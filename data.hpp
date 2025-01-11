@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #define GRID_HEIGHT 9
 #define GRID_WIDTH 9
 
@@ -11,103 +13,6 @@ struct Cell
   int nAdjacentMines;
 };
 
-Cell data[GRID_HEIGHT][GRID_WIDTH]{
-    {
-        {false, true, false, 0},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, true, false, 0},
-        {false, true, false, 0},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, true, false, 0},
-        {false, true, false, 0},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    },
-    {
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-        {false, false, false, 1},
-    }};
+extern Cell data[GRID_HEIGHT][GRID_WIDTH];
+
+extern uint32_t onePixel[50 * 50];

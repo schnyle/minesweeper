@@ -1,5 +1,6 @@
 #include <X11/Xlib.h>
 #include <array>
+#include <iostream>
 
 #include "data.hpp"
 
@@ -14,6 +15,7 @@
 static Display *display;
 static int screen;
 static Window root;
+static Visual *visual;
 
 GC createGC()
 {
@@ -35,10 +37,10 @@ GC createGC()
 
 void drawUnrevealedCell(Display *display, Window window, GC gc, int x, int y)
 {
-  int pixelXMin = x * CELL_SIZE;
-  int pixelXMax = pixelXMin + CELL_SIZE - 1;
-  int pixelYMin = y * CELL_SIZE;
-  int pixelYMax = pixelYMin + CELL_SIZE - 1;
+  short pixelXMin = x * CELL_SIZE;
+  short pixelXMax = pixelXMin + CELL_SIZE - 1;
+  short pixelYMin = y * CELL_SIZE;
+  short pixelYMax = pixelYMin + CELL_SIZE - 1;
 
   // square
   XSetForeground(display, gc, GREY);
@@ -58,23 +60,24 @@ void drawUnrevealedCell(Display *display, Window window, GC gc, int x, int y)
   int MODE = CoordModeOrigin;
 
   // bottom left corner
+  // TODO do these explicit int -> short conversions better
   XPoint blPoints[3] = {
-      {pixelXMin, pixelYMax - CELL_BORDER_WIDTH_3D},
+      {pixelXMin, short(pixelYMax - CELL_BORDER_WIDTH_3D)},
       {pixelXMin, pixelYMax},
-      {pixelXMin + CELL_BORDER_WIDTH_3D, pixelYMax - CELL_BORDER_WIDTH_3D}};
+      {short(pixelXMin + CELL_BORDER_WIDTH_3D), short(pixelYMax - CELL_BORDER_WIDTH_3D)}};
   XSetForeground(display, gc, LIGHT_GREY);
   XFillPolygon(display, window, gc, blPoints, 3, SHAPE, MODE);
 
   // top right corner
   XPoint trPoints[3] = {
-      {pixelXMax - CELL_BORDER_WIDTH_3D, pixelYMin},
+      {short(pixelXMax - CELL_BORDER_WIDTH_3D), pixelYMin},
       {pixelXMax, pixelYMin},
-      {pixelXMax - CELL_BORDER_WIDTH_3D, pixelYMin + CELL_BORDER_WIDTH_3D}};
+      {short(pixelXMax - CELL_BORDER_WIDTH_3D), short(pixelYMin + CELL_BORDER_WIDTH_3D)}};
   XSetForeground(display, gc, LIGHT_GREY);
   XFillPolygon(display, window, gc, trPoints, 3, SHAPE, MODE);
 }
 
-void drawEmptyCell(Display *display, Window window, GC gc, int x, int y)
+void drawRevealedCell(Display *display, Window window, GC gc, int x, int y, int n)
 {
   int pixelXMin = x * CELL_SIZE;
   int pixelXMax = pixelXMin + CELL_SIZE - 1;
@@ -84,6 +87,23 @@ void drawEmptyCell(Display *display, Window window, GC gc, int x, int y)
   // square
   XSetForeground(display, gc, GREY);
   XFillRectangle(display, window, gc, pixelXMin, pixelYMin, CELL_SIZE, CELL_SIZE);
+
+  // number of adjacent mines
+  if (n)
+  {
+    XImage *one = XCreateImage(
+        display,
+        visual,
+        DefaultDepth(display, screen),
+        ZPixmap,
+        0,
+        (char *)onePixel,
+        CELL_SIZE,
+        CELL_SIZE,
+        32,
+        CELL_SIZE * sizeof(uint32_t));
+    XPutImage(display, window, gc, one, 0, 0, pixelXMin, pixelYMin, CELL_SIZE, CELL_SIZE);
+  }
 
   // edges
   XSetForeground(display, gc, DARK_GREY);
@@ -101,9 +121,9 @@ void drawBoard(Display *display, Window window, GC gc, Cell (&data)[GRID_HEIGHT]
       {
         drawUnrevealedCell(display, window, gc, x, y);
       }
-      if (!data[y][x].nAdjacentMines)
+      else
       {
-        drawEmptyCell(display, window, gc, x, y);
+        drawRevealedCell(display, window, gc, x, y, data[y][x].nAdjacentMines);
       }
     }
   }
@@ -119,6 +139,7 @@ int main()
 
   screen = DefaultScreen(display);
   root = RootWindow(display, screen);
+  visual = DefaultVisual(display, screen);
   Window window = XCreateSimpleWindow(
       display, root, 0, 0, 800, 600, 1, BlackPixel(display, screen), WhitePixel(display, screen));
 
