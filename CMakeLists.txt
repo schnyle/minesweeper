@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(minesweeper)
 
+add_compile_options(-Wall -Wextra)
+
 find_package(X11 REQUIRED)
 
 add_executable(minesweeper

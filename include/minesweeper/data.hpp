@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#define GRID_HEIGHT 9
-#define GRID_WIDTH 9
+#define GRID_HEIGHT 18 // must fit inside short - see Renderer::draw3DEdges
+#define GRID_WIDTH 9   // "                                               "
 
 struct Cell
 {
