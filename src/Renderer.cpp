@@ -87,7 +87,7 @@ void Renderer::draw3DEdges(int row, int col)
   XFillPolygon(display, window, gc, trPoints, 3, SHAPE, MODE);
 }
 
-void Renderer::drawUnrevealedCell(int row, int col)
+void Renderer::drawHiddenCell(int row, int col)
 {
   drawCellBase(row, col);
   draw3DEdges(row, col);
@@ -95,60 +95,34 @@ void Renderer::drawUnrevealedCell(int row, int col)
 
 void Renderer::drawRevealedCell(int row, int col, int n)
 {
-  int pixelXMin = col * CELL_SIZE;
-  int pixelYMin = row * CELL_SIZE;
-
   drawCellBase(row, col);
   draw2DEdges(row, col);
 
-  // number of adjacent mines
-  if (n)
+  switch (n)
   {
-    XImage *one = XCreateImage(
-        display,
-        visual,
-        DefaultDepth(display, screen),
-        ZPixmap,
-        0,
-        (char *)onePixel,
-        CELL_SIZE,
-        CELL_SIZE,
-        32,
-        CELL_SIZE * sizeof(uint32_t));
-    XPutImage(display, window, gc, one, 0, 0, pixelXMin, pixelYMin, CELL_SIZE, CELL_SIZE);
+  case 0:
+    return;
+  case 1:
+    overlayImage(row, col, oneImage);
+    break;
+  default:
+    overlayImage(row, col, oneImage);
   }
 }
 
-void Renderer::drawFlaggedCell(int row, int col)
+void Renderer::overlayImage(int row, int col, uint32_t (&image)[50 * 50], uint32_t transparentHex)
 {
-  short pixelXMin = col * CELL_SIZE;
-  short pixelYMin = row * CELL_SIZE;
+  Point p = rowColToPixelPoint(row, col);
 
-  drawCellBase(row, col);
-  draw3DEdges(row, col);
-
-  // XImage *flag = XCreateImage(
-  //     display,
-  //     visual,
-  //     DefaultDepth(display, screen),
-  //     ZPixmap,
-  //     0,
-  //     (char *)flagPixel,
-  //     CELL_SIZE,
-  //     CELL_SIZE,
-  //     32,
-  //     CELL_SIZE * sizeof(uint32_t));
-
-  // For each pixel in your flag image
-  for (int i = 0; i < CELL_SIZE; i++)
+  for (int i = 0; i < CELL_SIZE; ++i)
   {
-    for (int j = 0; j < CELL_SIZE; j++)
+    for (int j = 0; j < CELL_SIZE; ++j)
     {
-      uint32_t pixel = flagPixel[i * CELL_SIZE + j];
-      if (pixel != 0xFFFFFFFF)
+      uint32_t pixel = image[i * CELL_SIZE + j];
+      if (pixel != transparentHex)
       {
         XSetForeground(display, gc, pixel);
-        XDrawPoint(display, window, gc, pixelXMin + j, pixelYMin + i);
+        XDrawPoint(display, window, gc, p.x + j, p.y + i);
       }
     }
   }
@@ -160,15 +134,13 @@ void Renderer::drawBoard(Cell (&data)[GRID_HEIGHT][GRID_WIDTH])
   {
     for (size_t col = 0; col < GRID_WIDTH; ++col)
     {
-      if (!data[row][col].isRevealed)
+      if (data[row][col].isHidden)
       {
+        drawHiddenCell(row, col);
+
         if (data[row][col].isFlagged)
         {
-          drawFlaggedCell(row, col);
-        }
-        else
-        {
-          drawUnrevealedCell(row, col);
+          overlayImage(row, col, flagImage);
         }
       }
       else
