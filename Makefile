@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -O0 -I/usr/include/X11
 LDFLAGS = -lX11
 
-SRCS = ${PROG}.cpp data.cpp
+SRCS = ${PROG}.cpp data.cpp Renderer.cpp
 OBJS = ${SRCS:.cpp=.o}
 
 all: ${PROG}
