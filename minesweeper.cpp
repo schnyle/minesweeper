@@ -111,6 +111,79 @@ void drawRevealedCell(Display *display, Window window, GC gc, int x, int y, int 
   XFillRectangle(display, window, gc, pixelXMin - 1, pixelYMin - 1, CELL_BORDER_WIDTH_2D, CELL_SIZE + 1);
 }
 
+void drawFlaggedCell(Display *display, Window window, GC gc, int x, int y)
+{
+  short pixelXMin = x * CELL_SIZE;
+  short pixelXMax = pixelXMin + CELL_SIZE - 1;
+  short pixelYMin = y * CELL_SIZE;
+  short pixelYMax = pixelYMin + CELL_SIZE - 1;
+
+  // square
+  XSetForeground(display, gc, GREY);
+  XFillRectangle(display, window, gc, pixelXMin, pixelYMin, CELL_SIZE, CELL_SIZE);
+
+  XImage *flag = XCreateImage(
+      display,
+      visual,
+      DefaultDepth(display, screen),
+      ZPixmap,
+      0,
+      (char *)flagPixel,
+      CELL_SIZE,
+      CELL_SIZE,
+      32,
+      CELL_SIZE * sizeof(uint32_t));
+
+  // For each pixel in your flag image
+  for (int i = 0; i < CELL_SIZE; i++)
+  {
+    for (int j = 0; j < CELL_SIZE; j++)
+    {
+      uint32_t pixel = flagPixel[i * CELL_SIZE + j];
+      if (pixel != 0xFFFFFFFF)
+      { // If pixel isn't white
+        XSetForeground(display, gc, pixel);
+        XDrawPoint(display, window, gc, pixelXMin + j, pixelYMin + i);
+      }
+    }
+  }
+
+  // XGCValues values;
+  // GC flagGC = XCreateGC(display, window, 0, &values);
+  // XSetFunction(display, flagGC, GXand);
+  // XPutImage(display, window, flagGC, flag, 0, 0, pixelXMin, pixelYMin, CELL_SIZE, CELL_SIZE);
+
+  // top/left edges
+  XSetForeground(display, gc, LIGHT_GREY);
+  XFillRectangle(display, window, gc, pixelXMin, pixelYMin, CELL_SIZE, CELL_BORDER_WIDTH_3D);
+  XFillRectangle(display, window, gc, pixelXMin, pixelYMin, CELL_BORDER_WIDTH_3D, CELL_SIZE);
+
+  // bottom/right edges
+  XSetForeground(display, gc, DARK_GREY);
+  XFillRectangle(display, window, gc, pixelXMin, pixelYMax - CELL_BORDER_WIDTH_3D + 1, CELL_SIZE, CELL_BORDER_WIDTH_3D);
+  XFillRectangle(display, window, gc, pixelXMax - CELL_BORDER_WIDTH_3D + 1, pixelYMin, CELL_BORDER_WIDTH_3D, CELL_SIZE);
+
+  int SHAPE = Complex;
+  int MODE = CoordModeOrigin;
+
+  // bottom left corner
+  // TODO do these explicit int -> short conversions better
+  XPoint blPoints[3] = {
+      {pixelXMin, short(pixelYMax - CELL_BORDER_WIDTH_3D)},
+      {pixelXMin, pixelYMax},
+      {short(pixelXMin + CELL_BORDER_WIDTH_3D), short(pixelYMax - CELL_BORDER_WIDTH_3D)}};
+  XSetForeground(display, gc, LIGHT_GREY);
+  XFillPolygon(display, window, gc, blPoints, 3, SHAPE, MODE);
+
+  // top right corner
+  XPoint trPoints[3] = {
+      {short(pixelXMax - CELL_BORDER_WIDTH_3D), pixelYMin},
+      {pixelXMax, pixelYMin},
+      {short(pixelXMax - CELL_BORDER_WIDTH_3D), short(pixelYMin + CELL_BORDER_WIDTH_3D)}};
+  XSetForeground(display, gc, LIGHT_GREY);
+  XFillPolygon(display, window, gc, trPoints, 3, SHAPE, MODE);
+}
+
 void drawBoard(Display *display, Window window, GC gc, Cell (&data)[GRID_HEIGHT][GRID_WIDTH])
 {
   for (size_t y = 0; y < GRID_HEIGHT; ++y)
@@ -119,7 +192,14 @@ void drawBoard(Display *display, Window window, GC gc, Cell (&data)[GRID_HEIGHT]
     {
       if (!data[y][x].isRevealed)
       {
-        drawUnrevealedCell(display, window, gc, x, y);
+        if (data[y][x].isFlagged)
+        {
+          drawFlaggedCell(display, window, gc, x, y);
+        }
+        else
+        {
+          drawUnrevealedCell(display, window, gc, x, y);
+        }
       }
       else
       {

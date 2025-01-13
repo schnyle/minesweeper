@@ -16,3 +16,5 @@ struct Cell
 extern Cell data[GRID_HEIGHT][GRID_WIDTH];
 
 extern uint32_t onePixel[50 * 50];
+
+extern uint32_t flagPixel[50 * 50];
