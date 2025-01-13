@@ -1,8 +1,7 @@
 #include <X11/Xlib.h>
+#include <minesweeper/Renderer.hpp>
+#include <minesweeper/data.hpp>
 #include <stdexcept>
-
-#include "Renderer.hpp"
-#include "data.hpp"
 
 Renderer::Renderer()
 {

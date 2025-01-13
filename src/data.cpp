@@ -1,8 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
-
-#include "data.hpp"
+#include <minesweeper/data.hpp>
 
 uint32_t onePixel[50 * 50];
 
