@@ -1,4 +1,5 @@
 #include <X11/Xlib.h>
+#include <fstream>
 #include <minesweeper/Renderer.hpp>
 #include <minesweeper/data.hpp>
 #include <stdexcept>
@@ -17,6 +18,8 @@ Renderer::Renderer()
   window = XCreateSimpleWindow(
       display, root, 0, 0, 800, 600, 1, BlackPixel(display, screen), WhitePixel(display, screen));
   gc = createGC();
+
+  loadImageData();
 }
 
 Renderer::~Renderer() { XCloseDisplay(display); }
@@ -103,14 +106,15 @@ void Renderer::drawRevealedCell(int row, int col, int n)
   case 0:
     return;
   case 1:
-    overlayImage(row, col, oneImage);
+    overlayImage(row, col, images.one);
     break;
   default:
-    overlayImage(row, col, oneImage);
+    overlayImage(row, col, images.one);
+    return;
   }
 }
 
-void Renderer::overlayImage(int row, int col, uint32_t (&image)[50 * 50], uint32_t transparentHex)
+void Renderer::overlayImage(int row, int col, const char *image, uint32_t transparentHex)
 {
   Point p = rowColToPixelPoint(row, col);
 
@@ -118,7 +122,8 @@ void Renderer::overlayImage(int row, int col, uint32_t (&image)[50 * 50], uint32
   {
     for (int j = 0; j < CELL_SIZE; ++j)
     {
-      uint32_t pixel = image[i * CELL_SIZE + j];
+      const char *pixelPtr = image + (i * CELL_SIZE + j) * 4;
+      uint32_t pixel = *reinterpret_cast<const uint32_t *>(pixelPtr);
       if (pixel != transparentHex)
       {
         XSetForeground(display, gc, pixel);
@@ -140,7 +145,7 @@ void Renderer::drawBoard(Cell (&data)[GRID_HEIGHT][GRID_WIDTH])
 
         if (data[row][col].isFlagged)
         {
-          overlayImage(row, col, flagImage);
+          overlayImage(row, col, images.flag);
         }
       }
       else
@@ -149,6 +154,27 @@ void Renderer::drawBoard(Cell (&data)[GRID_HEIGHT][GRID_WIDTH])
       }
     }
   }
+}
+
+void Renderer::loadBinaryFile(const std::string &filepath, char (&dest)[IMAGE_SIZE])
+{
+  std::ifstream file(filepath, std::ios::binary);
+  if (!file)
+  {
+    throw std::runtime_error("failed to open file: " + filepath);
+  }
+
+  file.read(dest, IMAGE_SIZE);
+  if (file.gcount() != IMAGE_SIZE)
+  {
+    throw std::runtime_error("failed to read complete image data for " + filepath);
+  }
+};
+
+void Renderer::loadImageData()
+{
+  loadBinaryFile("assets/flag.bin", images.flag);
+  loadBinaryFile("assets/one.bin", images.one);
 }
 
 GC Renderer::createGC()

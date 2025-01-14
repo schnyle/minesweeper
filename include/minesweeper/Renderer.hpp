@@ -1,6 +1,7 @@
 #pragma once
 
 #include <X11/Xlib.h>
+#include <array>
 #include <cstdint>
 #include <string>
 
@@ -31,6 +32,14 @@ private:
   uint32_t GREY = 0xbdbdbd;
   uint32_t LIGHT_GREY = 0xfefffe;
 
+  static constexpr size_t IMAGE_SIZE = 50 * 50 * 4;
+  struct Images
+  {
+    char flag[IMAGE_SIZE];
+    char one[IMAGE_SIZE];
+
+  } images;
+
   Display *display;
   Window root;
   Window window;
@@ -43,9 +52,12 @@ private:
   void draw3DEdges(int row, int col);
   void drawHiddenCell(int row, int col);
   void drawRevealedCell(int row, int col, int n);
-  void overlayImage(int row, int col, uint32_t (&image)[50 * 50], uint32_t transparentHex = 0xffffffff);
+  void overlayImage(int row, int col, const char *image, uint32_t transparentHex = 0xffffffff);
   void drawBoard(Cell (&data)[GRID_HEIGHT][GRID_WIDTH]);
-  GC createGC();
 
+  void loadBinaryFile(const std::string &filepath, char (&dest)[IMAGE_SIZE]);
+
+  void loadImageData();
+  GC createGC();
   Point rowColToPixelPoint(int row, int col);
 };
