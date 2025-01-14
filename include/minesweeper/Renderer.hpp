@@ -3,7 +3,9 @@
 #include <X11/Xlib.h>
 #include <array>
 #include <cstdint>
+#include <set>
 #include <string>
+#include <utility>
 
 #include "data.hpp"
 
@@ -32,6 +34,8 @@ private:
   uint32_t GREY = 0xbdbdbd;
   uint32_t LIGHT_GREY = 0xfefffe;
 
+  std::array<Cell, GRID_HEIGHT * GRID_WIDTH> data;
+
   static constexpr size_t IMAGE_SIZE = 50 * 50 * 4;
   struct Images
   {
@@ -55,6 +59,19 @@ private:
   GC gc;
   int screen;
 
+  // clang-format off
+  const std::array<std::pair<int, int>, 8> ADJACENCY_OFFSETS = {{
+    { 1, -1}, { 1, 0}, { 1, 1},
+    { 0, -1},          { 0, 1},
+    {-1, -1}, {-1, 0}, {-1, 1}
+  }};
+  // clang-format on
+
+  void run();
+  void revealAdjacentCells(int row, int col);
+  void floodFillEmptyCells(int row, int col);
+  void floodFillEmptyCellsRecursive(int row, int col, std::set<std::pair<int, int>> &visited);
+
   void drawCellBase(int row, int col);
   void draw2DEdges(int row, int col);
   void draw3DEdges(int row, int col);
@@ -62,11 +79,11 @@ private:
   void drawRevealedCell(int row, int col);
   void drawAdjacentMinesNum(int row, int col, int n);
   void overlayImage(int row, int col, const char *image, uint32_t transparentHex = 0xffffffff);
-  void drawBoard(std::array<Cell, GRID_HEIGHT * GRID_WIDTH> &data);
+  void drawBoard();
 
   void loadBinaryFile(const std::string &filepath, char (&dest)[IMAGE_SIZE]);
-
   void loadImageData();
   GC createGC();
-  Point rowColToPixelPoint(int row, int col);
+  int rowColToIndex(const int row, const int col) const;
+  Point rowColToPixelPoint(const int row, const int col) const;
 };

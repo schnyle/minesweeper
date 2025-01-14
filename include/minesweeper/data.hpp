@@ -10,7 +10,7 @@ struct Cell
   bool isMine;
   bool isHidden;
   bool isFlagged;
-  int nAdjacentMines = 0;
+  unsigned int nAdjacentMines = 0;
 };
 
 extern Cell data[GRID_HEIGHT][GRID_WIDTH];

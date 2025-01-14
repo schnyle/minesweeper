@@ -1,8 +1,11 @@
 #include <X11/Xlib.h>
 #include <fstream>
+#include <iostream>
 #include <minesweeper/Renderer.hpp>
 #include <minesweeper/data.hpp>
+#include <set>
 #include <stdexcept>
+#include <utility>
 
 Renderer::Renderer()
 {
@@ -15,28 +18,178 @@ Renderer::Renderer()
   screen = DefaultScreen(display);
   root = RootWindow(display, screen);
   visual = DefaultVisual(display, screen);
-  window = XCreateSimpleWindow(
-      display, root, 0, 0, 800, 600, 1, BlackPixel(display, screen), WhitePixel(display, screen));
-  gc = createGC();
 
+  XSetWindowAttributes xwa = {};
+  xwa.background_pixel = WhitePixel(display, screen);
+  xwa.border_pixel = BlackPixel(display, screen);
+  xwa.event_mask = ExposureMask | Button1MotionMask | ButtonPressMask | ButtonReleaseMask;
+  window = XCreateWindow(
+      display,
+      root,
+      0,
+      0,
+      1920,
+      1080,
+      1,
+      DefaultDepth(display, screen),
+      InputOutput,
+      visual,
+      CWBackPixel | CWEventMask | CWBorderPixel,
+      &xwa
+
+  );
+  gc = createGC();
   loadImageData();
+
+  data = generateData();
 }
 
 Renderer::~Renderer() { XCloseDisplay(display); }
 
 void Renderer::render()
 {
-  auto data = generateData();
-
   XStoreName(display, window, APP_NAME);
-  XSelectInput(display, window, ExposureMask | KeyPressMask);
   XMapWindow(display, window);
 
+  run();
+}
+
+void Renderer::run()
+{
+  bool first = true;
   XEvent event;
+
   while (true)
   {
-    drawBoard(data);
     XNextEvent(display, &event);
+
+    switch (event.type)
+    {
+    case Expose:
+      drawBoard();
+      break;
+    case ButtonPress:
+      const int row = event.xbutton.y / CELL_SIZE;
+      const int col = event.xbutton.x / CELL_SIZE;
+      const int index = row * GRID_WIDTH + col;
+
+      if (event.xbutton.button == Button1 && data[index].isHidden)
+      {
+        if (first)
+        {
+          first = false;
+          while (data[index].nAdjacentMines != 0 || data[index].isMine)
+          {
+            data = generateData();
+          }
+        }
+
+        if (data[index].isFlagged)
+        {
+          break;
+        }
+
+        data[index].isHidden = false;
+        if (data[index].nAdjacentMines == 0)
+        {
+          floodFillEmptyCells(row, col);
+        }
+      }
+      else if (event.xbutton.button == Button3)
+      {
+        if (data[index].isHidden)
+        {
+          data[index].isFlagged = !data[index].isFlagged;
+        }
+      }
+      else if (event.xbutton.button == Button2)
+      {
+        revealAdjacentCells(row, col);
+      }
+      break;
+    }
+
+    drawBoard();
+  }
+}
+
+void Renderer::revealAdjacentCells(int row, int col)
+{
+  unsigned int nFlags = 0;
+  std::set<std::pair<int, int>> hidden;
+
+  for (const auto &[dRow, dCol] : ADJACENCY_OFFSETS)
+  {
+    const int currentRow = row + dRow;
+    const int currentCol = col + dCol;
+    if (currentRow < 0 || currentCol < 0 || currentRow >= GRID_HEIGHT || currentCol >= GRID_WIDTH)
+    {
+      continue;
+    }
+
+    const auto currentIndex = rowColToIndex(currentRow, currentCol);
+    if (data[currentIndex].isFlagged)
+    {
+      ++nFlags;
+    }
+    else if (data[currentIndex].isHidden)
+    {
+      hidden.insert({currentRow, currentCol});
+    }
+  }
+
+  if (nFlags == data[rowColToIndex(row, col)].nAdjacentMines)
+  {
+    for (const auto &[currentRow, currentCol] : hidden)
+    {
+      const auto currentIndex = rowColToIndex(currentRow, currentCol);
+      data[currentIndex].isHidden = false;
+      if (data[currentIndex].nAdjacentMines == 0)
+      {
+        floodFillEmptyCells(currentRow, currentCol);
+      }
+    }
+  }
+}
+
+void Renderer::floodFillEmptyCells(int row, int col)
+{
+  std::set<std::pair<int, int>> visited;
+  floodFillEmptyCellsRecursive(row, col, visited);
+}
+
+void Renderer::floodFillEmptyCellsRecursive(int row, int col, std::set<std::pair<int, int>> &visited)
+{
+  visited.insert({row, col});
+
+  for (const auto &[dRow, dCol] : ADJACENCY_OFFSETS)
+  {
+    const int newRow = row + dRow;
+    const int newCol = col + dCol;
+    if (newRow < 0 || newCol < 0 || newRow >= GRID_HEIGHT || newCol >= GRID_WIDTH)
+    {
+      continue;
+    }
+
+    const std::pair<int, int> p{newRow, newCol};
+    if (visited.find(p) != visited.end())
+    {
+      continue;
+    }
+    else
+    {
+      visited.insert(p);
+    }
+
+    const int index = p.first * GRID_WIDTH + p.second;
+    if (!data[index].isMine)
+    {
+      data[index].isHidden = false;
+      if (data[index].nAdjacentMines == 0)
+      {
+        floodFillEmptyCellsRecursive(newRow, newCol, visited);
+      }
+    }
   }
 }
 
@@ -160,36 +313,36 @@ void Renderer::overlayImage(int row, int col, const char *image, uint32_t transp
   }
 }
 
-void Renderer::drawBoard(std::array<Cell, GRID_HEIGHT * GRID_WIDTH> &data)
+void Renderer::drawBoard()
 {
   for (size_t row = 0; row < GRID_HEIGHT; ++row)
   {
     for (size_t col = 0; col < GRID_WIDTH; ++col)
     {
       const size_t index = row * GRID_WIDTH + col;
-      if (data[index].isMine)
+
+      if (data[index].isHidden)
       {
-        drawRevealedCell(row, col);
-        overlayImage(row, col, images.mine);
+        drawHiddenCell(row, col);
+
+        if (data[index].isFlagged)
+        {
+          overlayImage(row, col, images.flag);
+        }
       }
       else
       {
         drawRevealedCell(row, col);
-        drawAdjacentMinesNum(row, col, data[index].nAdjacentMines);
-      }
-      // else if (data[index].isHidden)
-      // {
-      //   drawHiddenCell(row, col);
 
-      //   if (data[index].isFlagged)
-      //   {
-      //     overlayImage(row, col, images.flag);
-      //   }
-      // }
-      // else
-      // {
-      //   drawRevealedCell(row, col, data[index].nAdjacentMines);
-      // }
+        if (data[index].isMine)
+        {
+          overlayImage(row, col, images.mine);
+        }
+        else
+        {
+          drawAdjacentMinesNum(row, col, data[index].nAdjacentMines);
+        }
+      }
     }
   }
 }
@@ -242,4 +395,9 @@ GC Renderer::createGC()
   return gc;
 }
 
-Renderer::Point Renderer::rowColToPixelPoint(int row, int col) { return {col * CELL_SIZE, row * CELL_SIZE}; }
+int Renderer::rowColToIndex(const int row, const int col) const { return row * GRID_WIDTH + col; }
+
+Renderer::Point Renderer::rowColToPixelPoint(const int row, const int col) const
+{
+  return {col * CELL_SIZE, row * CELL_SIZE};
+}
