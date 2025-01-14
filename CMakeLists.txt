@@ -7,6 +7,7 @@ find_package(X11 REQUIRED)
 
 add_executable(minesweeper
   src/minesweeper.cpp
+  src/Game.cpp
   src/Renderer.cpp
   src/data.cpp
 )
