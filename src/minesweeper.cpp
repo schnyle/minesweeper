@@ -1,4 +1,4 @@
-#include <minesweeper/Renderer.hpp>
+#include <Renderer.hpp>
 
 int main()
 {

@@ -1,8 +1,9 @@
+#include <Renderer.hpp>
 #include <X11/Xlib.h>
+#include <config.hpp>
+#include <data.hpp>
 #include <fstream>
 #include <iostream>
-#include <minesweeper/Renderer.hpp>
-#include <minesweeper/data.hpp>
 #include <set>
 #include <stdexcept>
 #include <utility>
@@ -71,7 +72,7 @@ void Renderer::run()
     case ButtonPress:
       const int row = event.xbutton.y / CELL_SIZE;
       const int col = event.xbutton.x / CELL_SIZE;
-      const int index = row * GRID_WIDTH + col;
+      const int index = row * config::GRID_WIDTH + col;
 
       if (event.xbutton.button == Button1 && data[index].isHidden)
       {
@@ -104,6 +105,11 @@ void Renderer::run()
       }
       else if (event.xbutton.button == Button2)
       {
+        if (data[index].isHidden)
+        {
+          continue;
+        }
+
         revealAdjacentCells(row, col);
       }
       break;
@@ -122,7 +128,7 @@ void Renderer::revealAdjacentCells(int row, int col)
   {
     const int currentRow = row + dRow;
     const int currentCol = col + dCol;
-    if (currentRow < 0 || currentCol < 0 || currentRow >= GRID_HEIGHT || currentCol >= GRID_WIDTH)
+    if (currentRow < 0 || currentCol < 0 || currentRow >= config::GRID_HEIGHT || currentCol >= config::GRID_WIDTH)
     {
       continue;
     }
@@ -166,7 +172,7 @@ void Renderer::floodFillEmptyCellsRecursive(int row, int col, std::set<std::pair
   {
     const int newRow = row + dRow;
     const int newCol = col + dCol;
-    if (newRow < 0 || newCol < 0 || newRow >= GRID_HEIGHT || newCol >= GRID_WIDTH)
+    if (newRow < 0 || newCol < 0 || newRow >= config::GRID_HEIGHT || newCol >= config::GRID_WIDTH)
     {
       continue;
     }
@@ -181,7 +187,7 @@ void Renderer::floodFillEmptyCellsRecursive(int row, int col, std::set<std::pair
       visited.insert(p);
     }
 
-    const int index = p.first * GRID_WIDTH + p.second;
+    const int index = p.first * config::GRID_WIDTH + p.second;
     if (!data[index].isMine)
     {
       data[index].isHidden = false;
@@ -315,11 +321,11 @@ void Renderer::overlayImage(int row, int col, const char *image, uint32_t transp
 
 void Renderer::drawBoard()
 {
-  for (size_t row = 0; row < GRID_HEIGHT; ++row)
+  for (size_t row = 0; row < config::GRID_HEIGHT; ++row)
   {
-    for (size_t col = 0; col < GRID_WIDTH; ++col)
+    for (size_t col = 0; col < config::GRID_WIDTH; ++col)
     {
-      const size_t index = row * GRID_WIDTH + col;
+      const size_t index = row * config::GRID_WIDTH + col;
 
       if (data[index].isHidden)
       {
@@ -395,7 +401,7 @@ GC Renderer::createGC()
   return gc;
 }
 
-int Renderer::rowColToIndex(const int row, const int col) const { return row * GRID_WIDTH + col; }
+int Renderer::rowColToIndex(const int row, const int col) const { return row * config::GRID_WIDTH + col; }
 
 Renderer::Point Renderer::rowColToPixelPoint(const int row, const int col) const
 {

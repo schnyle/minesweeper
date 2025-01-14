@@ -2,6 +2,7 @@
 
 #include <X11/Xlib.h>
 #include <array>
+#include <config.hpp>
 #include <cstdint>
 #include <set>
 #include <string>
@@ -34,7 +35,7 @@ private:
   uint32_t GREY = 0xbdbdbd;
   uint32_t LIGHT_GREY = 0xfefffe;
 
-  std::array<Cell, GRID_HEIGHT * GRID_WIDTH> data;
+  std::array<Cell, config::GRID_HEIGHT * config::GRID_WIDTH> data;
 
   static constexpr size_t IMAGE_SIZE = 50 * 50 * 4;
   struct Images
