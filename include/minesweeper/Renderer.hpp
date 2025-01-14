@@ -59,9 +59,10 @@ private:
   void draw2DEdges(int row, int col);
   void draw3DEdges(int row, int col);
   void drawHiddenCell(int row, int col);
-  void drawRevealedCell(int row, int col, int n);
+  void drawRevealedCell(int row, int col);
+  void drawAdjacentMinesNum(int row, int col, int n);
   void overlayImage(int row, int col, const char *image, uint32_t transparentHex = 0xffffffff);
-  void drawBoard(Cell (&data)[GRID_HEIGHT][GRID_WIDTH]);
+  void drawBoard(std::array<Cell, GRID_HEIGHT * GRID_WIDTH> &data);
 
   void loadBinaryFile(const std::string &filepath, char (&dest)[IMAGE_SIZE]);
 

@@ -26,6 +26,8 @@ Renderer::~Renderer() { XCloseDisplay(display); }
 
 void Renderer::render()
 {
+  auto data = generateData();
+
   XStoreName(display, window, APP_NAME);
   XSelectInput(display, window, ExposureMask | KeyPressMask);
   XMapWindow(display, window);
@@ -96,10 +98,14 @@ void Renderer::drawHiddenCell(int row, int col)
   draw3DEdges(row, col);
 }
 
-void Renderer::drawRevealedCell(int row, int col, int n)
+void Renderer::drawRevealedCell(int row, int col)
 {
   drawCellBase(row, col);
   draw2DEdges(row, col);
+}
+
+void Renderer::drawAdjacentMinesNum(int row, int col, int n)
+{
 
   switch (n)
   {
@@ -154,25 +160,36 @@ void Renderer::overlayImage(int row, int col, const char *image, uint32_t transp
   }
 }
 
-void Renderer::drawBoard(Cell (&data)[GRID_HEIGHT][GRID_WIDTH])
+void Renderer::drawBoard(std::array<Cell, GRID_HEIGHT * GRID_WIDTH> &data)
 {
   for (size_t row = 0; row < GRID_HEIGHT; ++row)
   {
     for (size_t col = 0; col < GRID_WIDTH; ++col)
     {
-      if (data[row][col].isHidden)
+      const size_t index = row * GRID_WIDTH + col;
+      if (data[index].isMine)
       {
-        drawHiddenCell(row, col);
-
-        if (data[row][col].isFlagged)
-        {
-          overlayImage(row, col, images.flag);
-        }
+        drawRevealedCell(row, col);
+        overlayImage(row, col, images.mine);
       }
       else
       {
-        drawRevealedCell(row, col, data[row][col].nAdjacentMines);
+        drawRevealedCell(row, col);
+        drawAdjacentMinesNum(row, col, data[index].nAdjacentMines);
       }
+      // else if (data[index].isHidden)
+      // {
+      //   drawHiddenCell(row, col);
+
+      //   if (data[index].isFlagged)
+      //   {
+      //     overlayImage(row, col, images.flag);
+      //   }
+      // }
+      // else
+      // {
+      //   drawRevealedCell(row, col, data[index].nAdjacentMines);
+      // }
     }
   }
 }
