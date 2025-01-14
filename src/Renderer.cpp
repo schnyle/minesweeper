@@ -108,6 +108,27 @@ void Renderer::drawRevealedCell(int row, int col, int n)
   case 1:
     overlayImage(row, col, images.one);
     break;
+  case 2:
+    overlayImage(row, col, images.two);
+    break;
+  case 3:
+    overlayImage(row, col, images.three);
+    break;
+  case 4:
+    overlayImage(row, col, images.four);
+    break;
+  case 5:
+    overlayImage(row, col, images.five);
+    break;
+  case 6:
+    overlayImage(row, col, images.six);
+    break;
+  case 7:
+    overlayImage(row, col, images.seven);
+    break;
+  case 8:
+    overlayImage(row, col, images.eight);
+    break;
   default:
     overlayImage(row, col, images.one);
     return;
@@ -174,7 +195,15 @@ void Renderer::loadBinaryFile(const std::string &filepath, char (&dest)[IMAGE_SI
 void Renderer::loadImageData()
 {
   loadBinaryFile("assets/flag.bin", images.flag);
+  loadBinaryFile("assets/mine.bin", images.mine);
   loadBinaryFile("assets/one.bin", images.one);
+  loadBinaryFile("assets/two.bin", images.two);
+  loadBinaryFile("assets/three.bin", images.three);
+  loadBinaryFile("assets/four.bin", images.four);
+  loadBinaryFile("assets/five.bin", images.five);
+  loadBinaryFile("assets/six.bin", images.six);
+  loadBinaryFile("assets/seven.bin", images.seven);
+  loadBinaryFile("assets/eight.bin", images.eight);
 }
 
 GC Renderer::createGC()

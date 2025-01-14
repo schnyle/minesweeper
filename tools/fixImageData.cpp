@@ -26,7 +26,6 @@ int main()
       std::string word;
       while (hexs >> word)
       {
-        std::cout << "go\n";
         if (std::count(word.begin(), word.end(), 'f') > 3 && std::count(word.begin(), word.end(), 'e') > 0)
         {
           ss << "0xffffffff,";

@@ -36,7 +36,15 @@ private:
   struct Images
   {
     char flag[IMAGE_SIZE];
+    char mine[IMAGE_SIZE];
     char one[IMAGE_SIZE];
+    char two[IMAGE_SIZE];
+    char three[IMAGE_SIZE];
+    char four[IMAGE_SIZE];
+    char five[IMAGE_SIZE];
+    char six[IMAGE_SIZE];
+    char seven[IMAGE_SIZE];
+    char eight[IMAGE_SIZE];
 
   } images;
 
