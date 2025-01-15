@@ -37,9 +37,7 @@ Renderer::Renderer()
       InputOutput,
       visual,
       CWBackPixel | CWEventMask | CWBorderPixel,
-      &xwa
-
-  );
+      &xwa);
   XMapWindow(display, window);
 
   gc = createGC();
@@ -49,7 +47,12 @@ Renderer::Renderer()
   XStoreName(display, window, config::APP_NAME);
 }
 
-Renderer::~Renderer() { XCloseDisplay(display); }
+Renderer::~Renderer()
+{
+  XFreeGC(display, gc);
+  XDestroyWindow(display, window);
+  XCloseDisplay(display);
+}
 
 void Renderer::run(Game &game)
 {

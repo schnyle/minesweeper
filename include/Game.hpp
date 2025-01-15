@@ -19,7 +19,7 @@ public:
   using Minefield = std::vector<Cell>;
 
   Game();
-  ~Game();
+  ~Game() = default;
 
   Minefield getMinefield() const { return minefield; }
 

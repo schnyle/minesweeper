@@ -7,8 +7,6 @@
 
 Game::Game() { minefield = initMinefield(); }
 
-Game::~Game() {}
-
 void Game::handleLeftClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
