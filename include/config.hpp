@@ -22,4 +22,6 @@ constexpr int CELL_PIXEL_SIZE = 50;
 constexpr int CELL_BORDER_WIDTH_3D = 5;
 constexpr int CELL_BORDER_WIDTH_2D = 2;    // even int
 constexpr size_t IMAGE_SIZE = 50 * 50 * 4; // images in assets/
+
+constexpr int spriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE * 4;
 } // namespace config
