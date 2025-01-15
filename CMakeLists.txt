@@ -6,7 +6,7 @@ add_compile_options(-Wall -Wextra)
 find_package(X11 REQUIRED)
 
 add_executable(minesweeper
-  src/minesweeper.cpp
+  src/main.cpp
   src/Game.cpp
   src/Renderer.cpp
   src/data.cpp

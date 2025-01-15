@@ -40,24 +40,20 @@ Renderer::Renderer()
       &xwa
 
   );
+  XMapWindow(display, window);
+
   gc = createGC();
+
   loadImageData();
+
+  XStoreName(display, window, config::APP_NAME);
 }
 
 Renderer::~Renderer() { XCloseDisplay(display); }
 
-void Renderer::render()
-{
-  XStoreName(display, window, config::APP_NAME);
-  XMapWindow(display, window);
-
-  run();
-}
-
-void Renderer::run()
+void Renderer::run(Game &game)
 {
   XEvent event;
-  Game game;
 
   while (true)
   {
@@ -91,7 +87,7 @@ void Renderer::run()
   }
 }
 
-void Renderer::drawCellBase(int row, int col)
+void Renderer::drawCellBase(const int row, const int col) const
 {
   const Point p = rowColToPixelPoint(row, col);
 
@@ -99,7 +95,15 @@ void Renderer::drawCellBase(int row, int col)
   XFillRectangle(display, window, gc, p.x, p.y, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE);
 }
 
-void Renderer::draw2DEdges(int row, int col)
+void Renderer::drawMineCellBase(const int row, const int col) const
+{
+  const Point p = rowColToPixelPoint(row, col);
+
+  XSetForeground(display, gc, config::RED);
+  XFillRectangle(display, window, gc, p.x, p.y, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE);
+}
+
+void Renderer::draw2DEdges(const int row, const int col) const
 {
   const Point p = rowColToPixelPoint(row, col);
 
@@ -108,7 +112,7 @@ void Renderer::draw2DEdges(int row, int col)
   XFillRectangle(display, window, gc, p.x - 1, p.y - 1, config::CELL_BORDER_WIDTH_2D, config::CELL_PIXEL_SIZE + 1);
 }
 
-void Renderer::draw3DEdges(int row, int col)
+void Renderer::draw3DEdges(const int row, const int col) const
 {
   Point pMin = rowColToPixelPoint(row, col);
   Point pMax{pMin.x + config::CELL_PIXEL_SIZE - 1, pMin.y + config::CELL_PIXEL_SIZE - 1};
@@ -159,19 +163,19 @@ void Renderer::draw3DEdges(int row, int col)
   XFillPolygon(display, window, gc, trPoints, 3, SHAPE, MODE);
 }
 
-void Renderer::drawHiddenCell(int row, int col)
+void Renderer::drawHiddenCell(const int row, const int col) const
 {
   drawCellBase(row, col);
   draw3DEdges(row, col);
 }
 
-void Renderer::drawRevealedCell(int row, int col)
+void Renderer::drawRevealedCell(const int row, const int col) const
 {
   drawCellBase(row, col);
   draw2DEdges(row, col);
 }
 
-void Renderer::drawAdjacentMinesNum(int row, int col, int n)
+void Renderer::drawAdjacentMinesNum(const int row, const int col, const int n) const
 {
 
   switch (n)
@@ -208,7 +212,47 @@ void Renderer::drawAdjacentMinesNum(int row, int col, int n)
   }
 }
 
-void Renderer::overlayImage(int row, int col, const char *image, uint32_t transparentHex)
+void Renderer::drawRevealedMineCell(const int row, const int col) const
+{
+  drawMineCellBase(row, col);
+  overlayImage(row, col, images.mine);
+}
+
+void Renderer::drawBoard(const Game::Minefield &minefield) const
+{
+  for (size_t row = 0; row < config::GRID_HEIGHT; ++row)
+  {
+    for (size_t col = 0; col < config::GRID_WIDTH; ++col)
+    {
+      const size_t index = row * config::GRID_WIDTH + col;
+      const auto &[isMine, isHidden, isFlagged, nAdjacentMines] = minefield[index];
+
+      if (isHidden)
+      {
+        drawHiddenCell(row, col);
+
+        if (isFlagged)
+        {
+          overlayImage(row, col, images.flag);
+        }
+      }
+      else
+      {
+        if (isMine)
+        {
+          drawRevealedMineCell(row, col);
+        }
+        else
+        {
+          drawRevealedCell(row, col);
+          drawAdjacentMinesNum(row, col, minefield[index].nAdjacentMines);
+        }
+      }
+    }
+  }
+}
+
+void Renderer::overlayImage(const int row, const int col, const char *image, uint32_t transparentHex) const
 {
   Point p = rowColToPixelPoint(row, col);
 
@@ -222,40 +266,6 @@ void Renderer::overlayImage(int row, int col, const char *image, uint32_t transp
       {
         XSetForeground(display, gc, pixel);
         XDrawPoint(display, window, gc, p.x + j, p.y + i);
-      }
-    }
-  }
-}
-
-void Renderer::drawBoard(const Game::Minefield &minefield)
-{
-  for (size_t row = 0; row < config::GRID_HEIGHT; ++row)
-  {
-    for (size_t col = 0; col < config::GRID_WIDTH; ++col)
-    {
-      const size_t index = row * config::GRID_WIDTH + col;
-
-      if (minefield[index].isHidden)
-      {
-        drawHiddenCell(row, col);
-
-        if (minefield[index].isFlagged)
-        {
-          overlayImage(row, col, images.flag);
-        }
-      }
-      else
-      {
-        drawRevealedCell(row, col);
-
-        if (minefield[index].isMine)
-        {
-          overlayImage(row, col, images.mine);
-        }
-        else
-        {
-          drawAdjacentMinesNum(row, col, minefield[index].nAdjacentMines);
-        }
       }
     }
   }
