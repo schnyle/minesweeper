@@ -6,8 +6,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <random>
-
 RasterRenderer::RasterRenderer()
 {
   display = XOpenDisplay(nullptr);
@@ -113,8 +111,9 @@ void RasterRenderer::updateBackBuffer(Game &game)
     {
       const int x = col * config::CELL_PIXEL_SIZE;
       const int y = row * config::CELL_PIXEL_SIZE;
-      // copySprite(backBuffer, sprites.hidden, x, y);
-      copySprite(backBuffer, sprites.flag, x, y);
+      copySprite(backBuffer, sprites.hidden, x, y);
+      // return;
+      // copySprite(backBuffer, sprites.flag, x, y);
     }
   }
 }
@@ -142,6 +141,8 @@ void RasterRenderer::initializeBuffers()
   frontBuffer = std::make_unique<uint32_t[]>(bufferSize);
   backBuffer = std::make_unique<uint32_t[]>(bufferSize);
 
+  makeInterface();
+
   image = XCreateImage(
       display,
       visual,
@@ -161,47 +162,55 @@ void RasterRenderer::initializeSprites()
   makeFlaggedCellSprite();
 };
 
+void RasterRenderer::makeInterface()
+{
+  const int FRAME_WIDTH = 15;
+
+  // base
+  std::fill_n(backBuffer.get(), config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT, config::GREY);
+
+  buffInsert3DBorder(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      0,
+      0,
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+
+  buffInsert3DBorder(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      FRAME_WIDTH,
+      FRAME_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - 2 * FRAME_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT - 2 * FRAME_WIDTH,
+      config::DARK_GREY,
+      config::GREY,
+      config::LIGHT_GREY);
+}
+
 void RasterRenderer::makeHiddenCellSprite()
 {
   auto &buff = sprites.hidden;
 
   // base
-  buffInsertRectangle(buff, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
 
-  // top/left edges
-  buffInsertRectangle(buff, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_3D, config::LIGHT_GREY);
-  buffInsertRectangle(buff, 0, 0, config::CELL_BORDER_WIDTH_3D, config::CELL_PIXEL_SIZE, config::LIGHT_GREY);
-
-  // bottom/right edges
   const auto interiorLimit = config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_3D;
-  buffInsertRectangle(buff, interiorLimit, 0, config::CELL_BORDER_WIDTH_3D, config::CELL_PIXEL_SIZE, config::DARK_GREY);
-  buffInsertRectangle(buff, 0, interiorLimit, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_3D, config::DARK_GREY);
-
-  // top right corner
-  for (int row = 0; row < config::CELL_BORDER_WIDTH_3D; ++row)
-  {
-    for (int col = 0; col < config::CELL_BORDER_WIDTH_3D - row - 1; ++col)
-    {
-      const auto idx = rowColToCellIndex(row, col + interiorLimit);
-      buff[idx] = config::LIGHT_GREY;
-    }
-
-    const auto diagonalIdx = rowColToCellIndex(row, -row + config::CELL_PIXEL_SIZE - 1);
-    buff[diagonalIdx] = config::GREY;
-  }
-
-  // bottom left corner
-  for (int row = 0; row < config::CELL_BORDER_WIDTH_3D; ++row)
-  {
-    for (int col = 0; col < config::CELL_BORDER_WIDTH_3D - row - 1; ++col)
-    {
-      const auto idx = rowColToCellIndex(row + interiorLimit, col);
-      buff[idx] = config::LIGHT_GREY;
-    }
-
-    const auto diagonalIdx = rowColToCellIndex(-row + config::CELL_PIXEL_SIZE - 1, row);
-    buff[diagonalIdx] = config::GREY;
-  }
+  buffInsert3DBorder(
+      buff,
+      config::CELL_PIXEL_SIZE,
+      0,
+      0,
+      config::CELL_PIXEL_SIZE,
+      config::CELL_PIXEL_SIZE,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
 }
 
 void RasterRenderer::makeFlaggedCellSprite()
@@ -219,20 +228,28 @@ void RasterRenderer::makeFlaggedCellSprite()
   const int bottomBaseRectWidth = config::FLAG_BOTTOM_BASE_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
   const int bottomBaseRectX = (config::CELL_PIXEL_SIZE - bottomBaseRectWidth) / 2;
   const int bottomBaseRectY = flagPoleBottomY - bottomBaseRectHeight;
-  buffInsertRectangle(buff, bottomBaseRectX, bottomBaseRectY, bottomBaseRectWidth, bottomBaseRectHeight, config::BLACK);
+  buffInsertRectangle(
+      buff,
+      config::CELL_PIXEL_SIZE,
+      bottomBaseRectX,
+      bottomBaseRectY,
+      bottomBaseRectWidth,
+      bottomBaseRectHeight,
+      config::BLACK);
 
   // top base rectangle
   const int topBaseRectHeight = config::FLAG_TOP_BASE_RECT_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
   const int topBaseRectWidth = config::FLAG_TOP_BASE_RECT_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
   const int topBaseRectX = (config::CELL_PIXEL_SIZE - topBaseRectWidth) / 2;
   const int topBaseRectY = flagPoleBottomY - bottomBaseRectHeight - topBaseRectHeight;
-  buffInsertRectangle(buff, topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight, config::BLACK);
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight, config::BLACK);
 
   // pole
   const int poleWidth = config::FLAG_POLE_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
   const int poleX = (config::CELL_PIXEL_SIZE - poleWidth) / 2;
   const int poleY = (config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2;
-  buffInsertRectangle(buff, poleX, poleY, poleWidth, totalFlagPoleHeight, config::BLACK);
+  buffInsertRectangle(buff, config::CELL_PIXEL_SIZE, poleX, poleY, poleWidth, totalFlagPoleHeight, config::BLACK);
 
   // flag
   const int flagSize = config::FLAG_SIZE_RATIO * config::CELL_PIXEL_SIZE;
@@ -265,7 +282,8 @@ void RasterRenderer::copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_
 }
 
 void RasterRenderer::buffInsertRectangle(
-    uint32_t (&buff)[],
+    uint32_t *buff,
+    const int buffWidth,
     const int x,
     const int y,
     const int w,
@@ -274,9 +292,93 @@ void RasterRenderer::buffInsertRectangle(
 {
   for (int row = y; row < y + h; ++row)
   {
-    std::fill_n(buff + rowColToCellIndex(row, x), w, c);
+    const int index = row * buffWidth + x;
+    std::fill_n(buff + index, w, c);
   }
 };
+
+void RasterRenderer::buffInsert3DBorder(
+    uint32_t *buff,
+    const int buffWidth,
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const uint32_t cTop,
+    const uint32_t cMid,
+    const uint32_t cBot)
+{
+  // left edge
+  buffInsertRectangle(buff, buffWidth, x, y, config::CELL_BORDER_WIDTH_3D, h, cTop);
+  // top edge
+  buffInsertRectangle(buff, buffWidth, x, y, w, config::CELL_BORDER_WIDTH_3D, cTop);
+  // right edge
+  buffInsertRectangle(buff, buffWidth, x + w - config::CELL_BORDER_WIDTH_3D, y, config::CELL_BORDER_WIDTH_3D, h, cBot);
+  // bottom edge
+  buffInsertRectangle(buff, buffWidth, x, y + h - config::CELL_BORDER_WIDTH_3D, w, config::CELL_BORDER_WIDTH_3D, cBot);
+  // top-right corner
+  buffInsert3DCorner(
+      buff,
+      buffWidth,
+      x + w - config::CELL_BORDER_WIDTH_3D,
+      y,
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      cTop,
+      cMid,
+      cBot);
+  // bottom-left corner
+  buffInsert3DCorner(
+      buff,
+      buffWidth,
+      x,
+      y + h - config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      cTop,
+      cMid,
+      cBot);
+}
+
+void RasterRenderer::buffInsert3DCorner(
+    uint32_t *buff,
+    const int buffWidth,
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const uint32_t cTop,
+    const uint32_t cMid,
+    const uint32_t cBot)
+{
+  for (int row = y; row < y + h; ++row)
+  {
+    for (int col = x; col < x + w; ++col)
+    {
+      const auto idx = row * buffWidth + col;
+
+      const int relY = row - y;
+      const int relX = col - x;
+
+      uint32_t color;
+      const int diagonal = -relX + h - 1;
+      if (relY == diagonal)
+      {
+        color = cMid;
+      }
+      else if (relY < diagonal)
+      {
+        color = cTop;
+      }
+      else
+      {
+        color = cBot;
+      }
+
+      buff[idx] = color;
+    }
+  }
+}
 
 int RasterRenderer::rowColToWindowIndex(const int row, const int col) const
 {

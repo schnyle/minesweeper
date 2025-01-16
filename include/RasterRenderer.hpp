@@ -50,11 +50,40 @@ private:
   void initializeGC();
   void initializeBuffers();
   void initializeSprites();
+
+  void makeInterface();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();
 
   void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t (&sprite)[], const int row, const int col);
-  void buffInsertRectangle(uint32_t (&buff)[], const int x, const int y, const int w, const int h, const uint32_t c);
+  void buffInsertRectangle(
+      uint32_t *buff,
+      const int buffWidth,
+      const int x,
+      const int y,
+      const int w,
+      const int h,
+      const uint32_t c);
+  void buffInsert3DBorder(
+      uint32_t *buff,
+      const int buffWidth,
+      const int x,
+      const int y,
+      const int w,
+      const int h,
+      const uint32_t cTop,
+      const uint32_t cMid,
+      const uint32_t cBot);
+  void buffInsert3DCorner(
+      uint32_t *buff,
+      const int buffWidth,
+      const int x,
+      const int y,
+      const int w,
+      const int h,
+      const uint32_t cTop,
+      const uint32_t cMid,
+      const uint32_t cBot);
 
   int rowColToWindowIndex(const int row, const int col) const;
   int rowColToCellIndex(const int row, const int col) const;
