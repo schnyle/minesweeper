@@ -189,8 +189,8 @@ void RasterRenderer::makeInterface()
       config::WINDOW_PIXEL_WIDTH,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
-      config::WINDOW_PIXEL_HEIGHT - 2 * config::FRAME_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::DARK_GREY,
       config::GREY,
       config::LIGHT_GREY);
@@ -206,7 +206,7 @@ void RasterRenderer::makeInfoPanel()
       config::WINDOW_PIXEL_WIDTH,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-      config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::FRAME_WIDTH,
       config::LIGHT_GREY,
       config::GREY,
@@ -217,7 +217,7 @@ void RasterRenderer::makeInfoPanel()
       config::WINDOW_PIXEL_WIDTH,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
-      config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
       config::GREY);
   // top-left corner
@@ -235,7 +235,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsertRectangle(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
@@ -253,7 +253,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsert3DCorner(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
