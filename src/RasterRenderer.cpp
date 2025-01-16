@@ -113,7 +113,8 @@ void RasterRenderer::updateBackBuffer(Game &game)
     {
       const int x = col * config::CELL_PIXEL_SIZE;
       const int y = row * config::CELL_PIXEL_SIZE;
-      copySprite(backBuffer, sprites.hidden, x, y);
+      // copySprite(backBuffer, sprites.hidden, x, y);
+      copySprite(backBuffer, sprites.flag, x, y);
     }
   }
 }
@@ -154,19 +155,25 @@ void RasterRenderer::initializeBuffers()
       config::WINDOW_PIXEL_WIDTH * sizeof(int32_t));
 }
 
-void RasterRenderer::initializeSprites() { makeHiddenCellSprite(); };
+void RasterRenderer::initializeSprites()
+{
+  makeHiddenCellSprite();
+  makeFlaggedCellSprite();
+};
 
 void RasterRenderer::makeHiddenCellSprite()
 {
   auto &buff = sprites.hidden;
 
-  // top/left edges
+  // base
   buffInsertRectangle(buff, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+
+  // top/left edges
   buffInsertRectangle(buff, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_3D, config::LIGHT_GREY);
+  buffInsertRectangle(buff, 0, 0, config::CELL_BORDER_WIDTH_3D, config::CELL_PIXEL_SIZE, config::LIGHT_GREY);
 
   // bottom/right edges
   const auto interiorLimit = config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_3D;
-  buffInsertRectangle(buff, 0, 0, config::CELL_BORDER_WIDTH_3D, config::CELL_PIXEL_SIZE, config::LIGHT_GREY);
   buffInsertRectangle(buff, interiorLimit, 0, config::CELL_BORDER_WIDTH_3D, config::CELL_PIXEL_SIZE, config::DARK_GREY);
   buffInsertRectangle(buff, 0, interiorLimit, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_3D, config::DARK_GREY);
 
@@ -194,6 +201,55 @@ void RasterRenderer::makeHiddenCellSprite()
 
     const auto diagonalIdx = rowColToCellIndex(-row + config::CELL_PIXEL_SIZE - 1, row);
     buff[diagonalIdx] = config::GREY;
+  }
+}
+
+void RasterRenderer::makeFlaggedCellSprite()
+{
+
+  const int totalFlagPoleHeight = config::FLAG_TOTAL_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
+
+  const int flagPoleBottomY = config::CELL_PIXEL_SIZE - ((config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2);
+
+  auto &buff = sprites.flag;
+  std::copy(sprites.hidden, sprites.hidden + sprites.spriteSize, buff);
+
+  // bottom base rectangle
+  const int bottomBaseRectHeight = config::FLAG_BOTTOM_BASE_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
+  const int bottomBaseRectWidth = config::FLAG_BOTTOM_BASE_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
+  const int bottomBaseRectX = (config::CELL_PIXEL_SIZE - bottomBaseRectWidth) / 2;
+  const int bottomBaseRectY = flagPoleBottomY - bottomBaseRectHeight;
+  buffInsertRectangle(buff, bottomBaseRectX, bottomBaseRectY, bottomBaseRectWidth, bottomBaseRectHeight, config::BLACK);
+
+  // top base rectangle
+  const int topBaseRectHeight = config::FLAG_TOP_BASE_RECT_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
+  const int topBaseRectWidth = config::FLAG_TOP_BASE_RECT_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
+  const int topBaseRectX = (config::CELL_PIXEL_SIZE - topBaseRectWidth) / 2;
+  const int topBaseRectY = flagPoleBottomY - bottomBaseRectHeight - topBaseRectHeight;
+  buffInsertRectangle(buff, topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight, config::BLACK);
+
+  // pole
+  const int poleWidth = config::FLAG_POLE_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
+  const int poleX = (config::CELL_PIXEL_SIZE - poleWidth) / 2;
+  const int poleY = (config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2;
+  buffInsertRectangle(buff, poleX, poleY, poleWidth, totalFlagPoleHeight, config::BLACK);
+
+  // flag
+  const int flagSize = config::FLAG_SIZE_RATIO * config::CELL_PIXEL_SIZE;
+  const int flagX = poleX + poleWidth - flagSize;
+  const int flagY = poleY;
+  const double flagSlope = config::FLAG_SLOPE;
+  for (int y = 0; y < flagSize; ++y)
+  {
+    const int buffY = y + flagY;
+    for (int x = 0; x < flagSize; ++x)
+    {
+      if (y <= (flagSlope * x) + (flagSize / 2) - 1 && y >= -(flagSlope * x) + (flagSize / 2) + 1)
+      {
+        const int buffX = x + flagX;
+        buff[buffY * config::CELL_PIXEL_SIZE + buffX] = config::RED;
+      }
+    }
   }
 }
 

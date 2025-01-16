@@ -51,6 +51,7 @@ private:
   void initializeBuffers();
   void initializeSprites();
   void makeHiddenCellSprite();
+  void makeFlaggedCellSprite();
 
   void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t (&sprite)[], const int row, const int col);
   void buffInsertRectangle(uint32_t (&buff)[], const int x, const int y, const int w, const int h, const uint32_t c);
