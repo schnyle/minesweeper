@@ -109,9 +109,14 @@ void RasterRenderer::updateBackBuffer(Game &game)
   {
     for (int col = 0; col < config::GRID_WIDTH; ++col)
     {
-      const int x = col * config::CELL_PIXEL_SIZE;
-      const int y = row * config::CELL_PIXEL_SIZE;
-      // copySprite(backBuffer, sprites.hidden, x, y);
+      const int gameAreaWidth = config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH;
+      const int gameAreaHeight = config::WINDOW_PIXEL_HEIGHT - 2 * config::FRAME_WIDTH - config::INFO_PANEL_HEIGHT;
+      const int gameAreaX = config::FRAME_WIDTH;
+      const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+
+      const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
+      const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
+      copySprite(backBuffer, sprites.hidden, x, y);
       // return;
       // copySprite(backBuffer, sprites.flag, x, y);
     }
@@ -182,8 +187,8 @@ void RasterRenderer::makeInterface()
   buffInsert3DBorder(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::FRAME_WIDTH,
-      config::FRAME_WIDTH,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
       config::WINDOW_PIXEL_HEIGHT - 2 * config::FRAME_WIDTH,
       config::DARK_GREY,
@@ -199,7 +204,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsert3DBorder(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::FRAME_WIDTH,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
       config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
       config::FRAME_WIDTH,
@@ -210,7 +215,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsertRectangle(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::FRAME_WIDTH,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
       config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
       config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
@@ -219,7 +224,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsert3DCorner(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::FRAME_WIDTH,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
@@ -230,7 +235,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsertRectangle(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
@@ -239,7 +244,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsertRectangle(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::FRAME_WIDTH,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
@@ -248,7 +253,7 @@ void RasterRenderer::makeInfoPanel()
   buffInsert3DCorner(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
