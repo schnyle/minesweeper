@@ -52,6 +52,7 @@ private:
   void initializeSprites();
 
   void makeInterface();
+  void makeInfoPanel();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();
 

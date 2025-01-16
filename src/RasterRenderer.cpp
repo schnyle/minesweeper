@@ -111,7 +111,7 @@ void RasterRenderer::updateBackBuffer(Game &game)
     {
       const int x = col * config::CELL_PIXEL_SIZE;
       const int y = row * config::CELL_PIXEL_SIZE;
-      copySprite(backBuffer, sprites.hidden, x, y);
+      // copySprite(backBuffer, sprites.hidden, x, y);
       // return;
       // copySprite(backBuffer, sprites.flag, x, y);
     }
@@ -164,11 +164,10 @@ void RasterRenderer::initializeSprites()
 
 void RasterRenderer::makeInterface()
 {
-  const int FRAME_WIDTH = 15;
-
   // base
   std::fill_n(backBuffer.get(), config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT, config::GREY);
 
+  // border
   buffInsert3DBorder(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
@@ -183,10 +182,76 @@ void RasterRenderer::makeInterface()
   buffInsert3DBorder(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
-      FRAME_WIDTH,
-      FRAME_WIDTH,
-      config::WINDOW_PIXEL_WIDTH - 2 * FRAME_WIDTH,
-      config::WINDOW_PIXEL_HEIGHT - 2 * FRAME_WIDTH,
+      config::FRAME_WIDTH,
+      config::FRAME_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT - 2 * config::FRAME_WIDTH,
+      config::DARK_GREY,
+      config::GREY,
+      config::LIGHT_GREY);
+
+  makeInfoPanel();
+}
+
+void RasterRenderer::makeInfoPanel()
+{
+  // interface / game separator
+  buffInsert3DBorder(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::FRAME_WIDTH,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+      config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
+      config::FRAME_WIDTH,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+  // fill overlap
+  buffInsertRectangle(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::FRAME_WIDTH,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - 2 * config::FRAME_WIDTH,
+      config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
+      config::GREY);
+  // top-left corner
+  buffInsert3DCorner(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::FRAME_WIDTH,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::DARK_GREY,
+      config::GREY,
+      config::LIGHT_GREY);
+  // top-right corner
+  buffInsertRectangle(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::LIGHT_GREY);
+  // bottom-left corner
+  buffInsertRectangle(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::FRAME_WIDTH,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::DARK_GREY);
+  // bottom-right corner
+  buffInsert3DCorner(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
       config::DARK_GREY,
       config::GREY,
       config::LIGHT_GREY);

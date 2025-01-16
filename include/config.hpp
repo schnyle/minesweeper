@@ -19,6 +19,9 @@ constexpr int GRID_WIDTH = 4;  // "                                             
 constexpr int WINDOW_PIXEL_HEIGHT = 950;
 constexpr int WINDOW_PIXEL_WIDTH = 1800;
 
+constexpr int FRAME_WIDTH = 20;
+constexpr int INFO_PANEL_HEIGHT = 70;
+
 // sprites
 constexpr int CELL_PIXEL_SIZE = 50;
 constexpr int CELL_BORDER_WIDTH_3D = 5;    // recommend 1/10 of CELL_PIXEL_SIZE
