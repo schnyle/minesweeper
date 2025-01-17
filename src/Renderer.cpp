@@ -173,6 +173,8 @@ void Renderer::initializeBuffers()
 
   SpriteFactory::buffInsertInterface(
       backBuffer.get(), config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
+  SpriteFactory::buffInsertInterface(
+      frontBuffer.get(), config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
 
   image = XCreateImage(
       display,
@@ -180,7 +182,7 @@ void Renderer::initializeBuffers()
       DefaultDepth(display, screen),
       ZPixmap,
       0,
-      reinterpret_cast<char *>(frontBuffer.get()),
+      reinterpret_cast<char *>(backBuffer.get()),
       config::WINDOW_PIXEL_WIDTH,
       config::WINDOW_PIXEL_HEIGHT,
       32,
