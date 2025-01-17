@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 #include <config.hpp>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -42,6 +43,17 @@ private:
     uint32_t six[spriteSize];
     uint32_t seven[spriteSize];
     uint32_t eight[spriteSize];
+    std::map<int, uint32_t *> intToSpriteMap = {
+        {0, empty},
+        {1, one},
+        {2, two},
+        {3, three},
+        {4, four},
+        {5, five},
+        {6, six},
+        {7, seven},
+        {8, eight},
+    };
   } sprites;
 
   void renderFrame();
@@ -63,8 +75,15 @@ private:
   static const int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_SIZE) / 2;
   void copyNumericSprite(uint32_t *dest, uint32_t *source);
   void makeOneSprite();
+  void makeTwoSprite();
+  void makeThreeSprite();
+  void makeFourSprite();
+  void makeFiveSprite();
+  void makeSixSprite();
+  void makeSevenSprite();
+  void makeEightSprite();
 
-  void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t (&sprite)[], const int row, const int col);
+  void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int row, const int col);
   void buffInsertRectangle(
       uint32_t *buff,
       const int buffWidth,

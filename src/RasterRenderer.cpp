@@ -116,8 +116,7 @@ void RasterRenderer::updateBackBuffer(Game &game)
 
       const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
       const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
-      // copySprite(backBuffer, sprites.hidden, x, y);
-      copySprite(backBuffer, sprites.one, x, y);
+      copySprite(backBuffer, sprites.intToSpriteMap[col], x, y);
     }
   }
 }
@@ -167,6 +166,13 @@ void RasterRenderer::initializeSprites()
   makeFlaggedCellSprite();
 
   makeOneSprite();
+  makeTwoSprite();
+  makeThreeSprite();
+  makeFourSprite();
+  makeFiveSprite();
+  makeSixSprite();
+  makeSevenSprite();
+  makeEightSprite();
 };
 
 void RasterRenderer::makeInterface()
@@ -415,7 +421,311 @@ void RasterRenderer::makeOneSprite()
   copyNumericSprite(buff, sprite);
 }
 
-void RasterRenderer::copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t (&sprite)[], const int x, const int y)
+void RasterRenderer::makeTwoSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // bases
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  // bottom
+  buffInsertRectangle(
+      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, NUMERIC_SPRITE_SIZE - baseHeight, baseWidth, baseHeight, config::GREEN);
+  // top
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::GREEN);
+  // middle
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      baseWidth,
+      baseHeight,
+      config::GREEN);
+
+  // stems
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  // top
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      0,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE / 2,
+      config::GREEN);
+  // bottom
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE / 2,
+      config::GREEN);
+
+  auto &buff = sprites.two;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::makeThreeSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // bases
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  // bottom
+  buffInsertRectangle(
+      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, NUMERIC_SPRITE_SIZE - baseHeight, baseWidth, baseHeight, config::RED);
+  // top
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::RED);
+  // middle
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      baseWidth,
+      baseHeight,
+      config::RED);
+
+  // stem
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      0,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE,
+      config::RED);
+
+  auto &buff = sprites.three;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::makeFourSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // base
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  buffInsertRectangle(
+      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, (NUMERIC_SPRITE_SIZE) / 3, baseWidth, baseHeight, config::DARK_BLUE);
+
+  // stems
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  // right
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      0,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE,
+      config::DARK_BLUE);
+  // left
+  buffInsertRectangle(
+      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE / 3, config::DARK_BLUE);
+
+  auto &buff = sprites.four;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::makeFiveSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // bases
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  // bottom
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      NUMERIC_SPRITE_SIZE - baseHeight,
+      baseWidth,
+      baseHeight,
+      config::DARK_RED);
+  // top
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::DARK_RED);
+  // middle
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      baseWidth,
+      baseHeight,
+      config::DARK_RED);
+
+  // stems
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  // top
+  buffInsertRectangle(
+      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE / 2, config::DARK_RED);
+  // bottom
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE / 2,
+      config::DARK_RED);
+
+  auto &buff = sprites.five;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::makeSixSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // bases
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  // bottom
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      NUMERIC_SPRITE_SIZE - baseHeight,
+      baseWidth,
+      baseHeight,
+      config::TURQUOISE);
+  // top
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::TURQUOISE);
+  // middle
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      baseWidth,
+      baseHeight,
+      config::TURQUOISE);
+
+  // stems
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  // left
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::TURQUOISE);
+  // right
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE / 2,
+      config::TURQUOISE);
+
+  auto &buff = sprites.six;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::makeSevenSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // base
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::PURPLE);
+
+  // stem
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      0,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE,
+      config::PURPLE);
+
+  auto &buff = sprites.seven;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::makeEightSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // bases
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  // bottom
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      NUMERIC_SPRITE_SIZE - baseHeight,
+      baseWidth,
+      baseHeight,
+      config::DARK_GREY);
+  // top
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::DARK_GREY);
+  // middle
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      baseLeftPad,
+      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
+      baseWidth,
+      baseHeight,
+      config::DARK_GREY);
+
+  // stems
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  // left
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::DARK_GREY);
+  // right
+  buffInsertRectangle(
+      sprite,
+      NUMERIC_SPRITE_SIZE,
+      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
+      0,
+      stemWidth,
+      NUMERIC_SPRITE_SIZE,
+      config::DARK_GREY);
+
+  auto &buff = sprites.eight;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
+}
+
+void RasterRenderer::copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int x, const int y)
 {
   for (int row = 0; row < config::CELL_PIXEL_SIZE; ++row)
   {

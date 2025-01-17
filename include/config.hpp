@@ -7,15 +7,20 @@ namespace config
 {
 inline const char *APP_NAME = "Minesweeper";
 
-constexpr uint32_t DARK_GREY = 0x7a7a7b;
-constexpr uint32_t GREY = 0xbdbdbd;
-constexpr uint32_t LIGHT_GREY = 0xfefffe;
-constexpr uint32_t RED = 0xff0000;
 constexpr uint32_t BLACK = 0xff000000;
 constexpr uint32_t BLUE = 0xff0000ff;
+constexpr uint32_t DARK_BLUE = 0x01007a;
+constexpr uint32_t DARK_GREY = 0x7a7a7b;
+constexpr uint32_t DARK_RED = 0x840101;
+constexpr uint32_t GREEN = 0xff017a00;
+constexpr uint32_t GREY = 0xbdbdbd;
+constexpr uint32_t LIGHT_GREY = 0xfefffe;
+constexpr uint32_t PURPLE = 0x850085;
+constexpr uint32_t RED = 0xff0000;
+constexpr uint32_t TURQUOISE = 0x018384;
 
-constexpr int GRID_HEIGHT = 4; // must fit inside short - see Renderer::draw3DEdges
-constexpr int GRID_WIDTH = 4;  // "                                               "
+constexpr int GRID_HEIGHT = 2; // must fit inside short - see Renderer::draw3DEdges
+constexpr int GRID_WIDTH = 9;  // "                                               "
 
 constexpr int WINDOW_PIXEL_HEIGHT = 950;
 constexpr int WINDOW_PIXEL_WIDTH = 1800;
