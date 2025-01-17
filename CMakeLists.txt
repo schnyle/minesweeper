@@ -10,6 +10,7 @@ add_executable(minesweeper
   src/Game.cpp
   src/RasterRenderer.cpp
   src/Renderer.cpp
+  src/SpriteFactory.cpp
   src/data.cpp
 )
 
