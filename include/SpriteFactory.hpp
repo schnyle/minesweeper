@@ -31,6 +31,8 @@ public:
   SpriteFactory(Sprites *spriteObjs);
 
   static std::unique_ptr<Sprites> createSprites();
+  static void buffInsertInterface(uint32_t *buff, const int buffWidth, const int buffSize);
+  static void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int row, const int col);
 
 private:
   Sprites *sprites;
@@ -50,10 +52,9 @@ private:
   void makeSevenSprite();
   void makeEightSprite();
 
-  void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int row, const int col);
   void copyNumericSprite(uint32_t *dest, uint32_t *source);
 
-  void buffInsertRectangle(
+  static void buffInsertRectangle(
       uint32_t *buff,
       const int buffWidth,
       const int x,
@@ -61,7 +62,7 @@ private:
       const int w,
       const int h,
       const uint32_t c);
-  void buffInsert2DBorder(
+  static void buffInsert2DBorder(
       uint32_t *buff,
       const int buffWidth,
       const int x,
@@ -69,7 +70,7 @@ private:
       const int w,
       const int h,
       const uint32_t c);
-  void buffInsert3DBorder(
+  static void buffInsert3DBorder(
       uint32_t *buff,
       const int buffWidth,
       const int x,
@@ -79,7 +80,7 @@ private:
       const uint32_t cTop,
       const uint32_t cMid,
       const uint32_t cBot);
-  void buffInsert3DCorner(
+  static void buffInsert3DCorner(
       uint32_t *buff,
       const int buffWidth,
       const int x,
@@ -90,7 +91,7 @@ private:
       const uint32_t cMid,
       const uint32_t cBot);
 
-  int rowColToWindowIndex(const int row, const int col) const;
-  int rowColToCellIndex(const int row, const int col) const;
-  std::pair<int, int> rowColToPixelPoint(const int row, const int col) const;
+  static int rowColToWindowIndex(const int row, const int col);
+  static int rowColToCellIndex(const int row, const int col);
+  static std::pair<int, int> rowColToPixelPoint(const int row, const int col);
 };

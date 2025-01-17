@@ -37,9 +37,98 @@ std::unique_ptr<SpriteFactory::Sprites> SpriteFactory::createSprites()
 
   SpriteFactory spriteFactory(spriteObjs.get());
 
-  printf("returning spriteObjs\n");
   return spriteObjs;
 }
+
+void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, const int buffSize)
+{
+  // base
+  std::fill_n(buff, buffSize, config::GREY);
+
+  // border
+  buffInsert3DBorder(
+      buff,
+      buffWidth,
+      0,
+      0,
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+
+  buffInsert3DBorder(
+      buff,
+      buffWidth,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::DARK_GREY,
+      config::GREY,
+      config::LIGHT_GREY);
+
+  // interface / game separator
+  buffInsert3DBorder(
+      buff,
+      buffWidth,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::FRAME_WIDTH,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+  // fill overlap
+  buffInsertRectangle(
+      buff,
+      buffWidth,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
+      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
+      config::GREY);
+  // top-left corner
+  buffInsert3DCorner(
+      buff,
+      buffWidth,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::DARK_GREY,
+      config::GREY,
+      config::LIGHT_GREY);
+  // top-right corner
+  buffInsertRectangle(
+      buff,
+      buffWidth,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::LIGHT_GREY);
+  // bottom-left corner
+  buffInsertRectangle(
+      buff,
+      buffWidth,
+      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::DARK_GREY);
+  // bottom-right corner
+  buffInsert3DCorner(
+      buff,
+      buffWidth,
+      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::CELL_BORDER_WIDTH_3D,
+      config::CELL_BORDER_WIDTH_3D,
+      config::DARK_GREY,
+      config::GREY,
+      config::LIGHT_GREY);
+};
 
 void SpriteFactory::makeEmptyCellSprite()
 {
@@ -705,14 +794,11 @@ void SpriteFactory::buffInsert3DCorner(
   }
 }
 
-int SpriteFactory::rowColToWindowIndex(const int row, const int col) const
-{
-  return row * config::WINDOW_PIXEL_WIDTH + col;
-}
+int SpriteFactory::rowColToWindowIndex(const int row, const int col) { return row * config::WINDOW_PIXEL_WIDTH + col; }
 
-int SpriteFactory::rowColToCellIndex(const int row, const int col) const { return row * config::CELL_PIXEL_SIZE + col; }
+int SpriteFactory::rowColToCellIndex(const int row, const int col) { return row * config::CELL_PIXEL_SIZE + col; }
 
-std::pair<int, int> SpriteFactory::rowColToPixelPoint(const int row, const int col) const
+std::pair<int, int> SpriteFactory::rowColToPixelPoint(const int row, const int col)
 {
   return {col * config::CELL_PIXEL_SIZE, row * config::CELL_PIXEL_SIZE};
 };
