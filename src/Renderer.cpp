@@ -1,20 +1,17 @@
-#include <Game.hpp>
 #include <Renderer.hpp>
 #include <X11/Xlib.h>
+#include <algorithm>
 #include <config.hpp>
-#include <data.hpp>
-#include <fstream>
+#include <cstdlib>
 #include <iostream>
-#include <set>
 #include <stdexcept>
-#include <utility>
 
 Renderer::Renderer()
 {
   display = XOpenDisplay(nullptr);
   if (!display)
   {
-    throw std::runtime_error("Unable to open X display");
+    throw std::runtime_error("unable to open X display");
   }
 
   screen = DefaultScreen(display);
@@ -24,7 +21,7 @@ Renderer::Renderer()
   XSetWindowAttributes xwa = {};
   xwa.background_pixel = WhitePixel(display, screen);
   xwa.border_pixel = BlackPixel(display, screen);
-  xwa.event_mask = ExposureMask | Button1MotionMask | ButtonPressMask | ButtonReleaseMask;
+  xwa.event_mask = ExposureMask | Button1MotionMask | ButtonPressMask | ButtonReleaseMask; // check these
   window = XCreateWindow(
       display,
       root,
@@ -40,11 +37,11 @@ Renderer::Renderer()
       &xwa);
   XMapWindow(display, window);
 
-  gc = createGC();
-
-  loadImageData();
-
   XStoreName(display, window, config::APP_NAME);
+
+  initializeGC();
+  initializeBuffers();
+  sprites = SpriteFactory::createSprites();
 }
 
 Renderer::~Renderer()
@@ -58,254 +55,101 @@ void Renderer::run(Game &game)
 {
   XEvent event;
 
+  updateBackBuffer(game);
+
   while (true)
   {
     XNextEvent(display, &event);
-
-    switch (event.type)
+    if (event.type == Expose)
     {
-    case Expose:
-      drawBoard(game.getMinefield());
-      break;
-    case ButtonPress:
-      const int row = event.xbutton.y / config::CELL_PIXEL_SIZE;
-      const int col = event.xbutton.x / config::CELL_PIXEL_SIZE;
-
-      if (event.xbutton.button == Button1)
-      {
-        game.handleLeftClick(row, col);
-      }
-      else if (event.xbutton.button == Button2)
-      {
-        game.handleMiddleClick(row, col);
-      }
-      else if (event.xbutton.button == Button3)
-      {
-        game.handleRightClick(row, col);
-      }
-      break;
+      renderFrame();
+      continue;
     }
 
-    drawBoard(game.getMinefield());
+    updateGameState(game, event);
+    updateBackBuffer(game);
+    renderFrame();
   }
 }
 
-void Renderer::drawCellBase(const int row, const int col) const
+void Renderer::renderFrame()
 {
-  const Point p = rowColToPixelPoint(row, col);
-
-  XSetForeground(display, gc, config::GREY);
-  XFillRectangle(display, window, gc, p.x, p.y, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE);
+  image->data = reinterpret_cast<char *>(backBuffer.get());
+  XPutImage(display, window, gc, image, 0, 0, 0, 0, config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_HEIGHT);
+  frontBuffer.swap(backBuffer);
 }
 
-void Renderer::drawMineCellBase(const int row, const int col) const
+void Renderer::updateGameState(Game &game, XEvent &event)
 {
-  const Point p = rowColToPixelPoint(row, col);
-
-  XSetForeground(display, gc, config::RED);
-  XFillRectangle(display, window, gc, p.x, p.y, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE);
-}
-
-void Renderer::draw2DEdges(const int row, const int col) const
-{
-  const Point p = rowColToPixelPoint(row, col);
-
-  XSetForeground(display, gc, config::DARK_GREY);
-  XFillRectangle(display, window, gc, p.x - 1, p.y - 1, config::CELL_PIXEL_SIZE + 1, config::CELL_BORDER_WIDTH_2D);
-  XFillRectangle(display, window, gc, p.x - 1, p.y - 1, config::CELL_BORDER_WIDTH_2D, config::CELL_PIXEL_SIZE + 1);
-}
-
-void Renderer::draw3DEdges(const int row, const int col) const
-{
-  Point pMin = rowColToPixelPoint(row, col);
-  Point pMax{pMin.x + config::CELL_PIXEL_SIZE - 1, pMin.y + config::CELL_PIXEL_SIZE - 1};
-
-  // top/left edges
-  XSetForeground(display, gc, config::LIGHT_GREY);
-  XFillRectangle(display, window, gc, pMin.x, pMin.y, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_3D);
-  XFillRectangle(display, window, gc, pMin.x, pMin.y, config::CELL_BORDER_WIDTH_3D, config::CELL_PIXEL_SIZE);
-
-  // bottom/right edges
-  XSetForeground(display, gc, config::DARK_GREY);
-  XFillRectangle(
-      display,
-      window,
-      gc,
-      pMin.x,
-      pMax.y - config::CELL_BORDER_WIDTH_3D + 1,
-      config::CELL_PIXEL_SIZE,
-      config::CELL_BORDER_WIDTH_3D);
-  XFillRectangle(
-      display,
-      window,
-      gc,
-      pMax.x - config::CELL_BORDER_WIDTH_3D + 1,
-      pMin.y,
-      config::CELL_BORDER_WIDTH_3D,
-      config::CELL_PIXEL_SIZE);
-
-  static int SHAPE = Complex;
-  static int MODE = CoordModeOrigin;
-
-  // bottom left corner
-  XPoint blPoints[3] = {
-      {static_cast<short>(pMin.x), static_cast<short>(pMax.y - config::CELL_BORDER_WIDTH_3D)},
-      {static_cast<short>(pMin.x), static_cast<short>(pMax.y)},
-      {static_cast<short>(pMin.x + config::CELL_BORDER_WIDTH_3D),
-       static_cast<short>(pMax.y - config::CELL_BORDER_WIDTH_3D)}};
-  XSetForeground(display, gc, config::LIGHT_GREY);
-  XFillPolygon(display, window, gc, blPoints, 3, SHAPE, MODE);
-
-  // top right corner
-  XPoint trPoints[3] = {
-      {static_cast<short>(pMax.x - config::CELL_BORDER_WIDTH_3D), static_cast<short>(pMin.y)},
-      {static_cast<short>(pMax.x), static_cast<short>(pMin.y)},
-      {static_cast<short>(pMax.x - config::CELL_BORDER_WIDTH_3D),
-       static_cast<short>(pMin.y + config::CELL_BORDER_WIDTH_3D)}};
-  XSetForeground(display, gc, config::LIGHT_GREY);
-  XFillPolygon(display, window, gc, trPoints, 3, SHAPE, MODE);
-}
-
-void Renderer::drawHiddenCell(const int row, const int col) const
-{
-  drawCellBase(row, col);
-  draw3DEdges(row, col);
-}
-
-void Renderer::drawRevealedCell(const int row, const int col) const
-{
-  drawCellBase(row, col);
-  draw2DEdges(row, col);
-}
-
-void Renderer::drawAdjacentMinesNum(const int row, const int col, const int n) const
-{
-
-  switch (n)
+  switch (event.type)
   {
-  case 0:
-    return;
-  case 1:
-    overlayImage(row, col, images.one);
-    break;
-  case 2:
-    overlayImage(row, col, images.two);
-    break;
-  case 3:
-    overlayImage(row, col, images.three);
-    break;
-  case 4:
-    overlayImage(row, col, images.four);
-    break;
-  case 5:
-    overlayImage(row, col, images.five);
-    break;
-  case 6:
-    overlayImage(row, col, images.six);
-    break;
-  case 7:
-    overlayImage(row, col, images.seven);
-    break;
-  case 8:
-    overlayImage(row, col, images.eight);
-    break;
-  default:
-    overlayImage(row, col, images.one);
-    return;
-  }
-}
+  case ButtonPress:
+    const int gameAreaX = config::FRAME_WIDTH;
+    const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
 
-void Renderer::drawRevealedMineCell(const int row, const int col) const
-{
-  drawMineCellBase(row, col);
-  overlayImage(row, col, images.mine);
-}
+    const int row = (event.xbutton.y - gameAreaY) / config::CELL_PIXEL_SIZE;
+    const int col = (event.xbutton.x - gameAreaX) / config::CELL_PIXEL_SIZE;
 
-void Renderer::drawBoard(const Game::Minefield &minefield) const
-{
-  for (size_t row = 0; row < config::GRID_HEIGHT; ++row)
-  {
-    for (size_t col = 0; col < config::GRID_WIDTH; ++col)
+    if (event.xbutton.button == Button1)
     {
-      const size_t index = row * config::GRID_WIDTH + col;
-      const auto &[isMine, isHidden, isFlagged, nAdjacentMines] = minefield[index];
+      game.handleLeftClick(row, col);
+    }
+    else if (event.xbutton.button == Button2)
+    {
+      game.handleMiddleClick(row, col);
+    }
+    else if (event.xbutton.button == Button3)
+    {
+      game.handleRightClick(row, col);
+    }
+    break;
+  }
+}
+
+void Renderer::updateBackBuffer(Game &game)
+{
+  for (int row = 0; row < config::GRID_HEIGHT; ++row)
+  {
+    for (int col = 0; col < config::GRID_WIDTH; ++col)
+    {
+      const int gameAreaX = config::FRAME_WIDTH;
+      const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+
+      const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
+      const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
+
+      const int index = row * config::GRID_WIDTH + col;
+      const auto &[isMine, isHidden, isFlagged, nAdjacentMines] = game.getMinefield()[index];
+      uint32_t *sprite;
 
       if (isHidden)
       {
-        drawHiddenCell(row, col);
+        sprite = sprites->hidden;
 
         if (isFlagged)
         {
-          overlayImage(row, col, images.flag);
+          sprite = sprites->flag;
         }
       }
       else
       {
         if (isMine)
         {
-          drawRevealedMineCell(row, col);
+          sprite = sprites->mine;
         }
         else
         {
-          drawRevealedCell(row, col);
-          drawAdjacentMinesNum(row, col, minefield[index].nAdjacentMines);
+          sprite = sprites->intToSpriteMap[nAdjacentMines];
         }
       }
+
+      SpriteFactory::copySprite(backBuffer, sprite, x, y);
     }
   }
 }
 
-void Renderer::overlayImage(const int row, const int col, const char *image, uint32_t transparentHex) const
+void Renderer::initializeGC()
 {
-  Point p = rowColToPixelPoint(row, col);
-
-  for (int i = 0; i < config::CELL_PIXEL_SIZE; ++i)
-  {
-    for (int j = 0; j < config::CELL_PIXEL_SIZE; ++j)
-    {
-      const char *pixelPtr = image + (i * config::CELL_PIXEL_SIZE + j) * 4;
-      uint32_t pixel = *reinterpret_cast<const uint32_t *>(pixelPtr);
-      if (pixel != transparentHex)
-      {
-        XSetForeground(display, gc, pixel);
-        XDrawPoint(display, window, gc, p.x + j, p.y + i);
-      }
-    }
-  }
-}
-
-void Renderer::loadBinaryFile(const std::string &filepath, char (&dest)[config::IMAGE_SIZE])
-{
-  std::ifstream file(filepath, std::ios::binary);
-  if (!file)
-  {
-    throw std::runtime_error("failed to open file: " + filepath);
-  }
-
-  file.read(dest, config::IMAGE_SIZE);
-  if (file.gcount() != config::IMAGE_SIZE)
-  {
-    throw std::runtime_error("failed to read complete image data for " + filepath);
-  }
-};
-
-void Renderer::loadImageData()
-{
-  loadBinaryFile("assets/flag.bin", images.flag);
-  loadBinaryFile("assets/mine.bin", images.mine);
-  loadBinaryFile("assets/one.bin", images.one);
-  loadBinaryFile("assets/two.bin", images.two);
-  loadBinaryFile("assets/three.bin", images.three);
-  loadBinaryFile("assets/four.bin", images.four);
-  loadBinaryFile("assets/five.bin", images.five);
-  loadBinaryFile("assets/six.bin", images.six);
-  loadBinaryFile("assets/seven.bin", images.seven);
-  loadBinaryFile("assets/eight.bin", images.eight);
-}
-
-GC Renderer::createGC()
-{
-  GC gc;
   XGCValues xgcv;
 
   xgcv.line_style = LineSolid;
@@ -319,10 +163,26 @@ GC Renderer::createGC()
                             GCCapStyle | GCJoinStyle;
 
   gc = XCreateGC(display, root, valueMask, &xgcv);
-  return gc;
 }
 
-Renderer::Point Renderer::rowColToPixelPoint(const int row, const int col) const
+void Renderer::initializeBuffers()
 {
-  return {col * config::CELL_PIXEL_SIZE, row * config::CELL_PIXEL_SIZE};
+  const int bufferSize = config::WINDOW_PIXEL_HEIGHT * config::WINDOW_PIXEL_WIDTH;
+  frontBuffer = std::make_unique<uint32_t[]>(bufferSize);
+  backBuffer = std::make_unique<uint32_t[]>(bufferSize);
+
+  SpriteFactory::buffInsertInterface(
+      backBuffer.get(), config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
+
+  image = XCreateImage(
+      display,
+      visual,
+      DefaultDepth(display, screen),
+      ZPixmap,
+      0,
+      reinterpret_cast<char *>(frontBuffer.get()),
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT,
+      32,
+      config::WINDOW_PIXEL_WIDTH * sizeof(int32_t));
 }

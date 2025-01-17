@@ -147,7 +147,6 @@ void SpriteFactory::makeHiddenCellSprite()
   buffInsertRectangle(
       buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
 
-  const auto interiorLimit = config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_3D;
   buffInsert3DBorder(
       buff,
       config::CELL_PIXEL_SIZE,
@@ -376,7 +375,6 @@ void SpriteFactory::makeTwoSprite()
 
   // stems
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   // top
   buffInsertRectangle(
       sprite,
@@ -427,7 +425,6 @@ void SpriteFactory::makeThreeSprite()
 
   // stem
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   buffInsertRectangle(
       sprite,
       NUMERIC_SPRITE_SIZE,
@@ -456,7 +453,6 @@ void SpriteFactory::makeFourSprite()
 
   // stems
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   // right
   buffInsertRectangle(
       sprite,
@@ -507,7 +503,6 @@ void SpriteFactory::makeFiveSprite()
 
   // stems
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   // top
   buffInsertRectangle(
       sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE / 2, config::DARK_RED);
@@ -558,7 +553,6 @@ void SpriteFactory::makeSixSprite()
 
   // stems
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   // left
   buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::TURQUOISE);
   // right
@@ -589,7 +583,6 @@ void SpriteFactory::makeSevenSprite()
 
   // stem
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   buffInsertRectangle(
       sprite,
       NUMERIC_SPRITE_SIZE,
@@ -636,7 +629,6 @@ void SpriteFactory::makeEightSprite()
 
   // stems
   const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
   // left
   buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::DARK_GREY);
   // right

@@ -21,7 +21,7 @@ public:
   Game();
   ~Game() = default;
 
-  Minefield getMinefield() const { return minefield; }
+  const Minefield &getMinefield() { return minefield; }
 
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);
