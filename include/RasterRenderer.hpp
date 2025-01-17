@@ -70,6 +70,7 @@ private:
   void makeEmptyCellSprite();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();
+  void makeMineCellSprite();
 
   static const int NUMERIC_SPRITE_SIZE = 0.6 * config::CELL_PIXEL_SIZE;
   static const int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_SIZE) / 2;
@@ -85,6 +86,14 @@ private:
 
   void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int row, const int col);
   void buffInsertRectangle(
+      uint32_t *buff,
+      const int buffWidth,
+      const int x,
+      const int y,
+      const int w,
+      const int h,
+      const uint32_t c);
+  void buffInsert2DBorder(
       uint32_t *buff,
       const int buffWidth,
       const int x,

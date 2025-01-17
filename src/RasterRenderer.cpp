@@ -116,7 +116,8 @@ void RasterRenderer::updateBackBuffer(Game &game)
 
       const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
       const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
-      copySprite(backBuffer, sprites.intToSpriteMap[col], x, y);
+      // copySprite(backBuffer, sprites.intToSpriteMap[col], x, y);
+      copySprite(backBuffer, sprites.mine, x, y);
     }
   }
 }
@@ -164,6 +165,7 @@ void RasterRenderer::initializeSprites()
   makeEmptyCellSprite();
   makeHiddenCellSprite();
   makeFlaggedCellSprite();
+  makeMineCellSprite();
 
   makeOneSprite();
   makeTwoSprite();
@@ -273,35 +275,10 @@ void RasterRenderer::makeInfoPanel()
 void RasterRenderer::makeEmptyCellSprite()
 {
   auto &buff = sprites.empty;
-
-  // base
   buffInsertRectangle(
       buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
-
-  // left edge
-  buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_BORDER_WIDTH_2D, config::CELL_PIXEL_SIZE, config::DARK_GREY);
-  // top edge
-  buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_2D, config::DARK_GREY);
-  // right edge
-  buffInsertRectangle(
-      buff,
-      config::CELL_PIXEL_SIZE,
-      config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_2D,
-      0,
-      config::CELL_BORDER_WIDTH_2D,
-      config::CELL_PIXEL_SIZE,
-      config::DARK_GREY);
-  // left edge
-  buffInsertRectangle(
-      buff,
-      config::CELL_PIXEL_SIZE,
-      0,
-      config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_2D,
-      config::CELL_PIXEL_SIZE,
-      config::CELL_BORDER_WIDTH_2D,
-      config::DARK_GREY);
+  buffInsert2DBorder(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
 }
 
 void RasterRenderer::makeHiddenCellSprite()
@@ -377,6 +354,111 @@ void RasterRenderer::makeFlaggedCellSprite()
       {
         const int buffX = x + flagX;
         buff[buffY * config::CELL_PIXEL_SIZE + buffX] = config::RED;
+      }
+    }
+  }
+}
+
+void RasterRenderer::makeMineCellSprite()
+{
+  auto &buff = sprites.mine;
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::RED);
+  buffInsert2DBorder(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+
+  // rest of this is AI - I'm too lazy to do more art for now
+
+  // Draw the central black circle of the mine
+  const int size = config::CELL_PIXEL_SIZE;
+  const int center = size / 2;
+  const int mineRadius = size / 4; // Mine circle radius
+  const int spikeThickness = 2;
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      int dx = x - center;
+      int dy = y - center;
+      if (dx * dx + dy * dy <= mineRadius * mineRadius)
+      {
+        buff[y * size + x] = 0xFF000000; // Black color
+      }
+    }
+  }
+
+  // Draw the central black circle of the mine
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      int dx = x - center;
+      int dy = y - center;
+      if (dx * dx + dy * dy <= mineRadius * mineRadius)
+      {
+        buff[y * size + x] = 0xFF000000;
+      }
+    }
+  }
+
+  // Draw the 8 thicker spikes around the circle
+  const int spikeLength = mineRadius + 4;
+  const double directions[8][2] = {
+      {1.0, 0.0},
+      {0.707, 0.707},
+      {0.0, 1.0},
+      {-0.707, 0.707},
+      {-1.0, 0.0},
+      {-0.707, -0.707},
+      {0.0, -1.0},
+      {0.707, -0.707}};
+
+  const int halfThick = spikeThickness / 2;
+
+  for (const auto &dir : directions)
+  {
+    // Draw multiple parallel lines to create thickness
+    for (int offset = -halfThick; offset <= halfThick; offset++)
+    {
+      double perpX = -dir[1]; // Perpendicular vector for thickness
+      double perpY = dir[0];
+
+      int startX = center + static_cast<int>(perpX * offset);
+      int startY = center + static_cast<int>(perpY * offset);
+      int endX = startX + static_cast<int>(dir[0] * spikeLength);
+      int endY = startY + static_cast<int>(dir[1] * spikeLength);
+
+      // Draw line from start to end point
+      int dx = endX - startX;
+      int dy = endY - startY;
+      int steps = std::max(std::abs(dx), std::abs(dy));
+      if (steps == 0)
+        continue;
+
+      for (int i = 0; i <= steps; i++)
+      {
+        int x = startX + dx * i / steps;
+        int y = startY + dy * i / steps;
+
+        // Draw additional pixels for thickness
+        for (int px = -halfThick; px <= halfThick; px++)
+        {
+          for (int py = -halfThick; py <= halfThick; py++)
+          {
+            int finalX = x + px;
+            int finalY = y + py;
+            if (finalX >= 0 && finalX < size && finalY >= 0 && finalY < size)
+            {
+              // Only draw if we're outside the center circle
+              int distX = finalX - center;
+              int distY = finalY - center;
+              if (distX * distX + distY * distY >= mineRadius * mineRadius)
+              {
+                buff[finalY * size + finalX] = 0xFF000000;
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -751,6 +833,25 @@ void RasterRenderer::buffInsertRectangle(
     std::fill_n(buff + index, w, c);
   }
 };
+
+void RasterRenderer::buffInsert2DBorder(
+    uint32_t *buff,
+    const int buffWidth,
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const uint32_t c)
+{
+  // left edge
+  buffInsertRectangle(buff, buffWidth, x, y, config::CELL_BORDER_WIDTH_2D, h, c);
+  // top edge
+  buffInsertRectangle(buff, buffWidth, x, y, w, config::CELL_BORDER_WIDTH_2D, c);
+  // right edge
+  buffInsertRectangle(buff, buffWidth, w - config::CELL_BORDER_WIDTH_2D, y, config::CELL_BORDER_WIDTH_2D, h, c);
+  // left edge
+  buffInsertRectangle(buff, buffWidth, x, h - config::CELL_BORDER_WIDTH_2D, w, config::CELL_BORDER_WIDTH_2D, c);
+}
 
 void RasterRenderer::buffInsert3DBorder(
     uint32_t *buff,
