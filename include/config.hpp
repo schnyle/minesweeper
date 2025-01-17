@@ -19,8 +19,8 @@ constexpr uint32_t PURPLE = 0x850085;
 constexpr uint32_t RED = 0xff0000;
 constexpr uint32_t TURQUOISE = 0x018384;
 
-constexpr int GRID_HEIGHT = 2; // must fit inside short - see Renderer::draw3DEdges
-constexpr int GRID_WIDTH = 9;  // "                                               "
+constexpr int GRID_HEIGHT = 20; // must fit inside short - see Renderer::draw3DEdges
+constexpr int GRID_WIDTH = 20;  // "                                               "
 
 constexpr int WINDOW_PIXEL_HEIGHT = 950;
 constexpr int WINDOW_PIXEL_WIDTH = 1800;
@@ -29,8 +29,8 @@ constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;
 
 // sprites
-constexpr int CELL_PIXEL_SIZE = 50;
-constexpr int CELL_BORDER_WIDTH_3D = 5;    // recommend 1/10 of CELL_PIXEL_SIZE
+constexpr int CELL_PIXEL_SIZE = 40;
+constexpr int CELL_BORDER_WIDTH_3D = 4;    // recommend 1/10 of CELL_PIXEL_SIZE
 constexpr int CELL_BORDER_WIDTH_2D = 2;    // even int
 constexpr size_t IMAGE_SIZE = 50 * 50 * 4; // images in assets/
 

@@ -84,8 +84,11 @@ void RasterRenderer::updateGameState(Game &game, XEvent &event)
   switch (event.type)
   {
   case ButtonPress:
-    const int row = event.xbutton.y / config::CELL_PIXEL_SIZE;
-    const int col = event.xbutton.x / config::CELL_PIXEL_SIZE;
+    const int gameAreaX = config::FRAME_WIDTH;
+    const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+
+    const int row = (event.xbutton.y - gameAreaY) / config::CELL_PIXEL_SIZE;
+    const int col = (event.xbutton.x - gameAreaX) / config::CELL_PIXEL_SIZE;
 
     if (event.xbutton.button == Button1)
     {
@@ -116,8 +119,33 @@ void RasterRenderer::updateBackBuffer(Game &game)
 
       const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
       const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
-      // copySprite(backBuffer, sprites.intToSpriteMap[col], x, y);
-      copySprite(backBuffer, sprites.mine, x, y);
+
+      const int index = row * config::GRID_WIDTH + col;
+      const auto &[isMine, isHidden, isFlagged, nAdjacentMines] = game.getMinefield()[index];
+      uint32_t *sprite;
+
+      if (isHidden)
+      {
+        sprite = sprites.hidden;
+
+        if (isFlagged)
+        {
+          sprite = sprites.flag;
+        }
+      }
+      else
+      {
+        if (isMine)
+        {
+          sprite = sprites.mine;
+        }
+        else
+        {
+          sprite = sprites.intToSpriteMap[nAdjacentMines];
+        }
+      }
+
+      copySprite(backBuffer, sprite, x, y);
     }
   }
 }
