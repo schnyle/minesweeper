@@ -29,6 +29,7 @@ private:
   struct Sprites
   {
     static constexpr int spriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE * 4;
+    uint32_t empty[spriteSize];
     uint32_t hidden[spriteSize];
     uint32_t flag[spriteSize];
     uint32_t mine[spriteSize];
@@ -53,8 +54,15 @@ private:
 
   void makeInterface();
   void makeInfoPanel();
+
+  void makeEmptyCellSprite();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();
+
+  static const int NUMERIC_SPRITE_SIZE = 0.6 * config::CELL_PIXEL_SIZE;
+  static const int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_SIZE) / 2;
+  void copyNumericSprite(uint32_t *dest, uint32_t *source);
+  void makeOneSprite();
 
   void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t (&sprite)[], const int row, const int col);
   void buffInsertRectangle(

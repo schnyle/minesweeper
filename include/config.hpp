@@ -12,6 +12,7 @@ constexpr uint32_t GREY = 0xbdbdbd;
 constexpr uint32_t LIGHT_GREY = 0xfefffe;
 constexpr uint32_t RED = 0xff0000;
 constexpr uint32_t BLACK = 0xff000000;
+constexpr uint32_t BLUE = 0xff0000ff;
 
 constexpr int GRID_HEIGHT = 4; // must fit inside short - see Renderer::draw3DEdges
 constexpr int GRID_WIDTH = 4;  // "                                               "

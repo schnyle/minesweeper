@@ -116,9 +116,8 @@ void RasterRenderer::updateBackBuffer(Game &game)
 
       const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
       const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
-      copySprite(backBuffer, sprites.hidden, x, y);
-      // return;
-      // copySprite(backBuffer, sprites.flag, x, y);
+      // copySprite(backBuffer, sprites.hidden, x, y);
+      copySprite(backBuffer, sprites.one, x, y);
     }
   }
 }
@@ -163,8 +162,11 @@ void RasterRenderer::initializeBuffers()
 
 void RasterRenderer::initializeSprites()
 {
+  makeEmptyCellSprite();
   makeHiddenCellSprite();
   makeFlaggedCellSprite();
+
+  makeOneSprite();
 };
 
 void RasterRenderer::makeInterface()
@@ -262,6 +264,40 @@ void RasterRenderer::makeInfoPanel()
       config::LIGHT_GREY);
 }
 
+void RasterRenderer::makeEmptyCellSprite()
+{
+  auto &buff = sprites.empty;
+
+  // base
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+
+  // left edge
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_BORDER_WIDTH_2D, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+  // top edge
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_BORDER_WIDTH_2D, config::DARK_GREY);
+  // right edge
+  buffInsertRectangle(
+      buff,
+      config::CELL_PIXEL_SIZE,
+      config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_2D,
+      0,
+      config::CELL_BORDER_WIDTH_2D,
+      config::CELL_PIXEL_SIZE,
+      config::DARK_GREY);
+  // left edge
+  buffInsertRectangle(
+      buff,
+      config::CELL_PIXEL_SIZE,
+      0,
+      config::CELL_PIXEL_SIZE - config::CELL_BORDER_WIDTH_2D,
+      config::CELL_PIXEL_SIZE,
+      config::CELL_BORDER_WIDTH_2D,
+      config::DARK_GREY);
+}
+
 void RasterRenderer::makeHiddenCellSprite()
 {
   auto &buff = sprites.hidden;
@@ -338,6 +374,45 @@ void RasterRenderer::makeFlaggedCellSprite()
       }
     }
   }
+}
+
+void RasterRenderer::copyNumericSprite(uint32_t *dest, uint32_t *source)
+{
+  for (int i = 0; i < NUMERIC_SPRITE_SIZE; ++i)
+  {
+    const auto spriteStart = source + i * NUMERIC_SPRITE_SIZE;
+    const auto spriteEnd = source + i * NUMERIC_SPRITE_SIZE + NUMERIC_SPRITE_SIZE;
+    const int buffIdx = ((i + NUMERIC_SPRITE_PAD) * config::CELL_PIXEL_SIZE) + NUMERIC_SPRITE_PAD;
+    std::copy(spriteStart, spriteEnd, dest + buffIdx);
+  }
+}
+
+void RasterRenderer::makeOneSprite()
+{
+  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
+  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+
+  // base
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
+  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  buffInsertRectangle(
+      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, NUMERIC_SPRITE_SIZE - baseHeight, baseWidth, baseHeight, config::BLUE);
+
+  // stem
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::BLUE);
+
+  // topper
+  const int topperWidth = 0.2 * NUMERIC_SPRITE_SIZE;
+  const int topperHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int topperX = stemLeftPad - topperWidth;
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, topperX, 0, topperWidth, topperHeight, config::BLUE);
+
+  auto &buff = sprites.one;
+  std::copy(sprites.empty, sprites.empty + sprites.spriteSize, buff);
+  copyNumericSprite(buff, sprite);
 }
 
 void RasterRenderer::copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t (&sprite)[], const int x, const int y)
