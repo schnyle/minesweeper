@@ -22,8 +22,8 @@ constexpr uint32_t TURQUOISE = 0x018384;
 constexpr int GRID_HEIGHT = 20; // must fit inside short - see Renderer::draw3DEdges
 constexpr int GRID_WIDTH = 20;  // "                                               "
 
-constexpr int WINDOW_PIXEL_HEIGHT = 950;
-constexpr int WINDOW_PIXEL_WIDTH = 1800;
+constexpr int WINDOW_PIXEL_HEIGHT = 1080;
+constexpr int WINDOW_PIXEL_WIDTH = 1920;
 
 constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;

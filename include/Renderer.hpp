@@ -31,7 +31,7 @@ private:
   std::unique_ptr<SpriteFactory::Sprites> sprites;
 
   void renderFrame();
-  void updateGameState(Game &, XEvent &);
+  bool updateGameState(Game &, XEvent &);
   void updateBackBuffer(Game &);
 
   void initializeGC();

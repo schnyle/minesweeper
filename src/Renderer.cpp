@@ -1,5 +1,7 @@
 #include <Renderer.hpp>
+#include <X11/XKBlib.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <algorithm>
 #include <config.hpp>
 #include <cstdlib>
@@ -18,10 +20,12 @@ Renderer::Renderer()
   root = RootWindow(display, screen);
   visual = DefaultVisual(display, screen);
 
-  XSetWindowAttributes xwa = {};
-  xwa.background_pixel = WhitePixel(display, screen);
-  xwa.border_pixel = BlackPixel(display, screen);
-  xwa.event_mask = ExposureMask | Button1MotionMask | ButtonPressMask | ButtonReleaseMask; // check these
+  XSetWindowAttributes windowAttributes = {};
+  windowAttributes.background_pixel = WhitePixel(display, screen);
+  windowAttributes.border_pixel = BlackPixel(display, screen);
+  windowAttributes.event_mask = ExposureMask | Button1MotionMask | ButtonPressMask | ButtonReleaseMask |
+                                KeyPressMask; // check these
+  windowAttributes.override_redirect = true;
   window = XCreateWindow(
       display,
       root,
@@ -29,12 +33,30 @@ Renderer::Renderer()
       0,
       1920,
       1080,
-      1,
+      0,
       DefaultDepth(display, screen),
       InputOutput,
       visual,
       CWBackPixel | CWEventMask | CWBorderPixel,
-      &xwa);
+      &windowAttributes);
+
+  // remove header decoration
+  Atom wm_delete = XInternAtom(display, "WM_DELETE_WINDOW", true);
+  XSetWMProtocols(display, window, &wm_delete, 1);
+  Atom wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", true);
+  if (wm_hints != None)
+  {
+    struct
+    {
+      unsigned long flags;
+      unsigned long functions;
+      unsigned long decorations;
+      long input_mode;
+      unsigned long status;
+    } hints = {2, 0, 0, 0, 0};
+    XChangeProperty(display, window, wm_hints, wm_hints, 32, PropModeReplace, (unsigned char *)&hints, 5);
+  }
+
   XMapWindow(display, window);
 
   XStoreName(display, window, config::APP_NAME);
@@ -66,7 +88,11 @@ void Renderer::run(Game &game)
       continue;
     }
 
-    updateGameState(game, event);
+    if (!updateGameState(game, event))
+    {
+      break;
+    };
+
     updateBackBuffer(game);
     renderFrame();
   }
@@ -79,11 +105,12 @@ void Renderer::renderFrame()
   frontBuffer.swap(backBuffer);
 }
 
-void Renderer::updateGameState(Game &game, XEvent &event)
+bool Renderer::updateGameState(Game &game, XEvent &event)
 {
   switch (event.type)
   {
   case ButtonPress:
+  {
     const int gameAreaX = config::FRAME_WIDTH;
     const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
 
@@ -109,6 +136,15 @@ void Renderer::updateGameState(Game &game, XEvent &event)
     }
     break;
   }
+
+  case KeyPress:
+    if (XkbKeycodeToKeysym(display, event.xkey.keycode, 0, 0) == XK_q)
+    {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void Renderer::updateBackBuffer(Game &game)
