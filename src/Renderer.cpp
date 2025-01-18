@@ -111,8 +111,8 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
   {
   case ButtonPress:
   {
-    const int gameAreaX = config::FRAME_WIDTH;
-    const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+    const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
+    const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
 
     const int row = (event.xbutton.y - gameAreaY) / config::CELL_PIXEL_SIZE;
     const int col = (event.xbutton.x - gameAreaX) / config::CELL_PIXEL_SIZE;
@@ -156,8 +156,8 @@ void Renderer::updateBackBuffer(Game &game)
       const int gameAreaX = config::FRAME_WIDTH;
       const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
 
-      const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
-      const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
+      const int x = gameAreaX + config::GRID_AREA_X_PAD + col * config::CELL_PIXEL_SIZE;
+      const int y = gameAreaY + config::GRID_AREA_Y_PAD + row * config::CELL_PIXEL_SIZE;
 
       const int index = row * config::GRID_WIDTH + col;
       const auto &[isMine, isHidden, isFlagged, nAdjacentMines] = game.getMinefield()[index];
