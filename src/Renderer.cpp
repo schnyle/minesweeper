@@ -90,6 +90,11 @@ void Renderer::updateGameState(Game &game, XEvent &event)
     const int row = (event.xbutton.y - gameAreaY) / config::CELL_PIXEL_SIZE;
     const int col = (event.xbutton.x - gameAreaX) / config::CELL_PIXEL_SIZE;
 
+    if (row < 0 || row > config::GRID_HEIGHT || col < 0 || col > config::GRID_WIDTH)
+    {
+      break;
+    }
+
     if (event.xbutton.button == Button1)
     {
       game.handleLeftClick(row, col);
