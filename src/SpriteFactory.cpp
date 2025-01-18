@@ -162,7 +162,7 @@ void SpriteFactory::makeHiddenCellSprite()
 void SpriteFactory::makeFlaggedCellSprite()
 {
 
-  const int totalFlagPoleHeight = config::FLAG_TOTAL_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
+  const int totalFlagPoleHeight = 0.55 * config::CELL_PIXEL_SIZE;
 
   const int flagPoleBottomY = config::CELL_PIXEL_SIZE - ((config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2);
 
@@ -170,8 +170,8 @@ void SpriteFactory::makeFlaggedCellSprite()
   std::copy(sprites->hidden, sprites->hidden + spriteSize, buff);
 
   // bottom base rectangle
-  const int bottomBaseRectHeight = config::FLAG_BOTTOM_BASE_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
-  const int bottomBaseRectWidth = config::FLAG_BOTTOM_BASE_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
+  const int bottomBaseRectHeight = 0.1 * config::CELL_PIXEL_SIZE;
+  const int bottomBaseRectWidth = 0.5 * config::CELL_PIXEL_SIZE;
   const int bottomBaseRectX = (config::CELL_PIXEL_SIZE - bottomBaseRectWidth) / 2;
   const int bottomBaseRectY = flagPoleBottomY - bottomBaseRectHeight;
   buffInsertRectangle(
@@ -184,24 +184,24 @@ void SpriteFactory::makeFlaggedCellSprite()
       config::BLACK);
 
   // top base rectangle
-  const int topBaseRectHeight = config::FLAG_TOP_BASE_RECT_HEIGHT_RATIO * config::CELL_PIXEL_SIZE;
-  const int topBaseRectWidth = config::FLAG_TOP_BASE_RECT_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
+  const int topBaseRectHeight = 0.05 * config::CELL_PIXEL_SIZE;
+  const int topBaseRectWidth = 0.33 * config::CELL_PIXEL_SIZE;
   const int topBaseRectX = (config::CELL_PIXEL_SIZE - topBaseRectWidth) / 2;
   const int topBaseRectY = flagPoleBottomY - bottomBaseRectHeight - topBaseRectHeight;
   buffInsertRectangle(
       buff, config::CELL_PIXEL_SIZE, topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight, config::BLACK);
 
   // pole
-  const int poleWidth = config::FLAG_POLE_WIDTH_RATIO * config::CELL_PIXEL_SIZE;
+  const int poleWidth = 0.05 * config::CELL_PIXEL_SIZE;
   const int poleX = (config::CELL_PIXEL_SIZE - poleWidth) / 2;
   const int poleY = (config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2;
   buffInsertRectangle(buff, config::CELL_PIXEL_SIZE, poleX, poleY, poleWidth, totalFlagPoleHeight, config::BLACK);
 
   // flag
-  const int flagSize = config::FLAG_SIZE_RATIO * config::CELL_PIXEL_SIZE;
+  const int flagSize = 0.3 * config::CELL_PIXEL_SIZE;
   const int flagX = poleX + poleWidth - flagSize;
   const int flagY = poleY;
-  const double flagSlope = config::FLAG_SLOPE;
+  const double flagSlope = 0.66;
   for (int y = 0; y < flagSize; ++y)
   {
     const int buffY = y + flagY;
