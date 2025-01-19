@@ -107,6 +107,14 @@ void Renderer::renderFrame()
 
 bool Renderer::updateGameState(Game &game, XEvent &event)
 {
+  const int cursorX = event.xbutton.x;
+  const int cursorY = event.xbutton.y;
+
+  const bool inResetButton = cursorX >= config::RESET_BUTTON_X &&
+                             cursorX < config::RESET_BUTTON_X + config::RESET_BUTTON_WIDTH &&
+                             cursorY >= config::RESET_BUTTON_Y &&
+                             cursorY < config::RESET_BUTTON_Y + config::RESET_BUTTON_WIDTH;
+
   switch (event.type)
   {
   case ButtonPress:
@@ -114,31 +122,49 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
     const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
     const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
 
-    const int row = (event.xbutton.y - gameAreaY) / config::CELL_PIXEL_SIZE;
-    const int col = (event.xbutton.x - gameAreaX) / config::CELL_PIXEL_SIZE;
+    const int row = (cursorY - gameAreaY) / config::CELL_PIXEL_SIZE;
+    const int col = (cursorX - gameAreaX) / config::CELL_PIXEL_SIZE;
 
-    if (row < 0 || row > config::GRID_HEIGHT || col < 0 || col > config::GRID_WIDTH)
+    const bool inGameArea = cursorX >= gameAreaX && row >= 0 && row < config::GRID_HEIGHT && cursorY >= gameAreaY &&
+                            col >= 0 && col < config::GRID_WIDTH;
+    if (inGameArea)
     {
+      if (event.xbutton.button == Button1)
+      {
+        game.handleLeftClick(row, col);
+      }
+      else if (event.xbutton.button == Button2)
+      {
+        game.handleMiddleClick(row, col);
+      }
+      else if (event.xbutton.button == Button3)
+      {
+        game.handleRightClick(row, col);
+      }
       break;
     }
 
-    if (event.xbutton.button == Button1)
+    if (inResetButton && event.xbutton.button == Button1)
     {
-      game.handleLeftClick(row, col);
+      isResetButtonPressed = true;
     }
-    else if (event.xbutton.button == Button2)
+
+    break;
+  }
+
+  case ButtonRelease:
+  {
+    if (inResetButton && isResetButtonPressed)
     {
-      game.handleMiddleClick(row, col);
+      game.reset();
     }
-    else if (event.xbutton.button == Button3)
-    {
-      game.handleRightClick(row, col);
-    }
+    isResetButtonPressed = false;
     break;
   }
 
   case KeyPress:
-    if (XkbKeycodeToKeysym(display, event.xkey.keycode, 0, 0) == XK_q)
+    const auto keysym = XkbKeycodeToKeysym(display, event.xkey.keycode, 0, 0);
+    if (keysym == XK_q || keysym == XK_x || keysym == XK_Escape)
     {
       return false;
     }
@@ -149,6 +175,10 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
 
 void Renderer::updateBackBuffer(Game &game)
 {
+  const auto resetButtonSprite = isResetButtonPressed ? sprites->pressedButton : sprites->raisedButton;
+  SpriteFactory::copySprite(
+      backBuffer, resetButtonSprite, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
+
   for (int row = 0; row < config::GRID_HEIGHT; ++row)
   {
     for (int col = 0; col < config::GRID_WIDTH; ++col)
@@ -184,7 +214,7 @@ void Renderer::updateBackBuffer(Game &game)
         }
       }
 
-      SpriteFactory::copySprite(backBuffer, sprite, x, y);
+      SpriteFactory::copySprite(backBuffer, sprite, config::CELL_PIXEL_SIZE, x, y);
     }
   }
 }

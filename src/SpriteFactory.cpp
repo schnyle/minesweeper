@@ -4,6 +4,9 @@
 
 SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
 {
+  makeRaisedButtonSprite();
+  makePressedButtonSprite();
+
   makeEmptyCellSprite();
   makeHiddenCellSprite();
   makeFlaggedCellSprite();
@@ -130,6 +133,32 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
       config::LIGHT_GREY);
 };
 
+void SpriteFactory::makeRaisedButtonSprite()
+{
+  auto &buff = sprites->raisedButton;
+  buffInsertRectangle(
+      buff, config::RESET_BUTTON_WIDTH, 0, 0, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_WIDTH, config::GREY);
+  buffInsert3DBorder(
+      buff,
+      config::RESET_BUTTON_WIDTH,
+      0,
+      0,
+      config::RESET_BUTTON_WIDTH,
+      config::RESET_BUTTON_WIDTH,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+}
+
+void SpriteFactory::makePressedButtonSprite()
+{
+  auto &buff = sprites->pressedButton;
+  buffInsertRectangle(
+      buff, config::RESET_BUTTON_WIDTH, 0, 0, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_WIDTH, config::GREY);
+  buffInsert2DBorder(
+      buff, config::RESET_BUTTON_WIDTH, 0, 0, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_WIDTH, config::DARK_GREY);
+}
+
 void SpriteFactory::makeEmptyCellSprite()
 {
   auto &buff = sprites->empty;
@@ -167,7 +196,7 @@ void SpriteFactory::makeFlaggedCellSprite()
   const int flagPoleBottomY = config::CELL_PIXEL_SIZE - ((config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2);
 
   auto &buff = sprites->flag;
-  std::copy(sprites->hidden, sprites->hidden + spriteSize, buff);
+  std::copy(sprites->hidden, sprites->hidden + cellSpriteSize, buff);
 
   // bottom base rectangle
   const int bottomBaseRectHeight = 0.1 * config::CELL_PIXEL_SIZE;
@@ -345,7 +374,7 @@ void SpriteFactory::makeOneSprite()
   buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, topperX, 0, topperWidth, topperHeight, config::BLUE);
 
   auto &buff = sprites->one;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -395,7 +424,7 @@ void SpriteFactory::makeTwoSprite()
       config::GREEN);
 
   auto &buff = sprites->two;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -435,7 +464,7 @@ void SpriteFactory::makeThreeSprite()
       config::RED);
 
   auto &buff = sprites->three;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -467,7 +496,7 @@ void SpriteFactory::makeFourSprite()
       sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE / 3, config::DARK_BLUE);
 
   auto &buff = sprites->four;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -517,7 +546,7 @@ void SpriteFactory::makeFiveSprite()
       config::DARK_RED);
 
   auto &buff = sprites->five;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -566,7 +595,7 @@ void SpriteFactory::makeSixSprite()
       config::TURQUOISE);
 
   auto &buff = sprites->six;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -593,7 +622,7 @@ void SpriteFactory::makeSevenSprite()
       config::PURPLE);
 
   auto &buff = sprites->seven;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
@@ -642,16 +671,21 @@ void SpriteFactory::makeEightSprite()
       config::DARK_GREY);
 
   auto &buff = sprites->eight;
-  std::copy(sprites->empty, sprites->empty + spriteSize, buff);
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
   copyNumericSprite(buff, sprite);
 }
 
-void SpriteFactory::copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int x, const int y)
+void SpriteFactory::copySprite(
+    std::unique_ptr<uint32_t[]> &buff,
+    const uint32_t *sprite,
+    const int spriteWidth,
+    const int x,
+    const int y)
 {
   for (int row = 0; row < config::CELL_PIXEL_SIZE; ++row)
   {
-    const auto sourceRow = sprite + rowColToCellIndex(row, 0);
-    const auto sourceRowEnd = sprite + rowColToCellIndex(row, config::CELL_PIXEL_SIZE);
+    const auto sourceRow = sprite + row * spriteWidth;
+    const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
     const auto destinationRow = buff.get() + rowColToWindowIndex(row + y, x);
     std::copy(sourceRow, sourceRowEnd, destinationRow);
   }

@@ -54,6 +54,12 @@ void Game::handleMiddleClick(const int row, const int col)
   revealAdjacentCells(row, col);
 };
 
+void Game::reset()
+{
+  minefield = initMinefield();
+  isFirstClick = true;
+}
+
 int Game::rowColToIndex(const int row, const int col) const { return row * config::GRID_WIDTH + col; }
 
 std::vector<Game::Cell> Game::initMinefield()

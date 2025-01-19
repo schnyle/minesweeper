@@ -8,23 +8,25 @@
 class SpriteFactory
 {
 public:
-  static constexpr int spriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE * 4;
-
+  static constexpr int resetButtonSize = config::RESET_BUTTON_WIDTH * config::RESET_BUTTON_WIDTH;
+  static constexpr int cellSpriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE;
   struct Sprites
   {
-    uint32_t empty[spriteSize];
-    uint32_t hidden[spriteSize];
-    uint32_t flag[spriteSize];
-    uint32_t mine[spriteSize];
-    uint32_t zero[spriteSize];
-    uint32_t one[spriteSize];
-    uint32_t two[spriteSize];
-    uint32_t three[spriteSize];
-    uint32_t four[spriteSize];
-    uint32_t five[spriteSize];
-    uint32_t six[spriteSize];
-    uint32_t seven[spriteSize];
-    uint32_t eight[spriteSize];
+    uint32_t raisedButton[resetButtonSize];
+    uint32_t pressedButton[resetButtonSize];
+    uint32_t empty[cellSpriteSize];
+    uint32_t hidden[cellSpriteSize];
+    uint32_t flag[cellSpriteSize];
+    uint32_t mine[cellSpriteSize];
+    uint32_t zero[cellSpriteSize];
+    uint32_t one[cellSpriteSize];
+    uint32_t two[cellSpriteSize];
+    uint32_t three[cellSpriteSize];
+    uint32_t four[cellSpriteSize];
+    uint32_t five[cellSpriteSize];
+    uint32_t six[cellSpriteSize];
+    uint32_t seven[cellSpriteSize];
+    uint32_t eight[cellSpriteSize];
     std::map<int, uint32_t *> intToSpriteMap;
   };
 
@@ -32,13 +34,16 @@ public:
 
   static std::unique_ptr<Sprites> createSprites();
   static void buffInsertInterface(uint32_t *buff, const int buffWidth, const int buffSize);
-  static void copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int row, const int col);
+  static void
+  copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y);
 
 private:
   Sprites *sprites;
 
   static const int NUMERIC_SPRITE_SIZE = 0.6 * config::CELL_PIXEL_SIZE;
   static const int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_SIZE) / 2;
+  void makeRaisedButtonSprite();
+  void makePressedButtonSprite();
   void makeEmptyCellSprite();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();

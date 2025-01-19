@@ -27,6 +27,7 @@ private:
   XImage *image;
   std::unique_ptr<uint32_t[]> frontBuffer;
   std::unique_ptr<uint32_t[]> backBuffer;
+  bool isResetButtonPressed = false;
 
   std::unique_ptr<SpriteFactory::Sprites> sprites;
 

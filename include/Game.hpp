@@ -27,6 +27,8 @@ public:
   void handleRightClick(const int row, const int col);
   void handleMiddleClick(const int row, const int col);
 
+  void reset();
+
 private:
   Minefield minefield;
   bool isFirstClick = true;
