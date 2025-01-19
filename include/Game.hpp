@@ -22,6 +22,9 @@ public:
   ~Game() = default;
 
   const Minefield &getMinefield() { return minefield; }
+  const int &getNumMines() { return numMines; }
+  const int &getNumFlags() { return numFlags; }
+  int getRemainingFlags() { return numMines - numFlags; }
 
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);
@@ -31,6 +34,8 @@ public:
 
 private:
   Minefield minefield;
+  int numMines = 0;
+  int numFlags = 0;
   bool isFirstClick = true;
 
   // clang-format off

@@ -35,11 +35,21 @@ void Game::handleLeftClick(const int row, const int col)
 void Game::handleRightClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
+  auto &cell = minefield[index];
 
-  if (minefield[index].isHidden)
+  if (!cell.isHidden)
   {
-    minefield[index].isFlagged = !minefield[index].isFlagged;
+    return;
   }
+
+  if (!cell.isFlagged && numFlags == numMines)
+  {
+    return;
+  }
+
+  cell.isFlagged = !cell.isFlagged;
+
+  numFlags += minefield[index].isFlagged ? 1 : -1;
 };
 
 void Game::handleMiddleClick(const int row, const int col)
@@ -69,6 +79,8 @@ std::vector<Game::Cell> Game::initMinefield()
   std::bernoulli_distribution dist(0.2);
 
   std::vector<Cell> data(config::GRID_HEIGHT * config::GRID_WIDTH);
+  numMines = 0;
+  numFlags = 0;
 
   for (size_t i = 0; i < config::GRID_HEIGHT * config::GRID_WIDTH; ++i)
   {
@@ -80,6 +92,8 @@ std::vector<Game::Cell> Game::initMinefield()
     {
       const int row = i / config::GRID_WIDTH;
       const int col = i % config::GRID_WIDTH;
+
+      ++numMines;
 
       // right
       if (col != config::GRID_WIDTH - 1)

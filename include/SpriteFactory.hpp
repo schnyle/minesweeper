@@ -4,11 +4,12 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <stdexcept>
 
 class SpriteFactory
 {
 public:
-  static constexpr int resetButtonSize = config::RESET_BUTTON_WIDTH * config::RESET_BUTTON_WIDTH;
+  static constexpr int resetButtonSize = config::INFO_PANEL_BUTTONS_HEIGHT * config::INFO_PANEL_BUTTONS_HEIGHT;
   static constexpr int cellSpriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE;
   struct Sprites
   {
@@ -34,6 +35,14 @@ public:
 
   static std::unique_ptr<Sprites> createSprites();
   static void buffInsertInterface(uint32_t *buff, const int buffWidth, const int buffSize);
+  static void buffInsertRemainingFlags(
+      uint32_t *buff,
+      const int buffWidth,
+      const int x,
+      const int y,
+      const int w,
+      const int h,
+      const int n);
   static void
   copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y);
 
@@ -95,6 +104,27 @@ private:
       const uint32_t cTop,
       const uint32_t cMid,
       const uint32_t cBot);
+  static void buffInsertDigit(
+      uint32_t *buff,
+      const int buffWidth,
+      const int x,
+      const int y,
+      const int w,
+      const int h,
+      const int n,
+      const int c);
+
+  struct DigitSegments
+  {
+    bool topMiddle;
+    bool topLeft;
+    bool topRight;
+    bool middleMiddle;
+    bool bottomMiddle;
+    bool bottomLeft;
+    bool bottomRight;
+  };
+  static DigitSegments intToDigitSegments(const int n);
 
   static int rowColToWindowIndex(const int row, const int col);
   static int rowColToCellIndex(const int row, const int col);

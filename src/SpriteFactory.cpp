@@ -133,18 +133,58 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
       config::LIGHT_GREY);
 };
 
+void SpriteFactory::buffInsertRemainingFlags(
+    uint32_t *buff,
+    const int buffWidth,
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const int n)
+{
+  buffInsertRectangle(buff, buffWidth, x, y, w, h, config::BLACK);
+
+  const int leftDigit = n / 100;
+  const int middleDigit = (n % 100) / 10;
+  const int rightDigit = (n % 10);
+  const int digits[3]{leftDigit, middleDigit, rightDigit};
+
+  int pad = config::REMAINING_FLAGS_PAD;
+  while ((w - 4 * pad) % 3 != 0)
+  {
+    ++pad;
+  }
+
+  const int digitWidth = (w - 4 * pad) / 3;
+  const int digitHeight = h - 2 * pad;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    const int digitX = x + pad + i * (digitWidth + pad);
+    const int digitY = y + pad;
+
+    buffInsertDigit(buff, buffWidth, digitX, digitY, digitWidth, digitHeight, digits[i], config::RED);
+  }
+};
+
 void SpriteFactory::makeRaisedButtonSprite()
 {
   auto &buff = sprites->raisedButton;
   buffInsertRectangle(
-      buff, config::RESET_BUTTON_WIDTH, 0, 0, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_WIDTH, config::GREY);
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
   buffInsert3DBorder(
       buff,
-      config::RESET_BUTTON_WIDTH,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
       0,
       0,
-      config::RESET_BUTTON_WIDTH,
-      config::RESET_BUTTON_WIDTH,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -154,9 +194,21 @@ void SpriteFactory::makePressedButtonSprite()
 {
   auto &buff = sprites->pressedButton;
   buffInsertRectangle(
-      buff, config::RESET_BUTTON_WIDTH, 0, 0, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_WIDTH, config::GREY);
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
   buffInsert2DBorder(
-      buff, config::RESET_BUTTON_WIDTH, 0, 0, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_WIDTH, config::DARK_GREY);
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::DARK_GREY);
 }
 
 void SpriteFactory::makeEmptyCellSprite()
@@ -818,6 +870,94 @@ void SpriteFactory::buffInsert3DCorner(
       buff[idx] = color;
     }
   }
+}
+
+void SpriteFactory::buffInsertDigit(
+    uint32_t *buff,
+    const int buffWidth,
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const int n,
+    const int c)
+{
+  const int segmentWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+
+  const int leftX = x;
+  const int rightX = x + w - segmentWidth;
+
+  const int topVertY = y;
+  const int botVertY = y + h / 2;
+
+  const int horizTopY = y;
+  const int horizMidY = y + h / 2 - segmentWidth / 2;
+  const int horizBotY = y + h - segmentWidth;
+
+  const auto digitSegments = intToDigitSegments(n);
+
+  if (digitSegments.topMiddle)
+  {
+    buffInsertRectangle(buff, buffWidth, leftX, horizTopY, w, segmentWidth, c);
+  }
+  if (digitSegments.topLeft)
+  {
+    buffInsertRectangle(buff, buffWidth, leftX, topVertY, segmentWidth, h / 2, c);
+  }
+  if (digitSegments.topRight)
+  {
+    buffInsertRectangle(buff, buffWidth, rightX, topVertY, segmentWidth, h / 2, c);
+  }
+  if (digitSegments.middleMiddle)
+  {
+    buffInsertRectangle(buff, buffWidth, leftX, horizMidY, w, segmentWidth, c);
+  }
+  if (digitSegments.bottomMiddle)
+  {
+    buffInsertRectangle(buff, buffWidth, leftX, horizBotY, w, segmentWidth, c);
+  }
+  if (digitSegments.bottomLeft)
+  {
+    buffInsertRectangle(buff, buffWidth, leftX, botVertY, segmentWidth, h / 2, c);
+  }
+  if (digitSegments.bottomRight)
+  {
+    buffInsertRectangle(buff, buffWidth, rightX, botVertY, segmentWidth, h / 2, c);
+  }
+}
+
+SpriteFactory::DigitSegments SpriteFactory::intToDigitSegments(const int n)
+{
+  if (n < 0 || n > 9)
+  {
+    throw std::out_of_range("Digit must be in [0, 9]");
+  }
+
+  switch (n)
+  {
+  case 0:
+    return {true, true, true, false, true, true, true};
+  case 1:
+    return {false, false, true, false, false, false, true};
+  case 2:
+    return {true, false, true, true, true, true, false};
+  case 3:
+    return {true, false, true, true, true, false, true};
+  case 4:
+    return {false, true, true, true, false, false, true};
+  case 5:
+    return {true, true, false, true, true, false, true};
+  case 6:
+    return {true, true, false, true, true, true, true};
+  case 7:
+    return {true, false, true, false, false, false, true};
+  case 8:
+    return {true, true, true, true, true, true, true};
+  case 9:
+    return {true, true, true, true, false, false, true};
+  }
+
+  throw std::runtime_error("Error converting int to DigitSegments");
 }
 
 int SpriteFactory::rowColToWindowIndex(const int row, const int col) { return row * config::WINDOW_PIXEL_WIDTH + col; }

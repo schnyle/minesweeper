@@ -31,8 +31,8 @@ Renderer::Renderer()
       root,
       0,
       0,
-      1920,
-      1080,
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT,
       0,
       DefaultDepth(display, screen),
       InputOutput,
@@ -111,9 +111,9 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
   const int cursorY = event.xbutton.y;
 
   const bool inResetButton = cursorX >= config::RESET_BUTTON_X &&
-                             cursorX < config::RESET_BUTTON_X + config::RESET_BUTTON_WIDTH &&
+                             cursorX < config::RESET_BUTTON_X + config::INFO_PANEL_BUTTONS_HEIGHT &&
                              cursorY >= config::RESET_BUTTON_Y &&
-                             cursorY < config::RESET_BUTTON_Y + config::RESET_BUTTON_WIDTH;
+                             cursorY < config::RESET_BUTTON_Y + config::INFO_PANEL_BUTTONS_HEIGHT;
 
   switch (event.type)
   {
@@ -175,9 +175,18 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
 
 void Renderer::updateBackBuffer(Game &game)
 {
+  SpriteFactory::buffInsertRemainingFlags(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::REMAINING_FLAGS_X,
+      config::REMAINING_FLAGS_Y,
+      config::INFO_PANEL_BUTTONS_HEIGHT * 2,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      game.getRemainingFlags());
+
   const auto resetButtonSprite = isResetButtonPressed ? sprites->pressedButton : sprites->raisedButton;
   SpriteFactory::copySprite(
-      backBuffer, resetButtonSprite, config::RESET_BUTTON_WIDTH, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
+      backBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 
   for (int row = 0; row < config::GRID_HEIGHT; ++row)
   {

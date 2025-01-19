@@ -24,9 +24,14 @@ constexpr int WINDOW_PIXEL_HEIGHT = 1080;
 
 constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;
-constexpr int RESET_BUTTON_WIDTH = 0.75 * INFO_PANEL_HEIGHT;
-constexpr int RESET_BUTTON_X = config::WINDOW_PIXEL_WIDTH / 2 - config::RESET_BUTTON_WIDTH / 2;
-constexpr int RESET_BUTTON_Y = config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT / 2 - config::RESET_BUTTON_WIDTH / 2;
+constexpr int INFO_PANEL_BUTTONS_HEIGHT = 0.75 * INFO_PANEL_HEIGHT;
+constexpr int RESET_BUTTON_X = config::WINDOW_PIXEL_WIDTH / 2 - config::INFO_PANEL_BUTTONS_HEIGHT / 2;
+constexpr int RESET_BUTTON_Y = config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT / 2 -
+                               config::INFO_PANEL_BUTTONS_HEIGHT / 2;
+constexpr int REMAINING_FLAGS_X = 2 * config::FRAME_WIDTH;
+constexpr int REMAINING_FLAGS_Y = config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT / 2 -
+                                  config::INFO_PANEL_BUTTONS_HEIGHT / 2;
+constexpr int REMAINING_FLAGS_PAD = 0.05 * INFO_PANEL_HEIGHT;
 
 constexpr int GAME_AREA_WIDTH = WINDOW_PIXEL_WIDTH - 2 * FRAME_WIDTH;
 constexpr int GAME_AREA_HEIGHT = WINDOW_PIXEL_HEIGHT - INFO_PANEL_HEIGHT - 3 * FRAME_WIDTH;
