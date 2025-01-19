@@ -24,7 +24,7 @@ constexpr int WINDOW_PIXEL_HEIGHT = 1080;
 
 constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;
-constexpr int RESET_BUTTON_WIDTH = 0.75 * INFO_PANEL_HEIGHT - 1;
+constexpr int RESET_BUTTON_WIDTH = 0.75 * INFO_PANEL_HEIGHT;
 constexpr int RESET_BUTTON_X = config::WINDOW_PIXEL_WIDTH / 2 - config::RESET_BUTTON_WIDTH / 2;
 constexpr int RESET_BUTTON_Y = config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT / 2 - config::RESET_BUTTON_WIDTH / 2;
 

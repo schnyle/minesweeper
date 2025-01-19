@@ -682,7 +682,7 @@ void SpriteFactory::copySprite(
     const int x,
     const int y)
 {
-  for (int row = 0; row < config::CELL_PIXEL_SIZE; ++row)
+  for (int row = 0; row < spriteWidth; ++row)
   {
     const auto sourceRow = sprite + row * spriteWidth;
     const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
