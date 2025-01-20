@@ -76,25 +76,53 @@ Renderer::~Renderer()
 void Renderer::run(Game &game)
 {
   XEvent event;
+  struct timeval timeout;
+  fd_set fds;
+  int fdX11 = ConnectionNumber(display);
+  time_t lastTimeS = time(NULL);
 
   updateBackBuffer(game);
 
   while (true)
   {
-    XNextEvent(display, &event);
-    if (event.type == Expose)
+    // reset file descriptor
+    FD_ZERO(&fds);       // clear fd set
+    FD_SET(fdX11, &fds); // add x11 to set
+
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 100000; // 100ms for responsiveness
+
+    // check for X events or timeout
+    int num_ready = select(fdX11 + 1, &fds, NULL, NULL, &timeout);
+
+    // handle X events
+    while (XPending(display))
     {
+      XNextEvent(display, &event);
+
+      if (event.type == Expose)
+      {
+        renderFrame();
+        continue;
+      }
+
+      if (!updateGameState(game, event))
+      {
+        return;
+      }
+
+      updateBackBuffer(game);
       renderFrame();
-      continue;
     }
 
-    if (!updateGameState(game, event))
+    time_t currentTime = time(NULL); // whole seconds
+    if (time(NULL) > lastTimeS)
     {
-      break;
-    };
-
-    updateBackBuffer(game);
-    renderFrame();
+      game.incrementTimer();
+      updateBackBuffer(game);
+      renderFrame();
+      lastTimeS = currentTime;
+    }
   }
 }
 
@@ -175,6 +203,7 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
 
 void Renderer::updateBackBuffer(Game &game)
 {
+  // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
       backBuffer.get(),
       config::WINDOW_PIXEL_WIDTH,
@@ -184,10 +213,22 @@ void Renderer::updateBackBuffer(Game &game)
       config::INFO_PANEL_BUTTONS_HEIGHT,
       game.getRemainingFlags());
 
+  // reset button
   const auto resetButtonSprite = isResetButtonPressed ? sprites->pressedButton : sprites->raisedButton;
   SpriteFactory::copySprite(
       backBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 
+  // timer
+  SpriteFactory::buffInsertRemainingFlags(
+      backBuffer.get(),
+      config::WINDOW_PIXEL_WIDTH,
+      config::TIMER_X,
+      config::TIMER_Y,
+      config::INFO_PANEL_BUTTONS_HEIGHT * 2,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      game.getSecondsElapsed());
+
+  // game area
   for (int row = 0; row < config::GRID_HEIGHT; ++row)
   {
     for (int col = 0; col < config::GRID_WIDTH; ++col)

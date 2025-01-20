@@ -167,6 +167,40 @@ void SpriteFactory::buffInsertRemainingFlags(
   }
 };
 
+void SpriteFactory::buffInsertTimer(
+    uint32_t *buff,
+    const int buffWidth,
+    const int x,
+    const int y,
+    const int w,
+    const int h,
+    const int t)
+{
+  buffInsertRectangle(buff, buffWidth, x, y, w, h, config::BLACK);
+
+  const int leftDigit = t / 100;
+  const int middleDigit = (t % 100) / 10;
+  const int rightDigit = (t % 10);
+  const int digits[3]{leftDigit, middleDigit, rightDigit};
+
+  int pad = config::REMAINING_FLAGS_PAD;
+  while ((w - 4 * pad) % 3 != 0)
+  {
+    ++pad;
+  }
+
+  const int digitWidth = (w - 4 * pad) / 3;
+  const int digitHeight = h - 2 * pad;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    const int digitX = x + pad + i * (digitWidth + pad);
+    const int digitY = y + pad;
+
+    buffInsertDigit(buff, buffWidth, digitX, digitY, digitWidth, digitHeight, digits[i], config::RED);
+  }
+}
+
 void SpriteFactory::copySprite(
     std::unique_ptr<uint32_t[]> &buff,
     const uint32_t *sprite,

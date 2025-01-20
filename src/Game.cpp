@@ -10,23 +10,38 @@ Game::Game() { minefield = initMinefield(); }
 void Game::handleLeftClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
+  auto &cell = minefield[index];
 
   if (isFirstClick)
   {
     isFirstClick = false;
-    while (minefield[index].nAdjacentMines != 0 || minefield[index].isMine)
+    while (cell.nAdjacentMines != 0 || cell.isMine)
     {
       minefield = initMinefield();
     }
   }
 
-  if (minefield[index].isFlagged || !minefield[index].isHidden)
+  if (cell.isFlagged || !cell.isHidden)
   {
     return;
   }
 
-  minefield[index].isHidden = false;
-  if (minefield[index].nAdjacentMines == 0)
+  cell.isHidden = false;
+
+  if (cell.isMine) // will be gameover here
+  {
+    ++numFlags;
+    // for (auto &xCell : minefield)
+    // {
+    //   if (xCell.isMine)
+    //   {
+    //     xCell.isHidden = false;
+    //   }
+    // }
+    return;
+  }
+
+  if (cell.nAdjacentMines == 0)
   {
     floodFillEmptyCells(row, col);
   }
@@ -35,7 +50,7 @@ void Game::handleLeftClick(const int row, const int col)
 void Game::handleRightClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
-  auto &cell = minefield[index];
+  auto &cell = minefield[rowColToIndex(row, col)];
 
   if (!cell.isHidden)
   {
@@ -49,7 +64,7 @@ void Game::handleRightClick(const int row, const int col)
 
   cell.isFlagged = !cell.isFlagged;
 
-  numFlags += minefield[index].isFlagged ? 1 : -1;
+  numFlags += cell.isFlagged ? 1 : -1;
 };
 
 void Game::handleMiddleClick(const int row, const int col)
@@ -81,6 +96,7 @@ std::vector<Game::Cell> Game::initMinefield()
   std::vector<Cell> data(config::GRID_HEIGHT * config::GRID_WIDTH);
   numMines = 0;
   numFlags = 0;
+  secondsElapsed = 0;
 
   for (size_t i = 0; i < config::GRID_HEIGHT * config::GRID_WIDTH; ++i)
   {

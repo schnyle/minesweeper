@@ -44,6 +44,8 @@ public:
       const int h,
       const int n);
   static void
+  buffInsertTimer(uint32_t *buff, const int buffWidth, const int x, const int y, const int w, const int h, const int t);
+  static void
   copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y);
 
 private:

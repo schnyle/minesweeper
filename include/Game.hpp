@@ -25,6 +25,9 @@ public:
   const int &getNumMines() { return numMines; }
   const int &getNumFlags() { return numFlags; }
   int getRemainingFlags() { return numMines - numFlags; }
+  const int &getSecondsElapsed() { return secondsElapsed; }
+
+  void incrementTimer() { ++secondsElapsed; };
 
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);
@@ -36,6 +39,7 @@ private:
   Minefield minefield;
   int numMines = 0;
   int numFlags = 0;
+  int secondsElapsed = 0;
   bool isFirstClick = true;
 
   // clang-format off
