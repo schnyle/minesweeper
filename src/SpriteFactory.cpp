@@ -13,13 +13,13 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   makeMineCellSprite();
 
   makeOneSprite();
-  makeTwoSprite();
-  makeThreeSprite();
-  makeFourSprite();
-  makeFiveSprite();
-  makeSixSprite();
-  makeSevenSprite();
-  makeEightSprite();
+  makeNumericSprite(sprites->two, 2, config::GREEN);
+  makeNumericSprite(sprites->three, 3, config::RED);
+  makeNumericSprite(sprites->four, 4, config::DARK_BLUE);
+  makeNumericSprite(sprites->five, 5, config::DARK_RED);
+  makeNumericSprite(sprites->six, 6, config::TURQUOISE);
+  makeNumericSprite(sprites->seven, 7, config::PURPLE);
+  makeNumericSprite(sprites->eight, 8, config::DARK_GREY);
 
   sprites->intToSpriteMap = {
       {0, sprites->empty},
@@ -166,6 +166,24 @@ void SpriteFactory::buffInsertRemainingFlags(
     buffInsertDigit(buff, buffWidth, digitX, digitY, digitWidth, digitHeight, digits[i], config::RED);
   }
 };
+
+void SpriteFactory::copySprite(
+    std::unique_ptr<uint32_t[]> &buff,
+    const uint32_t *sprite,
+    const int spriteWidth,
+    const int x,
+    const int y)
+{
+  for (int row = 0; row < spriteWidth; ++row)
+  {
+    const auto sourceRow = sprite + row * spriteWidth;
+    const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
+    const auto destinationRow = buff.get() + rowColToWindowIndex(row + y, x);
+    std::copy(sourceRow, sourceRowEnd, destinationRow);
+  }
+}
+
+// private
 
 void SpriteFactory::makeRaisedButtonSprite()
 {
@@ -402,355 +420,57 @@ void SpriteFactory::makeMineCellSprite()
   }
 }
 
+void SpriteFactory::makeNumericSprite(uint32_t *buff, const int n, const uint32_t c)
+{
+  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
+  buffInsertDigit(
+      buff,
+      config::CELL_PIXEL_SIZE,
+      config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_WIDTH / 2,
+      config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_HEIGHT / 2,
+      NUMERIC_SPRITE_WIDTH,
+      NUMERIC_SPRITE_HEIGHT,
+      n,
+      c);
+};
+
 void SpriteFactory::makeOneSprite()
 {
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
+  uint32_t sprite[NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT];
+  std::fill_n(sprite, NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT, config::GREY);
 
   // base
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
+  const int baseHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
+  const int baseWidth = NUMERIC_SPRITE_WIDTH;
+  const int baseLeftPad = (NUMERIC_SPRITE_HEIGHT - baseWidth) / 2;
   buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, NUMERIC_SPRITE_SIZE - baseHeight, baseWidth, baseHeight, config::BLUE);
+      sprite,
+      NUMERIC_SPRITE_HEIGHT,
+      baseLeftPad,
+      NUMERIC_SPRITE_HEIGHT - baseHeight,
+      baseWidth,
+      baseHeight,
+      config::BLUE);
 
   // stem
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int stemLeftPad = (NUMERIC_SPRITE_SIZE - stemWidth) / 2;
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::BLUE);
+  const int stemWidth = 0.15 * NUMERIC_SPRITE_HEIGHT;
+  const int stemLeftPad = (NUMERIC_SPRITE_HEIGHT - stemWidth) / 2;
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_HEIGHT, stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_HEIGHT, config::BLUE);
 
   // topper
-  const int topperWidth = 0.2 * NUMERIC_SPRITE_SIZE;
-  const int topperHeight = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int topperWidth = 0.2 * NUMERIC_SPRITE_HEIGHT;
+  const int topperHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int topperX = stemLeftPad - topperWidth;
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, topperX, 0, topperWidth, topperHeight, config::BLUE);
+  buffInsertRectangle(sprite, NUMERIC_SPRITE_HEIGHT, topperX, 0, topperWidth, topperHeight, config::BLUE);
 
   auto &buff = sprites->one;
   std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeTwoSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // bases
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  // bottom
-  buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, NUMERIC_SPRITE_SIZE - baseHeight, baseWidth, baseHeight, config::GREEN);
-  // top
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::GREEN);
-  // middle
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      baseWidth,
-      baseHeight,
-      config::GREEN);
-
-  // stems
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  // top
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      0,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE / 2,
-      config::GREEN);
-  // bottom
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE / 2,
-      config::GREEN);
-
-  auto &buff = sprites->two;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeThreeSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // bases
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  // bottom
-  buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, NUMERIC_SPRITE_SIZE - baseHeight, baseWidth, baseHeight, config::RED);
-  // top
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::RED);
-  // middle
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      baseWidth,
-      baseHeight,
-      config::RED);
-
-  // stem
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      0,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE,
-      config::RED);
-
-  auto &buff = sprites->three;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeFourSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // base
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, (NUMERIC_SPRITE_SIZE) / 3, baseWidth, baseHeight, config::DARK_BLUE);
-
-  // stems
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  // right
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      0,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE,
-      config::DARK_BLUE);
-  // left
-  buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE / 3, config::DARK_BLUE);
-
-  auto &buff = sprites->four;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeFiveSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // bases
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  // bottom
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      NUMERIC_SPRITE_SIZE - baseHeight,
-      baseWidth,
-      baseHeight,
-      config::DARK_RED);
-  // top
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::DARK_RED);
-  // middle
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      baseWidth,
-      baseHeight,
-      config::DARK_RED);
-
-  // stems
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  // top
-  buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE / 2, config::DARK_RED);
-  // bottom
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE / 2,
-      config::DARK_RED);
-
-  auto &buff = sprites->five;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeSixSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // bases
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  // bottom
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      NUMERIC_SPRITE_SIZE - baseHeight,
-      baseWidth,
-      baseHeight,
-      config::TURQUOISE);
-  // top
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::TURQUOISE);
-  // middle
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      baseWidth,
-      baseHeight,
-      config::TURQUOISE);
-
-  // stems
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  // left
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::TURQUOISE);
-  // right
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE / 2,
-      config::TURQUOISE);
-
-  auto &buff = sprites->six;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeSevenSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // base
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::PURPLE);
-
-  // stem
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      0,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE,
-      config::PURPLE);
-
-  auto &buff = sprites->seven;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::makeEightSprite()
-{
-  uint32_t sprite[NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE];
-  std::fill_n(sprite, NUMERIC_SPRITE_SIZE * NUMERIC_SPRITE_SIZE, config::GREY);
-
-  // bases
-  const int baseHeight = 0.15 * NUMERIC_SPRITE_SIZE;
-  const int baseWidth = 0.6 * NUMERIC_SPRITE_SIZE;
-  const int baseLeftPad = (NUMERIC_SPRITE_SIZE - baseWidth) / 2;
-  // bottom
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      NUMERIC_SPRITE_SIZE - baseHeight,
-      baseWidth,
-      baseHeight,
-      config::DARK_GREY);
-  // top
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, baseWidth, baseHeight, config::DARK_GREY);
-  // middle
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      baseLeftPad,
-      (NUMERIC_SPRITE_SIZE - baseHeight) / 2,
-      baseWidth,
-      baseHeight,
-      config::DARK_GREY);
-
-  // stems
-  const int stemWidth = 0.15 * NUMERIC_SPRITE_SIZE;
-  // left
-  buffInsertRectangle(sprite, NUMERIC_SPRITE_SIZE, baseLeftPad, 0, stemWidth, NUMERIC_SPRITE_SIZE, config::DARK_GREY);
-  // right
-  buffInsertRectangle(
-      sprite,
-      NUMERIC_SPRITE_SIZE,
-      NUMERIC_SPRITE_SIZE - NUMERIC_SPRITE_PAD,
-      0,
-      stemWidth,
-      NUMERIC_SPRITE_SIZE,
-      config::DARK_GREY);
-
-  auto &buff = sprites->eight;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
-  copyNumericSprite(buff, sprite);
-}
-
-void SpriteFactory::copySprite(
-    std::unique_ptr<uint32_t[]> &buff,
-    const uint32_t *sprite,
-    const int spriteWidth,
-    const int x,
-    const int y)
-{
-  for (int row = 0; row < spriteWidth; ++row)
+  for (int i = 0; i < NUMERIC_SPRITE_HEIGHT; ++i)
   {
-    const auto sourceRow = sprite + row * spriteWidth;
-    const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
-    const auto destinationRow = buff.get() + rowColToWindowIndex(row + y, x);
-    std::copy(sourceRow, sourceRowEnd, destinationRow);
-  }
-}
-
-void SpriteFactory::copyNumericSprite(uint32_t *dest, uint32_t *source)
-{
-  for (int i = 0; i < NUMERIC_SPRITE_SIZE; ++i)
-  {
-    const auto spriteStart = source + i * NUMERIC_SPRITE_SIZE;
-    const auto spriteEnd = source + i * NUMERIC_SPRITE_SIZE + NUMERIC_SPRITE_SIZE;
+    const auto spriteStart = sprite + i * NUMERIC_SPRITE_HEIGHT;
+    const auto spriteEnd = sprite + i * NUMERIC_SPRITE_HEIGHT + NUMERIC_SPRITE_HEIGHT;
     const int buffIdx = ((i + NUMERIC_SPRITE_PAD) * config::CELL_PIXEL_SIZE) + NUMERIC_SPRITE_PAD;
-    std::copy(spriteStart, spriteEnd, dest + buffIdx);
+    std::copy(spriteStart, spriteEnd, buff + buffIdx);
   }
 }
 
@@ -882,7 +602,7 @@ void SpriteFactory::buffInsertDigit(
     const int n,
     const int c)
 {
-  const int segmentWidth = 0.15 * NUMERIC_SPRITE_SIZE;
+  const int segmentWidth = 0.15 * NUMERIC_SPRITE_HEIGHT;
 
   const int leftX = x;
   const int rightX = x + w - segmentWidth;
