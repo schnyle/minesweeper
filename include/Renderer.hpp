@@ -18,8 +18,6 @@ private:
   static const int WIDTH = config::WINDOW_PIXEL_WIDTH;
   static const int HEIGHT = config::WINDOW_PIXEL_HEIGHT;
 
-  bool isResetButtonPressed = false;
-
   std::unique_ptr<SpriteFactory::Sprites> sprites;
   std::unique_ptr<uint32_t[]> frameBuffer;
 
@@ -29,7 +27,6 @@ private:
 
   void initSDL();
   void renderFrame();
-  bool updateGameState(Minesweeper &, SDL_Event &);
   void updateInterface(Minesweeper &);
   void updateGameArea(Minesweeper &);
 };

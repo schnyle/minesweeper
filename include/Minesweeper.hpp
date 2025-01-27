@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL.h>
 #include <array>
 #include <set>
 #include <utility>
@@ -7,7 +8,9 @@
 
 class Minesweeper
 {
-public:
+  friend class GameLoop;
+
+private:
   struct Cell
   {
     bool isMine;
@@ -16,23 +19,23 @@ public:
     unsigned int nAdjacentMines = 0;
   };
 
+public:
   using Minefield = std::vector<Cell>;
 
   Minesweeper();
   ~Minesweeper() = default;
 
   const Minefield &getMinefield() { return minefield; }
-  const int &getNumMines() { return numMines; }
-  const int &getNumFlags() { return numFlags; }
+  int getNumMines() { return numMines; }
+  int getNumFlags() { return numFlags; }
   int getRemainingFlags() { return numMines - numFlags; }
-  const int &getSecondsElapsed() { return secondsElapsed; }
-
-  void incrementTimer() { ++secondsElapsed; };
+  int getSecondsElapsed() { return secondsElapsed; }
+  int getIsResetButtonPressed() { return isResetButtonPressed; }
 
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);
   void handleMiddleClick(const int row, const int col);
-
+  void incrementTimer() { ++secondsElapsed; };
   void reset();
 
 private:
@@ -41,6 +44,7 @@ private:
   int numFlags = 0;
   int secondsElapsed = 0;
   bool isFirstClick = true;
+  bool isResetButtonPressed = false;
 
   // clang-format off
   const std::array<std::pair<int, int>, 8> ADJACENCY_OFFSETS = {{
@@ -50,10 +54,10 @@ private:
   }};
   // clang-format on
 
-  int rowColToIndex(const int row, const int col) const;
-
   Minefield initMinefield();
+  int rowColToIndex(const int row, const int col) const;
   void revealAdjacentCells(const int row, const int col);
   void floodFillEmptyCells(const int row, const int col);
   void floodFillEmptyCellsRecursive(const int row, const int col, std::set<std::pair<int, int>> &visited);
+  bool updateGameState(SDL_Event &);
 };

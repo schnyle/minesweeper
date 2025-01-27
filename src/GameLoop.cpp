@@ -31,7 +31,7 @@ void GameLoop::handleEvents()
       isRunning = false;
     }
 
-    if (!renderer.updateGameState(game, event))
+    if (!game.updateGameState(event))
     {
       isRunning = false;
     }

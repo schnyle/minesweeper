@@ -71,76 +71,6 @@ void Renderer::renderFrame()
   SDL_RenderPresent(renderer);
 }
 
-bool Renderer::updateGameState(Minesweeper &game, SDL_Event &event)
-{
-  const int cursorX = event.motion.x;
-  const int cursorY = event.motion.y;
-
-  const bool inResetButton = cursorX >= config::RESET_BUTTON_X &&
-                             cursorX < config::RESET_BUTTON_X + config::INFO_PANEL_BUTTONS_HEIGHT &&
-                             cursorY >= config::RESET_BUTTON_Y &&
-                             cursorY < config::RESET_BUTTON_Y + config::INFO_PANEL_BUTTONS_HEIGHT;
-
-  const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
-  const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
-
-  const int row = (cursorY - gameAreaY) / config::CELL_PIXEL_SIZE;
-  const int col = (cursorX - gameAreaX) / config::CELL_PIXEL_SIZE;
-
-  const bool inXBounds = cursorX >= gameAreaX && col >= 0 && col < config::GRID_WIDTH;
-  const bool inYBounds = cursorY >= gameAreaY && row >= 0 && row < config::GRID_HEIGHT;
-  const bool inGameArea = inXBounds && inYBounds;
-
-  switch (event.type)
-  {
-  case SDL_MOUSEBUTTONDOWN:
-  {
-
-    if (inGameArea)
-    {
-      switch (event.button.button)
-      {
-      case SDL_BUTTON_LEFT:
-        game.handleLeftClick(row, col);
-        break;
-      case SDL_BUTTON_MIDDLE:
-        game.handleMiddleClick(row, col);
-        break;
-      case SDL_BUTTON_RIGHT:
-        game.handleRightClick(row, col);
-        break;
-      }
-    }
-
-    if (inResetButton && event.button.button == SDL_BUTTON_LEFT)
-    {
-      isResetButtonPressed = true;
-    }
-
-    break;
-  }
-
-  case SDL_MOUSEBUTTONUP:
-  {
-    if (inResetButton && isResetButtonPressed)
-    {
-      game.reset();
-    }
-    isResetButtonPressed = false;
-    break;
-  }
-
-  case SDL_KEYDOWN:
-    const auto keycode = event.key.keysym.sym;
-    if (keycode == SDLK_q || keycode == SDLK_x || keycode == SDLK_ESCAPE)
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void Renderer::updateInterface(Minesweeper &game)
 {
   // remaining flags
@@ -154,7 +84,7 @@ void Renderer::updateInterface(Minesweeper &game)
       game.getRemainingFlags());
 
   // reset button
-  const auto resetButtonSprite = isResetButtonPressed ? sprites->pressedButton : sprites->raisedButton;
+  const auto resetButtonSprite = game.getIsResetButtonPressed() ? sprites->pressedButton : sprites->raisedButton;
   SpriteFactory::copySprite(
       frameBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 
