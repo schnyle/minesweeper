@@ -1,13 +1,13 @@
-#include <Game.hpp>
+#include <Minesweeper.hpp>
 #include <config.hpp>
 #include <random>
 #include <set>
 #include <utility>
 #include <vector>
 
-Game::Game() { minefield = initMinefield(); }
+Minesweeper::Minesweeper() { minefield = initMinefield(); }
 
-void Game::handleLeftClick(const int row, const int col)
+void Minesweeper::handleLeftClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
   auto &cell = minefield[index];
@@ -47,7 +47,7 @@ void Game::handleLeftClick(const int row, const int col)
   }
 };
 
-void Game::handleRightClick(const int row, const int col)
+void Minesweeper::handleRightClick(const int row, const int col)
 {
   auto &cell = minefield[rowColToIndex(row, col)];
 
@@ -66,7 +66,7 @@ void Game::handleRightClick(const int row, const int col)
   numFlags += cell.isFlagged ? 1 : -1;
 };
 
-void Game::handleMiddleClick(const int row, const int col)
+void Minesweeper::handleMiddleClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
 
@@ -78,15 +78,15 @@ void Game::handleMiddleClick(const int row, const int col)
   revealAdjacentCells(row, col);
 };
 
-void Game::reset()
+void Minesweeper::reset()
 {
   minefield = initMinefield();
   isFirstClick = true;
 }
 
-int Game::rowColToIndex(const int row, const int col) const { return row * config::GRID_WIDTH + col; }
+int Minesweeper::rowColToIndex(const int row, const int col) const { return row * config::GRID_WIDTH + col; }
 
-std::vector<Game::Cell> Game::initMinefield()
+std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
 {
   std::random_device rd;
   std::mt19937 rg(rd());
@@ -165,7 +165,7 @@ std::vector<Game::Cell> Game::initMinefield()
   return data;
 }
 
-void Game::revealAdjacentCells(const int row, const int col)
+void Minesweeper::revealAdjacentCells(const int row, const int col)
 {
   unsigned int nFlags = 0;
   std::set<std::pair<int, int>> hidden;
@@ -204,13 +204,13 @@ void Game::revealAdjacentCells(const int row, const int col)
   }
 }
 
-void Game::floodFillEmptyCells(int row, int col)
+void Minesweeper::floodFillEmptyCells(int row, int col)
 {
   std::set<std::pair<int, int>> visited;
   floodFillEmptyCellsRecursive(row, col, visited);
 }
 
-void Game::floodFillEmptyCellsRecursive(int row, int col, std::set<std::pair<int, int>> &visited)
+void Minesweeper::floodFillEmptyCellsRecursive(int row, int col, std::set<std::pair<int, int>> &visited)
 {
   visited.insert({row, col});
 

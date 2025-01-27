@@ -25,54 +25,6 @@ Renderer::~Renderer()
   SDL_Quit();
 }
 
-void Renderer::run(Game &game)
-{
-  SDL_Event event;
-  bool running = true;
-
-  const int frameDelayMs = 16; // ~60 FPS
-
-  auto lastTime = SDL_GetTicks();
-  decltype(SDL_GetTicks()) timerAccumulator = 0;
-
-  while (running)
-  {
-    auto frameStart = SDL_GetTicks();
-
-    while (SDL_PollEvent(&event))
-    {
-      if (event.type == SDL_QUIT)
-      {
-        running = false;
-      }
-
-      if (!updateGameState(game, event))
-      {
-        running = false;
-      }
-    }
-
-    auto currentTime = SDL_GetTicks();
-    timerAccumulator += currentTime - lastTime;
-    while (timerAccumulator >= 1000)
-    {
-      game.incrementTimer();
-      timerAccumulator -= 1000;
-    }
-    lastTime = currentTime;
-
-    updateInterface(game);
-    updateGameArea(game);
-    renderFrame();
-
-    auto frameTicks = SDL_GetTicks() - frameStart;
-    if (frameTicks < frameDelayMs)
-    {
-      SDL_Delay(frameDelayMs - frameTicks);
-    }
-  }
-}
-
 void Renderer::initSDL()
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -119,7 +71,7 @@ void Renderer::renderFrame()
   SDL_RenderPresent(renderer);
 }
 
-bool Renderer::updateGameState(Game &game, SDL_Event &event)
+bool Renderer::updateGameState(Minesweeper &game, SDL_Event &event)
 {
   const int cursorX = event.motion.x;
   const int cursorY = event.motion.y;
@@ -189,7 +141,7 @@ bool Renderer::updateGameState(Game &game, SDL_Event &event)
   return true;
 }
 
-void Renderer::updateInterface(Game &game)
+void Renderer::updateInterface(Minesweeper &game)
 {
   // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
@@ -217,7 +169,7 @@ void Renderer::updateInterface(Game &game)
       game.getSecondsElapsed());
 }
 
-void Renderer::updateGameArea(Game &game)
+void Renderer::updateGameArea(Minesweeper &game)
 {
   for (int row = 0; row < config::GRID_HEIGHT; ++row)
   {

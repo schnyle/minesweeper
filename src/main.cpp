@@ -1,10 +1,12 @@
-#include <Game.hpp>
+#include <GameLoop.hpp>
+#include <Minesweeper.hpp>
 #include <Renderer.hpp>
 
 int main()
 {
-  Game game;
+  Minesweeper game;
   Renderer renderer;
-  renderer.run(game);
+  GameLoop gameLoop(game, renderer);
+  gameLoop.run();
   return 0;
 }

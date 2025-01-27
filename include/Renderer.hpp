@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Game.hpp>
+#include <Minesweeper.hpp>
 #include <SDL.h>
 #include <SpriteFactory.hpp>
 #include <config.hpp>
@@ -8,11 +8,11 @@
 
 class Renderer
 {
+  friend class GameLoop;
+
 public:
   Renderer();
   ~Renderer();
-
-  void run(Game &);
 
 private:
   static const int WIDTH = config::WINDOW_PIXEL_WIDTH;
@@ -29,7 +29,7 @@ private:
 
   void initSDL();
   void renderFrame();
-  bool updateGameState(Game &, SDL_Event &);
-  void updateInterface(Game &);
-  void updateGameArea(Game &);
+  bool updateGameState(Minesweeper &, SDL_Event &);
+  void updateInterface(Minesweeper &);
+  void updateGameArea(Minesweeper &);
 };

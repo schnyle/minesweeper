@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-class Game
+class Minesweeper
 {
 public:
   struct Cell
@@ -18,8 +18,8 @@ public:
 
   using Minefield = std::vector<Cell>;
 
-  Game();
-  ~Game() = default;
+  Minesweeper();
+  ~Minesweeper() = default;
 
   const Minefield &getMinefield() { return minefield; }
   const int &getNumMines() { return numMines; }

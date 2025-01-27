@@ -8,10 +8,10 @@ find_package(SDL2 REQUIRED)
 
 add_executable(minesweeper
   src/main.cpp
-  src/Game.cpp
+  src/Minesweeper.cpp
   src/Renderer.cpp
+  src/GameLoop.cpp
   src/SpriteFactory.cpp
-  src/data.cpp
 )
 
 target_include_directories(minesweeper
