@@ -122,33 +122,35 @@ bool Renderer::updateGameState(Game &game, SDL_Event &event)
                              cursorY >= config::RESET_BUTTON_Y &&
                              cursorY < config::RESET_BUTTON_Y + config::INFO_PANEL_BUTTONS_HEIGHT;
 
+  const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
+  const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
+
+  const int row = (cursorY - gameAreaY) / config::CELL_PIXEL_SIZE;
+  const int col = (cursorX - gameAreaX) / config::CELL_PIXEL_SIZE;
+
+  const bool inXBounds = cursorX >= gameAreaX && col >= 0 && col < config::GRID_WIDTH;
+  const bool inYBounds = cursorY >= gameAreaY && row >= 0 && row < config::GRID_HEIGHT;
+  const bool inGameArea = inXBounds && inYBounds;
+
   switch (event.type)
   {
   case SDL_MOUSEBUTTONDOWN:
   {
-    const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
-    const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
 
-    const int row = (cursorY - gameAreaY) / config::CELL_PIXEL_SIZE;
-    const int col = (cursorX - gameAreaX) / config::CELL_PIXEL_SIZE;
-
-    const bool inGameArea = cursorX >= gameAreaX && row >= 0 && row < config::GRID_HEIGHT && cursorY >= gameAreaY &&
-                            col >= 0 && col < config::GRID_WIDTH;
     if (inGameArea)
     {
-      if (event.button.button == SDL_BUTTON_LEFT)
+      switch (event.button.button)
       {
+      case SDL_BUTTON_LEFT:
         game.handleLeftClick(row, col);
-      }
-      else if (event.button.button == SDL_BUTTON_MIDDLE)
-      {
+        break;
+      case SDL_BUTTON_MIDDLE:
         game.handleMiddleClick(row, col);
-      }
-      else if (event.button.button == SDL_BUTTON_RIGHT)
-      {
+        break;
+      case SDL_BUTTON_RIGHT:
         game.handleRightClick(row, col);
+        break;
       }
-      break;
     }
 
     if (inResetButton && event.button.button == SDL_BUTTON_LEFT)

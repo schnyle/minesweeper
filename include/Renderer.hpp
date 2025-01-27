@@ -21,11 +21,11 @@ private:
   bool isResetButtonPressed = false;
 
   std::unique_ptr<SpriteFactory::Sprites> sprites;
+  std::unique_ptr<uint32_t[]> frameBuffer;
 
   SDL_Window *window;
   SDL_Renderer *renderer;
   SDL_Texture *texture;
-  std::unique_ptr<uint32_t[]> frameBuffer;
 
   void renderFrame();
   bool updateGameState(Game &, SDL_Event &);

@@ -49,7 +49,6 @@ void Game::handleLeftClick(const int row, const int col)
 
 void Game::handleRightClick(const int row, const int col)
 {
-  const auto index = rowColToIndex(row, col);
   auto &cell = minefield[rowColToIndex(row, col)];
 
   if (!cell.isHidden)
