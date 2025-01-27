@@ -1,142 +1,121 @@
 #include <Renderer.hpp>
-#include <X11/XKBlib.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <algorithm>
+#include <SpriteFactory.hpp>
+#include <chrono>
 #include <config.hpp>
-#include <cstdlib>
 #include <iostream>
-#include <stdexcept>
+#include <memory>
 
-Renderer::Renderer()
+#include <cstring>
+
+Renderer::Renderer() : frameBuffer(nullptr), window(nullptr), renderer(nullptr), texture(nullptr)
 {
-  display = XOpenDisplay(nullptr);
-  if (!display)
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
   {
-    throw std::runtime_error("unable to open X display");
+    std::cout << "error initializing SDL: " << SDL_GetError() << std::endl;
   }
 
-  screen = DefaultScreen(display);
-  root = RootWindow(display, screen);
-  visual = DefaultVisual(display, screen);
-
-  XSetWindowAttributes windowAttributes = {};
-  windowAttributes.background_pixel = WhitePixel(display, screen);
-  windowAttributes.border_pixel = BlackPixel(display, screen);
-  windowAttributes.event_mask = ExposureMask | Button1MotionMask | ButtonPressMask | ButtonReleaseMask |
-                                KeyPressMask; // check these
-  windowAttributes.override_redirect = true;
-  window = XCreateWindow(
-      display,
-      root,
-      0,
-      0,
-      config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_HEIGHT,
-      0,
-      DefaultDepth(display, screen),
-      InputOutput,
-      visual,
-      CWBackPixel | CWEventMask | CWBorderPixel,
-      &windowAttributes);
-
-  // remove header decoration
-  Atom wm_delete = XInternAtom(display, "WM_DELETE_WINDOW", true);
-  XSetWMProtocols(display, window, &wm_delete, 1);
-  Atom wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", true);
-  if (wm_hints != None)
+  window = SDL_CreateWindow(
+      "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+  if (!window)
   {
-    struct
-    {
-      unsigned long flags;
-      unsigned long functions;
-      unsigned long decorations;
-      long input_mode;
-      unsigned long status;
-    } hints = {2, 0, 0, 0, 0};
-    XChangeProperty(display, window, wm_hints, wm_hints, 32, PropModeReplace, (unsigned char *)&hints, 5);
+    std::cout << "error creating window: " << SDL_GetError() << std::endl;
   }
 
-  XMapWindow(display, window);
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (!renderer)
+  {
+    std::cout << "error getting renderer: " << SDL_GetError() << std::endl;
+  }
 
-  XStoreName(display, window, config::APP_NAME);
+  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+  if (!texture)
+  {
+    std::cout << "error getting texture: " << SDL_GetError() << std::endl;
+  }
 
-  initializeGC();
-  initializeBuffers();
+  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
+  if (!frameBuffer)
+  {
+    std::cout << "error allocating frame buffer" << std::endl;
+  }
+
+  SpriteFactory::buffInsertInterface(frameBuffer.get(), WIDTH, WIDTH * HEIGHT);
+
   sprites = SpriteFactory::createSprites();
 }
 
 Renderer::~Renderer()
 {
-  XFreeGC(display, gc);
-  XDestroyWindow(display, window);
-  XCloseDisplay(display);
+  SDL_DestroyTexture(texture);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 }
 
 void Renderer::run(Game &game)
 {
-  XEvent event;
-  struct timeval timeout;
-  fd_set fds;
-  int fdX11 = ConnectionNumber(display);
-  time_t lastTimeS = time(NULL);
+  SDL_Event event;
+  bool running = true;
 
-  updateBackBuffer(game);
+  const int frameDelayMs = 16; // ~60 FPS
 
-  while (true)
+  auto lastTime = SDL_GetTicks();
+  decltype(SDL_GetTicks()) timerAccumulator = 0;
+
+  while (running)
   {
-    // reset file descriptor
-    FD_ZERO(&fds);       // clear fd set
-    FD_SET(fdX11, &fds); // add x11 to set
+    auto frameStart = SDL_GetTicks();
 
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 100000; // 100ms for responsiveness
-
-    // check for X events or timeout
-    int num_ready = select(fdX11 + 1, &fds, NULL, NULL, &timeout);
-
-    // handle X events
-    while (XPending(display))
+    while (SDL_PollEvent(&event))
     {
-      XNextEvent(display, &event);
-
-      if (event.type == Expose)
+      if (event.type == SDL_QUIT)
       {
-        renderFrame();
-        continue;
+        running = false;
       }
 
       if (!updateGameState(game, event))
       {
-        return;
+        running = false;
       }
-
-      updateBackBuffer(game);
-      renderFrame();
     }
 
-    time_t currentTime = time(NULL); // whole seconds
-    if (time(NULL) > lastTimeS)
+    auto currentTime = SDL_GetTicks();
+    timerAccumulator += currentTime - lastTime;
+    while (timerAccumulator >= 1000)
     {
       game.incrementTimer();
-      updateBackBuffer(game);
-      renderFrame();
-      lastTimeS = currentTime;
+      timerAccumulator -= 1000;
+    }
+    lastTime = currentTime;
+
+    updateFrameBuffer(game);
+    renderFrame();
+
+    auto frameTicks = SDL_GetTicks() - frameStart;
+    if (frameTicks < frameDelayMs)
+    {
+      SDL_Delay(frameDelayMs - frameTicks);
     }
   }
 }
 
 void Renderer::renderFrame()
 {
-  image->data = reinterpret_cast<char *>(backBuffer.get());
-  XPutImage(display, window, gc, image, 0, 0, 0, 0, config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_HEIGHT);
-  frontBuffer.swap(backBuffer);
+  void *pixels;
+  int pitch;
+  SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+
+  std::memcpy(pixels, frameBuffer.get(), WIDTH * HEIGHT * sizeof(uint32_t));
+
+  SDL_UnlockTexture(texture);
+  SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+  SDL_RenderPresent(renderer);
 }
 
-bool Renderer::updateGameState(Game &game, XEvent &event)
+bool Renderer::updateGameState(Game &game, SDL_Event &event)
 {
-  const int cursorX = event.xbutton.x;
-  const int cursorY = event.xbutton.y;
+  const int cursorX = event.motion.x;
+  const int cursorY = event.motion.y;
 
   const bool inResetButton = cursorX >= config::RESET_BUTTON_X &&
                              cursorX < config::RESET_BUTTON_X + config::INFO_PANEL_BUTTONS_HEIGHT &&
@@ -145,7 +124,7 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
 
   switch (event.type)
   {
-  case ButtonPress:
+  case SDL_MOUSEBUTTONDOWN:
   {
     const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
     const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
@@ -157,22 +136,22 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
                             col >= 0 && col < config::GRID_WIDTH;
     if (inGameArea)
     {
-      if (event.xbutton.button == Button1)
+      if (event.button.button == SDL_BUTTON_LEFT)
       {
         game.handleLeftClick(row, col);
       }
-      else if (event.xbutton.button == Button2)
+      else if (event.button.button == SDL_BUTTON_MIDDLE)
       {
         game.handleMiddleClick(row, col);
       }
-      else if (event.xbutton.button == Button3)
+      else if (event.button.button == SDL_BUTTON_RIGHT)
       {
         game.handleRightClick(row, col);
       }
       break;
     }
 
-    if (inResetButton && event.xbutton.button == Button1)
+    if (inResetButton && event.button.button == SDL_BUTTON_LEFT)
     {
       isResetButtonPressed = true;
     }
@@ -180,7 +159,7 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
     break;
   }
 
-  case ButtonRelease:
+  case SDL_MOUSEBUTTONUP:
   {
     if (inResetButton && isResetButtonPressed)
     {
@@ -190,9 +169,9 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
     break;
   }
 
-  case KeyPress:
-    const auto keysym = XkbKeycodeToKeysym(display, event.xkey.keycode, 0, 0);
-    if (keysym == XK_q || keysym == XK_x || keysym == XK_Escape)
+  case SDL_KEYDOWN:
+    const auto keycode = event.key.keysym.sym;
+    if (keycode == SDLK_q || keycode == SDLK_x || keycode == SDLK_ESCAPE)
     {
       return false;
     }
@@ -201,12 +180,12 @@ bool Renderer::updateGameState(Game &game, XEvent &event)
   return true;
 }
 
-void Renderer::updateBackBuffer(Game &game)
+void Renderer::updateFrameBuffer(Game &game)
 {
   // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
-      backBuffer.get(),
-      config::WINDOW_PIXEL_WIDTH,
+      frameBuffer.get(),
+      WIDTH,
       config::REMAINING_FLAGS_X,
       config::REMAINING_FLAGS_Y,
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
@@ -216,12 +195,12 @@ void Renderer::updateBackBuffer(Game &game)
   // reset button
   const auto resetButtonSprite = isResetButtonPressed ? sprites->pressedButton : sprites->raisedButton;
   SpriteFactory::copySprite(
-      backBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
+      frameBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 
   // timer
   SpriteFactory::buffInsertRemainingFlags(
-      backBuffer.get(),
-      config::WINDOW_PIXEL_WIDTH,
+      frameBuffer.get(),
+      WIDTH,
       config::TIMER_X,
       config::TIMER_Y,
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
@@ -264,48 +243,7 @@ void Renderer::updateBackBuffer(Game &game)
         }
       }
 
-      SpriteFactory::copySprite(backBuffer, sprite, config::CELL_PIXEL_SIZE, x, y);
+      SpriteFactory::copySprite(frameBuffer, sprite, config::CELL_PIXEL_SIZE, x, y);
     }
   }
-}
-
-void Renderer::initializeGC()
-{
-  XGCValues xgcv;
-
-  xgcv.line_style = LineSolid;
-  xgcv.cap_style = CapButt;
-  xgcv.join_style = JoinMiter;
-  xgcv.fill_style = FillSolid;
-  xgcv.foreground = BlackPixel(display, screen);
-  xgcv.background = WhitePixel(display, screen);
-
-  unsigned long valueMask = GCForeground | GCBackground | GCFillStyle | GCLineStyle | GCLineWidth | GCLineWidth |
-                            GCCapStyle | GCJoinStyle;
-
-  gc = XCreateGC(display, root, valueMask, &xgcv);
-}
-
-void Renderer::initializeBuffers()
-{
-  const int bufferSize = config::WINDOW_PIXEL_HEIGHT * config::WINDOW_PIXEL_WIDTH;
-  frontBuffer = std::make_unique<uint32_t[]>(bufferSize);
-  backBuffer = std::make_unique<uint32_t[]>(bufferSize);
-
-  SpriteFactory::buffInsertInterface(
-      backBuffer.get(), config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
-  SpriteFactory::buffInsertInterface(
-      frontBuffer.get(), config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
-
-  image = XCreateImage(
-      display,
-      visual,
-      DefaultDepth(display, screen),
-      ZPixmap,
-      0,
-      reinterpret_cast<char *>(backBuffer.get()),
-      config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_HEIGHT,
-      32,
-      config::WINDOW_PIXEL_WIDTH * sizeof(int32_t));
 }

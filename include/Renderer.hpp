@@ -1,13 +1,10 @@
 #pragma once
 
 #include <Game.hpp>
+#include <SDL.h>
 #include <SpriteFactory.hpp>
-#include <X11/Xlib.h>
 #include <config.hpp>
-#include <cstdint>
-#include <map>
 #include <memory>
-#include <utility>
 
 class Renderer
 {
@@ -18,23 +15,19 @@ public:
   void run(Game &);
 
 private:
-  Display *display;
-  Window root;
-  Window window;
-  Visual *visual;
-  GC gc;
-  int screen;
-  XImage *image;
-  std::unique_ptr<uint32_t[]> frontBuffer;
-  std::unique_ptr<uint32_t[]> backBuffer;
+  static const int WIDTH = config::WINDOW_PIXEL_WIDTH;
+  static const int HEIGHT = config::WINDOW_PIXEL_HEIGHT;
+
   bool isResetButtonPressed = false;
 
   std::unique_ptr<SpriteFactory::Sprites> sprites;
 
-  void renderFrame();
-  bool updateGameState(Game &, XEvent &);
-  void updateBackBuffer(Game &);
+  SDL_Window *window;
+  SDL_Renderer *renderer;
+  SDL_Texture *texture;
+  std::unique_ptr<uint32_t[]> frameBuffer;
 
-  void initializeGC();
-  void initializeBuffers();
+  void renderFrame();
+  bool updateGameState(Game &, SDL_Event &);
+  void updateFrameBuffer(Game &);
 };

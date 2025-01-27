@@ -386,7 +386,7 @@ void SpriteFactory::makeMineCellSprite()
       int dy = y - center;
       if (dx * dx + dy * dy <= mineRadius * mineRadius)
       {
-        buff[y * size + x] = 0xFF000000;
+        buff[y * size + x] = config::BLACK;
       }
     }
   }
@@ -444,7 +444,7 @@ void SpriteFactory::makeMineCellSprite()
               int distY = finalY - center;
               if (distX * distX + distY * distY >= mineRadius * mineRadius)
               {
-                buff[finalY * size + finalX] = 0xFF000000;
+                buff[finalY * size + finalX] = config::BLACK;
               }
             }
           }
