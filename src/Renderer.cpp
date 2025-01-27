@@ -1,16 +1,27 @@
+#include <Minesweeper.hpp>
 #include <Renderer.hpp>
 #include <SpriteFactory.hpp>
 #include <algorithm>
 #include <chrono>
 #include <config.hpp>
+#include <cstring>
 #include <iostream>
 #include <memory>
 
-#include <cstring>
-
 Renderer::Renderer()
 {
-  initSDL();
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+  {
+    std::cout << "error initializing SDL: " << SDL_GetError() << std::endl;
+  }
+
+  initGameWindow();
+
+  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
+  if (!frameBuffer)
+  {
+    std::cout << "error allocating frame buffer" << std::endl;
+  }
 
   SpriteFactory::buffInsertInterface(frameBuffer.get(), WIDTH, WIDTH * HEIGHT);
 
@@ -19,43 +30,53 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
-  SDL_DestroyTexture(texture);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
+  SDL_DestroyTexture(gameTexture);
+  SDL_DestroyRenderer(gameRenderer);
+  SDL_DestroyWindow(gameWindow);
+  SDL_DestroyWindow(configWindow);
   SDL_Quit();
 }
 
-void Renderer::initSDL()
+void Renderer::initGameWindow()
 {
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
-  {
-    std::cout << "error initializing SDL: " << SDL_GetError() << std::endl;
-  }
-
-  window = SDL_CreateWindow(
+  gameWindow = SDL_CreateWindow(
       "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
-  if (!window)
+  if (!gameWindow)
   {
     std::cout << "error creating window: " << SDL_GetError() << std::endl;
   }
 
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  if (!renderer)
+  gameRenderer = SDL_CreateRenderer(gameWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (!gameRenderer)
   {
     std::cout << "error getting renderer: " << SDL_GetError() << std::endl;
   }
 
-  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
-  if (!texture)
+  gameTexture = SDL_CreateTexture(gameRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+  if (!gameTexture)
   {
     std::cout << "error getting texture: " << SDL_GetError() << std::endl;
   }
 
-  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
-  if (!frameBuffer)
+  gameWindowID = SDL_GetWindowID(gameWindow);
+}
+
+void Renderer::initConfigWindow()
+{
+  configWindow = SDL_CreateWindow(
+      "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, CONFIG_WIDTH, CONFIG_HEIGHT, SDL_WINDOW_HIDDEN);
+  if (!configWindow)
   {
-    std::cout << "error allocating frame buffer" << std::endl;
+    std::cout << "error creating window: " << SDL_GetError() << std::endl;
   }
+
+  configSurface = SDL_GetWindowSurface(configWindow);
+  if (!configSurface)
+  {
+    std::cout << "error getting surface: " << SDL_GetError() << std::endl;
+  }
+
+  configWindowID = SDL_GetWindowID(configWindow);
 }
 
 void Renderer::renderFrame()
@@ -63,12 +84,12 @@ void Renderer::renderFrame()
   void *pixels;
   int pitch;
 
-  SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+  SDL_LockTexture(gameTexture, nullptr, &pixels, &pitch);
   std::memcpy(pixels, frameBuffer.get(), WIDTH * HEIGHT * sizeof(uint32_t));
 
-  SDL_UnlockTexture(texture);
-  SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-  SDL_RenderPresent(renderer);
+  SDL_UnlockTexture(gameTexture);
+  SDL_RenderCopy(gameRenderer, gameTexture, nullptr, nullptr);
+  SDL_RenderPresent(gameRenderer);
 }
 
 void Renderer::updateInterface(Minesweeper &game)
@@ -87,6 +108,15 @@ void Renderer::updateInterface(Minesweeper &game)
   const auto resetButtonSprite = game.getIsResetButtonPressed() ? sprites->pressedButton : sprites->raisedButton;
   SpriteFactory::copySprite(
       frameBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
+
+  // config button
+  const auto configButtonSprite = game.getIsConfigButtonPressed() ? sprites->pressedButton : sprites->raisedButton;
+  SpriteFactory::copySprite(
+      frameBuffer,
+      configButtonSprite,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::CONFIG_BUTTON_X,
+      config::CONFIG_BUTTON_Y);
 
   // timer
   SpriteFactory::buffInsertRemainingFlags(
@@ -137,6 +167,29 @@ void Renderer::updateGameArea(Minesweeper &game)
       }
 
       SpriteFactory::copySprite(frameBuffer, sprite, config::CELL_PIXEL_SIZE, x, y);
+    }
+  }
+}
+
+void Renderer::updateConfigWindow(Minesweeper &game)
+{
+  if (showConfigWindow != game.getShowConfigButton())
+  {
+    showConfigWindow = game.getShowConfigButton();
+    if (showConfigWindow)
+    {
+      if (configWindow == nullptr)
+      {
+        initConfigWindow();
+      }
+
+      SDL_ShowWindow(configWindow);
+      SDL_FillRect(configSurface, nullptr, SDL_MapRGB(configSurface->format, 255, 0, 0));
+      SDL_UpdateWindowSurface(configWindow);
+    }
+    else
+    {
+      SDL_HideWindow(configWindow);
     }
   }
 }

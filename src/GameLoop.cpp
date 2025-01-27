@@ -31,9 +31,16 @@ void GameLoop::handleEvents()
       isRunning = false;
     }
 
-    if (!game.updateGameState(event))
+    if (event.window.windowID == renderer.gameWindowID)
     {
-      isRunning = false;
+      if (!game.updateGameState(event))
+      {
+        isRunning = false;
+      }
+    }
+
+    if (event.window.windowID == renderer.configWindowID)
+    {
     }
   }
 }
@@ -56,6 +63,7 @@ void GameLoop::render()
 {
   renderer.updateInterface(game);
   renderer.updateGameArea(game);
+  renderer.updateConfigWindow(game);
   renderer.renderFrame();
 }
 

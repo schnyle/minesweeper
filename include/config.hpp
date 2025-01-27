@@ -22,6 +22,9 @@ constexpr uint32_t TURQUOISE = 0x018384ff;
 constexpr int WINDOW_PIXEL_WIDTH = 1920;
 constexpr int WINDOW_PIXEL_HEIGHT = 1080;
 
+constexpr int CONFIG_PIXEL_WIDTH = WINDOW_PIXEL_HEIGHT / 2;
+constexpr int CONFIG_PIXEL_HEIGHT = WINDOW_PIXEL_HEIGHT / 2;
+
 // info panel
 constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;
@@ -38,6 +41,9 @@ constexpr int REMAINING_FLAGS_PAD = 0.05 * INFO_PANEL_HEIGHT;
 
 constexpr int TIMER_X = WINDOW_PIXEL_WIDTH - REMAINING_FLAGS_X - 2 * config::INFO_PANEL_BUTTONS_HEIGHT;
 constexpr int TIMER_Y = REMAINING_FLAGS_Y;
+
+constexpr int CONFIG_BUTTON_X = TIMER_X - INFO_PANEL_BUTTONS_HEIGHT * 2;
+constexpr int CONFIG_BUTTON_Y = RESET_BUTTON_Y;
 
 // game area
 constexpr int GAME_AREA_WIDTH = WINDOW_PIXEL_WIDTH - 2 * FRAME_WIDTH;

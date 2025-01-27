@@ -30,7 +30,9 @@ public:
   int getNumFlags() { return numFlags; }
   int getRemainingFlags() { return numMines - numFlags; }
   int getSecondsElapsed() { return secondsElapsed; }
-  int getIsResetButtonPressed() { return isResetButtonPressed; }
+  bool getIsResetButtonPressed() { return isResetButtonPressed; }
+  bool getIsConfigButtonPressed() { return isConfigButtonPressed; }
+  bool getShowConfigButton() { return showConfigWindow; };
 
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);
@@ -45,6 +47,8 @@ private:
   int secondsElapsed = 0;
   bool isFirstClick = true;
   bool isResetButtonPressed = false;
+  bool isConfigButtonPressed = false;
+  bool showConfigWindow = false;
 
   // clang-format off
   const std::array<std::pair<int, int>, 8> ADJACENCY_OFFSETS = {{
@@ -59,5 +63,5 @@ private:
   void revealAdjacentCells(const int row, const int col);
   void floodFillEmptyCells(const int row, const int col);
   void floodFillEmptyCellsRecursive(const int row, const int col, std::set<std::pair<int, int>> &visited);
-  bool updateGameState(SDL_Event &);
+  bool updateGameState(SDL_Event &event);
 };

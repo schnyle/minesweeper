@@ -1,6 +1,7 @@
 #include <Minesweeper.hpp>
 #include <SDL.h>
 #include <config.hpp>
+#include <iostream>
 #include <random>
 #include <set>
 #include <utility>
@@ -256,6 +257,11 @@ bool Minesweeper::updateGameState(SDL_Event &event)
                              cursorY >= config::RESET_BUTTON_Y &&
                              cursorY < config::RESET_BUTTON_Y + config::INFO_PANEL_BUTTONS_HEIGHT;
 
+  const bool inConfigButton = cursorX >= config::CONFIG_BUTTON_X &&
+                              cursorX < config::CONFIG_BUTTON_X + config::INFO_PANEL_BUTTONS_HEIGHT &&
+                              cursorY >= config::CONFIG_BUTTON_Y &&
+                              cursorY < config::CONFIG_BUTTON_Y + config::INFO_PANEL_BUTTONS_HEIGHT;
+
   const int gameAreaX = config::FRAME_WIDTH + config::GRID_AREA_X_PAD;
   const int gameAreaY = config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH + config::GRID_AREA_Y_PAD;
 
@@ -292,6 +298,11 @@ bool Minesweeper::updateGameState(SDL_Event &event)
       isResetButtonPressed = true;
     }
 
+    if (inConfigButton && event.button.button == SDL_BUTTON_LEFT)
+    {
+      isConfigButtonPressed = true;
+    }
+
     break;
   }
 
@@ -301,6 +312,13 @@ bool Minesweeper::updateGameState(SDL_Event &event)
     {
       reset();
     }
+
+    if (inConfigButton && isConfigButtonPressed)
+    {
+      showConfigWindow = !showConfigWindow;
+    }
+
+    isConfigButtonPressed = false;
     isResetButtonPressed = false;
     break;
   }
