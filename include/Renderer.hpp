@@ -27,7 +27,9 @@ private:
   SDL_Renderer *renderer;
   SDL_Texture *texture;
 
+  void initSDL();
   void renderFrame();
   bool updateGameState(Game &, SDL_Event &);
-  void updateFrameBuffer(Game &);
+  void updateInterface(Game &);
+  void updateGameArea(Game &);
 };

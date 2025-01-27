@@ -1,5 +1,6 @@
 #include <Renderer.hpp>
 #include <SpriteFactory.hpp>
+#include <algorithm>
 #include <chrono>
 #include <config.hpp>
 #include <iostream>
@@ -7,37 +8,9 @@
 
 #include <cstring>
 
-Renderer::Renderer() : frameBuffer(nullptr), window(nullptr), renderer(nullptr), texture(nullptr)
+Renderer::Renderer()
 {
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
-  {
-    std::cout << "error initializing SDL: " << SDL_GetError() << std::endl;
-  }
-
-  window = SDL_CreateWindow(
-      "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
-  if (!window)
-  {
-    std::cout << "error creating window: " << SDL_GetError() << std::endl;
-  }
-
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  if (!renderer)
-  {
-    std::cout << "error getting renderer: " << SDL_GetError() << std::endl;
-  }
-
-  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
-  if (!texture)
-  {
-    std::cout << "error getting texture: " << SDL_GetError() << std::endl;
-  }
-
-  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
-  if (!frameBuffer)
-  {
-    std::cout << "error allocating frame buffer" << std::endl;
-  }
+  initSDL();
 
   SpriteFactory::buffInsertInterface(frameBuffer.get(), WIDTH, WIDTH * HEIGHT);
 
@@ -88,7 +61,8 @@ void Renderer::run(Game &game)
     }
     lastTime = currentTime;
 
-    updateFrameBuffer(game);
+    updateInterface(game);
+    updateGameArea(game);
     renderFrame();
 
     auto frameTicks = SDL_GetTicks() - frameStart;
@@ -99,12 +73,45 @@ void Renderer::run(Game &game)
   }
 }
 
+void Renderer::initSDL()
+{
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+  {
+    std::cout << "error initializing SDL: " << SDL_GetError() << std::endl;
+  }
+
+  window = SDL_CreateWindow(
+      "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+  if (!window)
+  {
+    std::cout << "error creating window: " << SDL_GetError() << std::endl;
+  }
+
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (!renderer)
+  {
+    std::cout << "error getting renderer: " << SDL_GetError() << std::endl;
+  }
+
+  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+  if (!texture)
+  {
+    std::cout << "error getting texture: " << SDL_GetError() << std::endl;
+  }
+
+  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
+  if (!frameBuffer)
+  {
+    std::cout << "error allocating frame buffer" << std::endl;
+  }
+}
+
 void Renderer::renderFrame()
 {
   void *pixels;
   int pitch;
-  SDL_LockTexture(texture, nullptr, &pixels, &pitch);
 
+  SDL_LockTexture(texture, nullptr, &pixels, &pitch);
   std::memcpy(pixels, frameBuffer.get(), WIDTH * HEIGHT * sizeof(uint32_t));
 
   SDL_UnlockTexture(texture);
@@ -182,7 +189,7 @@ bool Renderer::updateGameState(Game &game, SDL_Event &event)
   return true;
 }
 
-void Renderer::updateFrameBuffer(Game &game)
+void Renderer::updateInterface(Game &game)
 {
   // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
@@ -208,8 +215,10 @@ void Renderer::updateFrameBuffer(Game &game)
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
       config::INFO_PANEL_BUTTONS_HEIGHT,
       game.getSecondsElapsed());
+}
 
-  // game area
+void Renderer::updateGameArea(Game &game)
+{
   for (int row = 0; row < config::GRID_HEIGHT; ++row)
   {
     for (int col = 0; col < config::GRID_WIDTH; ++col)
