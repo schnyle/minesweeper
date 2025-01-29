@@ -2,6 +2,7 @@
 
 #include <Minesweeper.hpp>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <SpriteFactory.hpp>
 #include <config.hpp>
 #include <memory>
@@ -35,6 +36,8 @@ private:
   SDL_Renderer *configRenderer = nullptr;
   SDL_Texture *configTexture = nullptr;
   SDL_Surface *configSurface = nullptr;
+
+  TTF_Font *font;
 
   void initGameWindow();
   void initConfigWindow();

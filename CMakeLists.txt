@@ -5,6 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra)
 
 find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 add_executable(minesweeper
   src/main.cpp
@@ -22,3 +23,4 @@ target_include_directories(minesweeper
 )
 
 target_link_libraries(minesweeper PRIVATE SDL2::SDL2)
+target_link_libraries(minesweeper PRIVATE SDL2_ttf::SDL2_ttf)

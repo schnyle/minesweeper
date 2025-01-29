@@ -8,11 +8,25 @@
 #include <iostream>
 #include <memory>
 
+#include <SDL.h>
+#include <SDL_ttf.h>
+
 Renderer::Renderer()
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
   {
     std::cout << "error initializing SDL: " << SDL_GetError() << std::endl;
+  }
+
+  if (TTF_Init() < 0)
+  {
+    std::cout << "error initializing SDL TTF: " << TTF_GetError() << std::endl;
+  }
+
+  font = TTF_OpenFont("UbuntuMono-B.ttf", 24);
+  if (!font)
+  {
+    std::cout << "failed to load font: " << TTF_GetError() << std::endl;
   }
 
   initGameWindow();
@@ -64,16 +78,21 @@ void Renderer::initGameWindow()
 void Renderer::initConfigWindow()
 {
   configWindow = SDL_CreateWindow(
-      "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, CONFIG_WIDTH, CONFIG_HEIGHT, SDL_WINDOW_HIDDEN);
+      "Minesweeper Settings",
+      SDL_WINDOWPOS_CENTERED,
+      SDL_WINDOWPOS_CENTERED,
+      CONFIG_WIDTH,
+      CONFIG_HEIGHT,
+      SDL_WINDOW_HIDDEN);
   if (!configWindow)
   {
     std::cout << "error creating window: " << SDL_GetError() << std::endl;
   }
 
-  configSurface = SDL_GetWindowSurface(configWindow);
-  if (!configSurface)
+  configRenderer = SDL_CreateRenderer(configWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  if (!configRenderer)
   {
-    std::cout << "error getting surface: " << SDL_GetError() << std::endl;
+    std::cout << "error getting config renderer: " << SDL_GetError() << std::endl;
   }
 
   configWindowID = SDL_GetWindowID(configWindow);
@@ -183,9 +202,16 @@ void Renderer::updateConfigWindow(Minesweeper &game)
         initConfigWindow();
       }
 
+      SDL_Surface *textSurface = TTF_RenderText_Solid(font, "hello", {255, 0, 0, 255});
+
+      SDL_Texture *textTexture = SDL_CreateTextureFromSurface(configRenderer, textSurface);
+
+      SDL_Rect textRect = {0, 0, textSurface->w, textSurface->h};
+
+      SDL_RenderCopy(configRenderer, textTexture, nullptr, &textRect);
+
+      SDL_RenderPresent(configRenderer);
       SDL_ShowWindow(configWindow);
-      SDL_FillRect(configSurface, nullptr, SDL_MapRGB(configSurface->format, 255, 0, 0));
-      SDL_UpdateWindowSurface(configWindow);
     }
     else
     {
