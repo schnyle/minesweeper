@@ -24,7 +24,7 @@ Renderer::Renderer()
   }
 
   font = TTF_OpenFont("UbuntuMono-B.ttf", 24);
-  if (!font)
+  if (font == nullptr)
   {
     std::cout << "failed to load font: " << TTF_GetError() << std::endl;
   }
@@ -48,6 +48,10 @@ Renderer::~Renderer()
   SDL_DestroyRenderer(gameRenderer);
   SDL_DestroyWindow(gameWindow);
   SDL_DestroyWindow(configWindow);
+
+  TTF_CloseFont(font);
+  TTF_Quit();
+
   SDL_Quit();
 }
 
@@ -83,14 +87,14 @@ void Renderer::initConfigWindow()
       SDL_WINDOWPOS_CENTERED,
       CONFIG_WIDTH,
       CONFIG_HEIGHT,
-      SDL_WINDOW_HIDDEN);
-  if (!configWindow)
+      SDL_WINDOW_SHOWN);
+  if (configWindow == nullptr)
   {
     std::cout << "error creating window: " << SDL_GetError() << std::endl;
   }
 
   configRenderer = SDL_CreateRenderer(configWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  if (!configRenderer)
+  if (configRenderer == nullptr)
   {
     std::cout << "error getting config renderer: " << SDL_GetError() << std::endl;
   }
@@ -202,16 +206,31 @@ void Renderer::updateConfigWindow(Minesweeper &game)
         initConfigWindow();
       }
 
+      SDL_SetRenderDrawColor(configRenderer, 255, 255, 255, 255);
+      SDL_RenderClear(configRenderer);
+
       SDL_Surface *textSurface = TTF_RenderText_Solid(font, "hello", {255, 0, 0, 255});
+      if (textSurface == nullptr)
+      {
+        std::cout << "error creating text surface: " << TTF_GetError() << std::endl;
+        return;
+      }
 
       SDL_Texture *textTexture = SDL_CreateTextureFromSurface(configRenderer, textSurface);
+      if (textTexture == nullptr)
+      {
+        std::cout << "error creating text texture: " << TTF_GetError() << std::endl;
+        return;
+      }
 
       SDL_Rect textRect = {0, 0, textSurface->w, textSurface->h};
-
       SDL_RenderCopy(configRenderer, textTexture, nullptr, &textRect);
 
       SDL_RenderPresent(configRenderer);
       SDL_ShowWindow(configWindow);
+
+      SDL_DestroyTexture(textTexture);
+      SDL_FreeSurface(textSurface);
     }
     else
     {
