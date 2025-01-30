@@ -31,7 +31,7 @@ void GameLoop::handleEvents()
       isRunning = false;
     }
 
-    if (event.window.windowID == renderer.gameWindowID)
+    if (event.window.windowID == renderer.gameWindow.getWindowID())
     {
       if (!game.updateGameState(event))
       {
@@ -61,8 +61,7 @@ void GameLoop::updateTimer(Uint32 &lastTime, Uint32 &timerAccumulator)
 
 void GameLoop::render()
 {
-  renderer.updateInterface(game);
-  renderer.updateGameArea(game);
+  renderer.gameWindow.updateFrameBuffer(game);
   renderer.updateConfigWindow(game);
   renderer.renderFrame();
 }

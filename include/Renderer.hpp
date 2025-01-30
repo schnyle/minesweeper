@@ -7,6 +7,8 @@
 #include <config.hpp>
 #include <memory>
 
+#include "window/GameWindow.hpp"
+
 class Renderer
 {
   friend class GameLoop;
@@ -26,10 +28,7 @@ private:
   std::unique_ptr<SpriteFactory::Sprites> sprites;
   std::unique_ptr<uint32_t[]> frameBuffer;
 
-  Uint32 gameWindowID;
-  SDL_Window *gameWindow = nullptr;
-  SDL_Renderer *gameRenderer = nullptr;
-  SDL_Texture *gameTexture = nullptr;
+  GameWindow gameWindow;
 
   Uint32 configWindowID;
   SDL_Window *configWindow = nullptr;
@@ -40,10 +39,7 @@ private:
   TTF_Font *font24;
   TTF_Font *font48;
 
-  void initGameWindow();
   void initConfigWindow();
   void renderFrame();
-  void updateInterface(Minesweeper &);
-  void updateGameArea(Minesweeper &);
   void updateConfigWindow(Minesweeper &);
 };

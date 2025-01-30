@@ -201,6 +201,17 @@ void SpriteFactory::buffInsertTimer(
   }
 }
 
+void SpriteFactory::copySprite(uint32_t *buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y)
+{
+  for (int row = 0; row < spriteWidth; ++row)
+  {
+    const auto sourceRow = sprite + row * spriteWidth;
+    const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
+    const auto destinationRow = buff + rowColToWindowIndex(row + y, x);
+    std::copy(sourceRow, sourceRowEnd, destinationRow);
+  }
+}
+
 void SpriteFactory::copySprite(
     std::unique_ptr<uint32_t[]> &buff,
     const uint32_t *sprite,
@@ -208,13 +219,7 @@ void SpriteFactory::copySprite(
     const int x,
     const int y)
 {
-  for (int row = 0; row < spriteWidth; ++row)
-  {
-    const auto sourceRow = sprite + row * spriteWidth;
-    const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
-    const auto destinationRow = buff.get() + rowColToWindowIndex(row + y, x);
-    std::copy(sourceRow, sourceRowEnd, destinationRow);
-  }
+  copySprite(buff.get(), sprite, spriteWidth, x, y);
 }
 
 // private

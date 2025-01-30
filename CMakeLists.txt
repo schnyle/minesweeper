@@ -11,6 +11,7 @@ set(SOURCES
   src/main.cpp
   src/Minesweeper.cpp
   src/Renderer.cpp
+  src/window/GameWindow.cpp
   src/GameLoop.cpp
   src/SpriteFactory.cpp
 )
@@ -32,6 +33,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/window
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_BINARY_DIR}/generated
