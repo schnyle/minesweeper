@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 
+#include "paths.h"
 #include <SDL.h>
 #include <SDL_ttf.h>
 
@@ -23,7 +24,8 @@ Renderer::Renderer()
     std::cout << "error initializing SDL TTF: " << TTF_GetError() << std::endl;
   }
 
-  font = TTF_OpenFont("UbuntuMono-B.ttf", 24);
+  const char *fontPath = PROJECT_ASSETS_DIR "/UbuntuMono-B.ttf";
+  font = TTF_OpenFont(fontPath, 24);
   if (font == nullptr)
   {
     std::cout << "failed to load font: " << TTF_GetError() << std::endl;
