@@ -7,14 +7,6 @@ add_compile_options(-Wall -Wextra)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-get_filename_component(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
-set(PROJECT_ASSETS_DIR "${PROJECT_ROOT_DIR}/assets")
-
-configure_file(
-  "${PROJECT_ROOT_DIR}/cmake/paths.h.in"
-  "${CMAKE_BINARY_DIR}/generated/paths.h"
-)
-
 set(SOURCES
   src/main.cpp
   src/Minesweeper.cpp
@@ -23,7 +15,17 @@ set(SOURCES
   src/SpriteFactory.cpp
 )
 
-include_directories("${CMAKE_BINARY_DIR}/generated")
+# setup font embedding
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated")
+add_custom_command(
+  OUTPUT "${CMAKE_BINARY_DIR}/generated/font.h"
+  COMMAND xxd -i assets/UbuntuMono-B.ttf > "${CMAKE_BINARY_DIR}/generated/font.h"
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  DEPENDS "${CMAKE_SOURCE_DIR}/assets/UbuntuMono-B.ttf"
+)
+add_custom_target(generate_font_header
+  DEPENDS "${CMAKE_BINARY_DIR}/generated/font.h"
+)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -32,8 +34,13 @@ target_include_directories(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-  $
+  ${CMAKE_BINARY_DIR}/generated
 )
 
-target_link_libraries(minesweeper PRIVATE SDL2::SDL2)
-target_link_libraries(minesweeper PRIVATE SDL2_ttf::SDL2_ttf)
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
+  SDL2::SDL2
+  SDL2_ttf::SDL2_ttf
+)
+
+add_dependencies(${PROJECT_NAME} generate_font_header)

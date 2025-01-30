@@ -37,7 +37,8 @@ private:
   SDL_Texture *configTexture = nullptr;
   SDL_Surface *configSurface = nullptr;
 
-  TTF_Font *font;
+  TTF_Font *font24;
+  TTF_Font *font48;
 
   void initGameWindow();
   void initConfigWindow();

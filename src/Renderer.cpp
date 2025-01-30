@@ -8,7 +8,7 @@
 #include <iostream>
 #include <memory>
 
-#include "paths.h"
+#include "font.h"
 #include <SDL.h>
 #include <SDL_ttf.h>
 
@@ -24,9 +24,10 @@ Renderer::Renderer()
     std::cout << "error initializing SDL TTF: " << TTF_GetError() << std::endl;
   }
 
-  const char *fontPath = PROJECT_ASSETS_DIR "/UbuntuMono-B.ttf";
-  font = TTF_OpenFont(fontPath, 24);
-  if (font == nullptr)
+  SDL_RWops *rw = SDL_RWFromMem(assets_UbuntuMono_B_ttf, assets_UbuntuMono_B_ttf_len);
+  font24 = TTF_OpenFontRW(rw, 0, 24);
+  font48 = TTF_OpenFontRW(rw, 0, 48);
+  if (font24 == nullptr || font48 == nullptr)
   {
     std::cout << "failed to load font: " << TTF_GetError() << std::endl;
   }
@@ -51,7 +52,8 @@ Renderer::~Renderer()
   SDL_DestroyWindow(gameWindow);
   SDL_DestroyWindow(configWindow);
 
-  TTF_CloseFont(font);
+  TTF_CloseFont(font24);
+  TTF_CloseFont(font48);
   TTF_Quit();
 
   SDL_Quit();
@@ -211,7 +213,7 @@ void Renderer::updateConfigWindow(Minesweeper &game)
       SDL_SetRenderDrawColor(configRenderer, 255, 255, 255, 255);
       SDL_RenderClear(configRenderer);
 
-      SDL_Surface *textSurface = TTF_RenderText_Solid(font, "hello", {255, 0, 0, 255});
+      SDL_Surface *textSurface = TTF_RenderText_Solid(font24, "hello", {255, 0, 0, 255});
       if (textSurface == nullptr)
       {
         std::cout << "error creating text surface: " << TTF_GetError() << std::endl;
