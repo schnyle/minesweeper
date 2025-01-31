@@ -1,6 +1,8 @@
 #include <SpriteFactory.hpp>
+#include <cmath>
 #include <config.hpp>
 #include <memory>
+#include <stdexcept>
 
 SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
 {

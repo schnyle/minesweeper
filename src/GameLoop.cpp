@@ -39,7 +39,7 @@ void GameLoop::handleEvents()
       }
     }
 
-    if (event.window.windowID == renderer.configWindowID)
+    if (event.window.windowID == renderer.settingsWindow.getWindowID())
     {
     }
   }

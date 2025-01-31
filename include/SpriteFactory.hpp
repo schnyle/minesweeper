@@ -1,10 +1,11 @@
 #pragma once
 
-#include <config.hpp>
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <stdexcept>
+#include <utility>
+
+#include "config.hpp"
 
 class SpriteFactory
 {
