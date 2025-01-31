@@ -11,7 +11,7 @@ SettingsWindow::SettingsWindow()
 {
   if (TTF_Init() < 0)
   {
-    std::cout << "error initializing SDL TTF: " << TTF_GetError() << std::endl;
+    std::cerr << "error initializing SDL TTF: " << TTF_GetError() << std::endl;
   }
 
   SDL_RWops *rw = SDL_RWFromMem(assets_UbuntuMono_B_ttf, assets_UbuntuMono_B_ttf_len);
@@ -23,16 +23,7 @@ SettingsWindow::SettingsWindow()
   }
 }
 
-SettingsWindow::~SettingsWindow()
-{
-  SDL_DestroyTexture(texture);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-
-  TTF_Quit();
-}
-
-void SettingsWindow::init(uint32_t *frameBuffer)
+void SettingsWindow::init()
 {
   WIDTH = config::CONFIG_PIXEL_WIDTH;
   HEIGHT = config::CONFIG_PIXEL_HEIGHT;
@@ -41,21 +32,19 @@ void SettingsWindow::init(uint32_t *frameBuffer)
       "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
   if (window == nullptr)
   {
-    std::cout << "error creating window: " << SDL_GetError() << std::endl;
+    std::cerr << "error creating window: " << SDL_GetError() << std::endl;
   }
 
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (renderer == nullptr)
   {
-    std::cout << "error getting config renderer: " << SDL_GetError() << std::endl;
+    std::cerr << "error getting config renderer: " << SDL_GetError() << std::endl;
   }
 
   windowID = SDL_GetWindowID(window);
 }
 
-void SettingsWindow::updateFrameBuffer(Minesweeper &game) {}
-
-void SettingsWindow::updateConfigWindow(Minesweeper &game)
+void SettingsWindow::update(Minesweeper &game)
 {
   if (showConfigWindow != game.getShowConfigButton())
   {
@@ -64,24 +53,23 @@ void SettingsWindow::updateConfigWindow(Minesweeper &game)
     {
       if (window == nullptr)
       {
-        uint32_t *x;
-        init(x);
+        init();
       }
 
       if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0)
       {
-        std::cout << "error setting render draw color: " << SDL_GetError() << std::endl;
+        std::cerr << "error setting render draw color: " << SDL_GetError() << std::endl;
       };
 
       if (SDL_RenderClear(renderer) < 0)
       {
-        std::cout << "error calling RenderClear: " << SDL_GetError() << std::endl;
+        std::cerr << "error calling RenderClear: " << SDL_GetError() << std::endl;
       };
 
       SDL_Surface *textSurface = TTF_RenderText_Solid(font24, "hello", {255, 0, 0, 255});
       if (textSurface == nullptr)
       {
-        std::cout << "error creating text surface: " << TTF_GetError() << std::endl;
+        std::cerr << "error creating text surface: " << TTF_GetError() << std::endl;
         return;
       }
 
@@ -92,7 +80,7 @@ void SettingsWindow::updateConfigWindow(Minesweeper &game)
       SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
       if (textTexture == nullptr)
       {
-        std::cout << "error creating text texture: " << TTF_GetError() << std::endl;
+        std::cerr << "error creating text texture: " << TTF_GetError() << std::endl;
         return;
       }
 

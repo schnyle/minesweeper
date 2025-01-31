@@ -2,16 +2,20 @@
 
 #include <Minesweeper.hpp>
 #include <cstdint>
+#include <memory>
 
 #include "Window.hpp"
 
 class GameWindow : public Window
 {
 public:
-  ~GameWindow();
+  GameWindow();
 
-  void init(uint32_t *frameBuffer) override;
-  void updateFrameBuffer(Minesweeper &) override;
+  void init() override;
+  void update(Minesweeper &) override;
+
+private:
+  std::unique_ptr<uint32_t[]> frameBuffer;
 
   void updateInterface(Minesweeper &);
   void updateGameArea(Minesweeper &);

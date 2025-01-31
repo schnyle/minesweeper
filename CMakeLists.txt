@@ -10,7 +10,6 @@ find_package(SDL2_ttf REQUIRED)
 set(SOURCES
   src/main.cpp
   src/Minesweeper.cpp
-  src/Renderer.cpp
   src/window/GameWindow.cpp
   src/window/SettingsWindow.cpp
   src/GameLoop.cpp

@@ -3,19 +3,25 @@
 #include <SpriteFactory.hpp>
 #include <config.hpp>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 
-GameWindow::~GameWindow()
-{
-  SDL_DestroyTexture(texture);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-}
-
-void GameWindow::init(uint32_t *fb)
+GameWindow::GameWindow()
 {
   WIDTH = config::WINDOW_PIXEL_WIDTH;
   HEIGHT = config::WINDOW_PIXEL_HEIGHT;
+
+  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
+  if (!frameBuffer)
+  {
+    std::cerr << "error allocating frame buffer" << std::endl;
+  }
+
+  SpriteFactory::buffInsertInterface(frameBuffer.get(), WIDTH, WIDTH * HEIGHT);
+}
+
+void GameWindow::init()
+{
 
   window = SDL_CreateWindow(
       "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
@@ -40,21 +46,29 @@ void GameWindow::init(uint32_t *fb)
   }
 
   windowID = SDL_GetWindowID(window);
-
-  frameBuffer = fb;
 };
 
-void GameWindow::updateFrameBuffer(Minesweeper &game)
+void GameWindow::update(Minesweeper &game)
 {
   updateInterface(game);
   updateGameArea(game);
+
+  void *pixels;
+  int pitch;
+
+  SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+  std::memcpy(pixels, frameBuffer.get(), WIDTH * HEIGHT * sizeof(uint32_t));
+
+  SDL_UnlockTexture(texture);
+  SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+  SDL_RenderPresent(renderer);
 };
 
 void GameWindow::updateInterface(Minesweeper &game)
 {
   // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
-      frameBuffer,
+      frameBuffer.get(),
       WIDTH,
       config::REMAINING_FLAGS_X,
       config::REMAINING_FLAGS_Y,
@@ -78,7 +92,7 @@ void GameWindow::updateInterface(Minesweeper &game)
 
   // timer
   SpriteFactory::buffInsertRemainingFlags(
-      frameBuffer,
+      frameBuffer.get(),
       WIDTH,
       config::TIMER_X,
       config::TIMER_Y,

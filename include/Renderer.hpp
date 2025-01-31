@@ -5,6 +5,7 @@
 #include <SDL_ttf.h>
 #include <SpriteFactory.hpp>
 #include <config.hpp>
+#include <iostream>
 #include <memory>
 
 #include "window/GameWindow.hpp"
@@ -15,8 +16,20 @@ class Renderer
   friend class GameLoop;
 
 public:
-  Renderer();
-  ~Renderer();
+  Renderer()
+  {
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    {
+      std::cerr << "error initializing SDL: " << SDL_GetError() << std::endl;
+    }
+
+    gameWindow.init();
+  };
+  ~Renderer()
+  {
+    SDL_Quit();
+    TTF_Quit();
+  };
 
 private:
   static const int WIDTH = config::WINDOW_PIXEL_WIDTH;

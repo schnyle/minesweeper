@@ -8,12 +8,9 @@ class SettingsWindow : public Window
 {
 public:
   SettingsWindow();
-  ~SettingsWindow();
 
-  void init(uint32_t *frameBuffer) override;
-  void updateFrameBuffer(Minesweeper &) override;
-
-  void updateConfigWindow(Minesweeper &);
+  void init() override;
+  void update(Minesweeper &) override;
 
 private:
   TTF_Font *font24;
