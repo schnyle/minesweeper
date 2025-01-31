@@ -62,7 +62,7 @@ void GameLoop::updateTimer(Uint32 &lastTime, Uint32 &timerAccumulator)
 void GameLoop::render()
 {
   renderer.gameWindow.updateFrameBuffer(game);
-  renderer.updateConfigWindow(game);
+  renderer.settingsWindow.updateConfigWindow(game);
   renderer.renderFrame();
 }
 

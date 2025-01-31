@@ -12,6 +12,7 @@ set(SOURCES
   src/Minesweeper.cpp
   src/Renderer.cpp
   src/window/GameWindow.cpp
+  src/window/SettingsWindow.cpp
   src/GameLoop.cpp
   src/SpriteFactory.cpp
 )

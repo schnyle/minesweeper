@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "window/GameWindow.hpp"
+#include "window/SettingsWindow.hpp"
 
 class Renderer
 {
@@ -29,6 +30,7 @@ private:
   std::unique_ptr<uint32_t[]> frameBuffer;
 
   GameWindow gameWindow;
+  SettingsWindow settingsWindow;
 
   Uint32 configWindowID;
   SDL_Window *configWindow = nullptr;
@@ -39,7 +41,5 @@ private:
   TTF_Font *font24;
   TTF_Font *font48;
 
-  void initConfigWindow();
   void renderFrame();
-  void updateConfigWindow(Minesweeper &);
 };
