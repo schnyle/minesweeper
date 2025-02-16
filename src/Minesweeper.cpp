@@ -97,7 +97,7 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
   numFlags = 0;
   secondsElapsed = 0;
 
-  for (size_t i = 0; i < config::GRID_HEIGHT * config::GRID_WIDTH; ++i)
+  for (int i = 0; i < config::GRID_HEIGHT * config::GRID_WIDTH; ++i)
   {
     bool isMine = dist(rg); // random
     bool isHidden = true;

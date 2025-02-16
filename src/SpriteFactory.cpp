@@ -56,8 +56,8 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
       buffWidth,
       0,
       0,
-      config::WINDOW_PIXEL_WIDTH,
-      config::WINDOW_PIXEL_HEIGHT,
+      config::GAME_WINDOW_PIXEL_WIDTH,
+      config::GAME_WINDOW_PIXEL_HEIGHT,
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -67,8 +67,8 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
       buffWidth,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-      config::WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::GAME_WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::DARK_GREY,
       config::GREY,
       config::LIGHT_GREY);
@@ -79,7 +79,7 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
       buffWidth,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::FRAME_WIDTH,
       config::LIGHT_GREY,
       config::GREY,
@@ -90,7 +90,7 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
       buffWidth,
       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
-      config::WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
       config::GREY);
   // top-left corner
@@ -108,7 +108,7 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
   buffInsertRectangle(
       buff,
       buffWidth,
-      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+      config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
@@ -126,7 +126,7 @@ void SpriteFactory::buffInsertInterface(uint32_t *buff, const int buffWidth, con
   buffInsert3DCorner(
       buff,
       buffWidth,
-      config::WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+      config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
       config::CELL_BORDER_WIDTH_3D,
       config::CELL_BORDER_WIDTH_3D,
@@ -721,7 +721,10 @@ SpriteFactory::DigitSegments SpriteFactory::intToDigitSegments(const int n)
   throw std::runtime_error("Error converting int to DigitSegments");
 }
 
-int SpriteFactory::rowColToWindowIndex(const int row, const int col) { return row * config::WINDOW_PIXEL_WIDTH + col; }
+int SpriteFactory::rowColToWindowIndex(const int row, const int col)
+{
+  return row * config::GAME_WINDOW_PIXEL_WIDTH + col;
+}
 
 int SpriteFactory::rowColToCellIndex(const int row, const int col) { return row * config::CELL_PIXEL_SIZE + col; }
 

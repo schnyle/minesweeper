@@ -29,11 +29,7 @@ public:
 
     config::DISPLAY_PIXEL_WIDTH = dm.w;
     config::DISPLAY_PIXEL_HEIGHT = dm.h;
-
-    config::WINDOW_PIXEL_WIDTH = dm.w * config::GAME_WINDOW_TO_DISPLAY_RATIO;
-    config::WINDOW_PIXEL_HEIGHT = dm.h * config::GAME_WINDOW_TO_DISPLAY_RATIO;
-
-    config::initialize();
+    config::update();
 
     return true;
   }
