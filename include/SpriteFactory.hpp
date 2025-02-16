@@ -20,6 +20,7 @@ public:
     uint32_t hidden[cellSpriteSize];
     uint32_t flag[cellSpriteSize];
     uint32_t mine[cellSpriteSize];
+    uint32_t clickedMine[cellSpriteSize];
     uint32_t zero[cellSpriteSize];
     uint32_t one[cellSpriteSize];
     uint32_t two[cellSpriteSize];
@@ -62,6 +63,7 @@ private:
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();
   void makeMineCellSprite();
+  void makeClickedMineCellSprite();
   void makeNumericSprite(uint32_t *buff, const int n, const uint32_t c);
   void makeOneSprite();
 
@@ -110,6 +112,7 @@ private:
       const int h,
       const int n,
       const int c);
+  static void buffInsertMine(uint32_t *buff, const int buffWidth, const uint32_t backgroundColor);
 
   struct DigitSegments
   {

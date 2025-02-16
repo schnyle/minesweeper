@@ -18,6 +18,7 @@ constexpr uint32_t LIGHT_GREY = 0xfefffeff;
 constexpr uint32_t PURPLE = 0x850085ff;
 constexpr uint32_t RED = 0xff0000ff;
 constexpr uint32_t TURQUOISE = 0x018384ff;
+constexpr uint32_t WHITE = 0xffffffff;
 
 constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;

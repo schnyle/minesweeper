@@ -13,6 +13,7 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   makeHiddenCellSprite();
   makeFlaggedCellSprite();
   makeMineCellSprite();
+  makeClickedMineCellSprite();
 
   makeOneSprite();
   makeNumericSprite(sprites->two, 2, config::GREEN);
@@ -359,107 +360,14 @@ void SpriteFactory::makeFlaggedCellSprite()
 void SpriteFactory::makeMineCellSprite()
 {
   auto &buff = sprites->mine;
-  buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::RED);
-  buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
-
-  // rest of this is AI - I'm too lazy to do more art for now
-
-  // Draw the central black circle of the mine
-  const int size = config::CELL_PIXEL_SIZE;
-  const int center = size / 2;
-  const int mineRadius = size / 4; // Mine circle radius
-  const int spikeThickness = 2;
-  for (int y = 0; y < size; y++)
-  {
-    for (int x = 0; x < size; x++)
-    {
-      int dx = x - center;
-      int dy = y - center;
-      if (dx * dx + dy * dy <= mineRadius * mineRadius)
-      {
-        buff[y * size + x] = 0xFF000000; // Black color
-      }
-    }
-  }
-
-  // Draw the central black circle of the mine
-  for (int y = 0; y < size; y++)
-  {
-    for (int x = 0; x < size; x++)
-    {
-      int dx = x - center;
-      int dy = y - center;
-      if (dx * dx + dy * dy <= mineRadius * mineRadius)
-      {
-        buff[y * size + x] = config::BLACK;
-      }
-    }
-  }
-
-  // Draw the 8 thicker spikes around the circle
-  const int spikeLength = mineRadius + 4;
-  const double directions[8][2] = {
-      {1.0, 0.0},
-      {0.707, 0.707},
-      {0.0, 1.0},
-      {-0.707, 0.707},
-      {-1.0, 0.0},
-      {-0.707, -0.707},
-      {0.0, -1.0},
-      {0.707, -0.707}};
-
-  const int halfThick = spikeThickness / 2;
-
-  for (const auto &dir : directions)
-  {
-    // Draw multiple parallel lines to create thickness
-    for (int offset = -halfThick; offset <= halfThick; offset++)
-    {
-      double perpX = -dir[1]; // Perpendicular vector for thickness
-      double perpY = dir[0];
-
-      int startX = center + static_cast<int>(perpX * offset);
-      int startY = center + static_cast<int>(perpY * offset);
-      int endX = startX + static_cast<int>(dir[0] * spikeLength);
-      int endY = startY + static_cast<int>(dir[1] * spikeLength);
-
-      // Draw line from start to end point
-      int dx = endX - startX;
-      int dy = endY - startY;
-      int steps = std::max(std::abs(dx), std::abs(dy));
-      if (steps == 0)
-        continue;
-
-      for (int i = 0; i <= steps; i++)
-      {
-        int x = startX + dx * i / steps;
-        int y = startY + dy * i / steps;
-
-        // Draw additional pixels for thickness
-        for (int px = -halfThick; px <= halfThick; px++)
-        {
-          for (int py = -halfThick; py <= halfThick; py++)
-          {
-            int finalX = x + px;
-            int finalY = y + py;
-            if (finalX >= 0 && finalX < size && finalY >= 0 && finalY < size)
-            {
-              // Only draw if we're outside the center circle
-              int distX = finalX - center;
-              int distY = finalY - center;
-              if (distX * distX + distY * distY >= mineRadius * mineRadius)
-              {
-                buff[finalY * size + finalX] = config::BLACK;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  buffInsertMine(buff, config::CELL_PIXEL_SIZE, config::GREY);
 }
+
+void SpriteFactory::makeClickedMineCellSprite()
+{
+  auto &buff = sprites->clickedMine;
+  buffInsertMine(buff, config::CELL_PIXEL_SIZE, config::RED);
+};
 
 void SpriteFactory::makeNumericSprite(uint32_t *buff, const int n, const uint32_t c)
 {
@@ -684,6 +592,59 @@ void SpriteFactory::buffInsertDigit(
   if (digitSegments.bottomRight)
   {
     buffInsertRectangle(buff, buffWidth, rightX, botVertY, segmentWidth, h / 2, c);
+  }
+}
+
+void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth, const uint32_t backgroundColor)
+{
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, backgroundColor);
+  buffInsert2DBorder(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+
+  const int size = buffWidth;
+  const int mineCenter = size / 2;
+  const int glintCenter = 7 * size / 16;
+  const int glintRadius = size / 20;
+  const int mineRadius = size / 4;
+  const int mineRadiusSqrd = mineRadius * mineRadius;
+  const double spikeThickness = 3;
+  const double spikeRadius = spikeThickness / std::sqrt(2);
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const int glintDx = x - glintCenter;
+      const int glintDy = y - glintCenter;
+      const bool glint = glintDx * glintDx + glintDy * glintDy <= glintRadius * glintRadius;
+
+      if (glint)
+      {
+        buff[y * size + x] = config::WHITE;
+        continue;
+      }
+
+      const int dx = x - mineCenter;
+      const int dy = y - mineCenter;
+
+      const bool inBounds = dx * dx + dy * dy <= size * size / 3 / 3;
+      if (!inBounds)
+      {
+        continue;
+      }
+
+      const bool circle = dx * dx + dy * dy <= mineRadiusSqrd;
+      const bool verticalLine = std::abs(dx) <= spikeThickness / 2;
+      const bool horizontalLine = std::abs(dy) <= spikeThickness / 2;
+      const bool positiveDiag = dy <= dx + spikeRadius && dy >= dx - spikeRadius;
+      const bool negativeDiag = dy <= -dx + spikeRadius && dy >= -dx - spikeRadius;
+
+      if (circle || verticalLine || horizontalLine || positiveDiag || negativeDiag)
+      {
+        buff[y * size + x] = config::BLACK;
+      }
+    }
   }
 }
 

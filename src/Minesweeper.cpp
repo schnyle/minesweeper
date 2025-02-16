@@ -32,6 +32,7 @@ void Minesweeper::handleLeftClick(const int row, const int col)
 
   if (cell.isMine) // will be gameover here
   {
+    cell.isClicked = true;
     ++numFlags;
     for (auto &xCell : minefield)
     {
@@ -159,7 +160,7 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
       }
     }
 
-    data[i] = {isMine, isHidden, isFlagged, data[i].nAdjacentMines};
+    data[i] = {isMine, isHidden, isFlagged, false, data[i].nAdjacentMines};
   }
 
   return data;

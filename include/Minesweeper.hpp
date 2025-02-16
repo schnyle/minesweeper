@@ -16,6 +16,7 @@ private:
     bool isMine;
     bool isHidden;
     bool isFlagged;
+    bool isClicked = false;
     unsigned int nAdjacentMines = 0;
   };
 

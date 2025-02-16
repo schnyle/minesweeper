@@ -68,10 +68,10 @@ void GameWindow::init()
   windowID = SDL_GetWindowID(window);
 };
 
-void GameWindow::update(Minesweeper &game)
+void GameWindow::update(Minesweeper &minesweeper)
 {
-  updateInterface(game);
-  updateGameArea(game);
+  updateInterface(minesweeper);
+  updateGameArea(minesweeper);
 
   void *pixels;
   int pitch;
@@ -85,7 +85,7 @@ void GameWindow::update(Minesweeper &game)
   SDL_RenderPresent(renderer);
 };
 
-void GameWindow::updateInterface(Minesweeper &game)
+void GameWindow::updateInterface(Minesweeper &minesweeper)
 {
   // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
@@ -95,15 +95,16 @@ void GameWindow::updateInterface(Minesweeper &game)
       config::REMAINING_FLAGS_Y,
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      game.getRemainingFlags());
+      minesweeper.getRemainingFlags());
 
   // reset button
-  const auto resetButtonSprite = game.getIsResetButtonPressed() ? sprites->pressedButton : sprites->raisedButton;
+  const auto resetButtonSprite = minesweeper.getIsResetButtonPressed() ? sprites->pressedButton : sprites->raisedButton;
   SpriteFactory::copySprite(
       frameBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 
   // config button
-  const auto configButtonSprite = game.getIsConfigButtonPressed() ? sprites->pressedButton : sprites->raisedButton;
+  const auto configButtonSprite = minesweeper.getIsConfigButtonPressed() ? sprites->pressedButton
+                                                                         : sprites->raisedButton;
   SpriteFactory::copySprite(
       frameBuffer,
       configButtonSprite,
@@ -119,7 +120,7 @@ void GameWindow::updateInterface(Minesweeper &game)
       config::TIMER_Y,
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      game.getSecondsElapsed());
+      minesweeper.getSecondsElapsed());
 }
 
 void GameWindow::updateGameArea(Minesweeper &game)
@@ -135,7 +136,7 @@ void GameWindow::updateGameArea(Minesweeper &game)
       const int y = gameAreaY + config::GRID_AREA_Y_PAD + row * config::CELL_PIXEL_SIZE;
 
       const int index = row * config::GRID_WIDTH + col;
-      const auto &[isMine, isHidden, isFlagged, nAdjacentMines] = game.getMinefield()[index];
+      const auto &[isMine, isHidden, isFlagged, isClicked, nAdjacentMines] = game.getMinefield()[index];
       uint32_t *sprite;
 
       if (isHidden)
@@ -151,7 +152,7 @@ void GameWindow::updateGameArea(Minesweeper &game)
       {
         if (isMine)
         {
-          sprite = sprites->mine;
+          sprite = isClicked ? sprites->clickedMine : sprites->mine;
         }
         else
         {
