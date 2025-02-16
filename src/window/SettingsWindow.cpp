@@ -25,8 +25,8 @@ SettingsWindow::SettingsWindow()
 
 void SettingsWindow::init()
 {
-  WIDTH = config::CONFIG_PIXEL_WIDTH;
-  HEIGHT = config::CONFIG_PIXEL_HEIGHT;
+  WIDTH = config::CONFIG_WINDOW_PIXEL_WIDTH;
+  HEIGHT = config::CONFIG_WINDOW_PIXEL_HEIGHT;
 
   window = SDL_CreateWindow(
       "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);

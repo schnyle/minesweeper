@@ -1,5 +1,5 @@
 # from project root:
-# sudo docker build -t minesweeper-windows-build build-tools/windows .
+# sudo docker build -t minesweeper-windows-build build-tools/windows
 # sudo docker run -v $(pwd):/src minesweeper-windows-build
 
 FROM debian:bullseye

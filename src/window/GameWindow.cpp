@@ -8,23 +8,31 @@
 
 GameWindow::GameWindow()
 {
-  WIDTH = config::WINDOW_PIXEL_WIDTH;
-  HEIGHT = config::WINDOW_PIXEL_HEIGHT;
-
-  frameBuffer = std::make_unique<uint32_t[]>(WIDTH * HEIGHT);
+  frameBuffer = std::make_unique<uint32_t[]>(config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
   if (!frameBuffer)
   {
     std::cerr << "error allocating frame buffer" << std::endl;
   }
 
-  SpriteFactory::buffInsertInterface(frameBuffer.get(), WIDTH, WIDTH * HEIGHT);
+  SpriteFactory::buffInsertInterface(
+      frameBuffer.get(), config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT);
 }
 
 void GameWindow::init()
 {
+  SDL_Rect bounds;
+  SDL_GetDisplayBounds(0, &bounds);
+
+  const int leftPad = (config::DISPLAY_PIXEL_WIDTH - config::WINDOW_PIXEL_WIDTH) / 2;
+  const int topPad = (config::DISPLAY_PIXEL_HEIGHT - config::WINDOW_PIXEL_HEIGHT) / 2;
+
+  const int windowX = bounds.x + leftPad;
+  const int windowY = bounds.y + topPad;
 
   window = SDL_CreateWindow(
-      "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+      "Minesweeper", windowX, windowY, config::WINDOW_PIXEL_WIDTH, config::WINDOW_PIXEL_HEIGHT, SDL_WINDOW_SHOWN);
+  SDL_SetWindowPosition(window, windowX, windowY);
+  SDL_ShowWindow(window);
 
   if (window == nullptr)
   {
@@ -38,7 +46,12 @@ void GameWindow::init()
     std::cerr << "error creating game window renderer: " << SDL_GetError() << std::endl;
   }
 
-  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+  texture = SDL_CreateTexture(
+      renderer,
+      SDL_PIXELFORMAT_RGBA8888,
+      SDL_TEXTUREACCESS_STREAMING,
+      config::WINDOW_PIXEL_WIDTH,
+      config::WINDOW_PIXEL_HEIGHT);
 
   if (texture == nullptr)
   {
@@ -57,7 +70,7 @@ void GameWindow::update(Minesweeper &game)
   int pitch;
 
   SDL_LockTexture(texture, nullptr, &pixels, &pitch);
-  std::memcpy(pixels, frameBuffer.get(), WIDTH * HEIGHT * sizeof(uint32_t));
+  std::memcpy(pixels, frameBuffer.get(), config::WINDOW_PIXEL_WIDTH * config::WINDOW_PIXEL_HEIGHT * sizeof(uint32_t));
 
   SDL_UnlockTexture(texture);
   SDL_RenderCopy(renderer, texture, nullptr, nullptr);
@@ -69,7 +82,7 @@ void GameWindow::updateInterface(Minesweeper &game)
   // remaining flags
   SpriteFactory::buffInsertRemainingFlags(
       frameBuffer.get(),
-      WIDTH,
+      config::WINDOW_PIXEL_WIDTH,
       config::REMAINING_FLAGS_X,
       config::REMAINING_FLAGS_Y,
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
@@ -93,7 +106,7 @@ void GameWindow::updateInterface(Minesweeper &game)
   // timer
   SpriteFactory::buffInsertRemainingFlags(
       frameBuffer.get(),
-      WIDTH,
+      config::WINDOW_PIXEL_WIDTH,
       config::TIMER_X,
       config::TIMER_Y,
       config::INFO_PANEL_BUTTONS_HEIGHT * 2,

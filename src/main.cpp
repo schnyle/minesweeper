@@ -4,9 +4,15 @@
 
 int main(int argc, char *argv[])
 {
+  if (!Renderer::initSDL())
+  {
+    return 1;
+  };
+
   Minesweeper game;
   Renderer renderer;
   GameLoop gameLoop(game, renderer);
   gameLoop.run();
+
   return 0;
 }

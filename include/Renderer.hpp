@@ -16,15 +16,30 @@ class Renderer
   friend class GameLoop;
 
 public:
-  Renderer()
+  static bool initSDL()
   {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
-      std::cerr << "error initializing SDL: " << SDL_GetError() << std::endl;
+      std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+      return false;
     }
 
-    gameWindow.init();
-  };
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+
+    config::DISPLAY_PIXEL_WIDTH = dm.w;
+    config::DISPLAY_PIXEL_HEIGHT = dm.h;
+
+    config::WINDOW_PIXEL_WIDTH = dm.w * config::GAME_WINDOW_TO_DISPLAY_RATIO;
+    config::WINDOW_PIXEL_HEIGHT = dm.h * config::GAME_WINDOW_TO_DISPLAY_RATIO;
+
+    config::initialize();
+
+    return true;
+  }
+
+  Renderer() { gameWindow.init(); };
+
   ~Renderer()
   {
     SDL_Quit();
