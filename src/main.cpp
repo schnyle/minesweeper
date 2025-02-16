@@ -2,7 +2,7 @@
 #include <Minesweeper.hpp>
 #include <Renderer.hpp>
 
-int main()
+int main(int argc, char *argv[])
 {
   Minesweeper game;
   Renderer renderer;

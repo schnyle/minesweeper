@@ -1,5 +1,5 @@
 #include <Minesweeper.hpp>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <config.hpp>
 #include <iostream>
 #include <random>

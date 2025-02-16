@@ -1,5 +1,5 @@
 #include <GameLoop.hpp>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 GameLoop::GameLoop(Minesweeper &g, Renderer &r) : game(g), renderer(r) {}
 

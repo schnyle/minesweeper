@@ -1,5 +1,5 @@
 #include <GameWindow.hpp>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <SpriteFactory.hpp>
 #include <config.hpp>
 #include <cstdint>
