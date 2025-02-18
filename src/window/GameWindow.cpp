@@ -139,14 +139,17 @@ void GameWindow::updateGameArea(Minesweeper &game)
       const auto &[isMine, isHidden, isFlagged, isClicked, nAdjacentMines] = game.getMinefield()[index];
       uint32_t *sprite;
 
-      if (isHidden)
+      if (isHidden && !isFlagged)
       {
         sprite = sprites->hidden;
-
-        if (isFlagged)
-        {
-          sprite = sprites->flag;
-        }
+      }
+      else if (isHidden && isFlagged && !isMine && game.getIsGameOver())
+      {
+        sprite = sprites->redXMine;
+      }
+      else if (isHidden && isFlagged)
+      {
+        sprite = sprites->flag;
       }
       else
       {

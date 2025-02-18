@@ -14,6 +14,7 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   makeFlaggedCellSprite();
   makeMineCellSprite();
   makeClickedMineCellSprite();
+  makeMineCellWithRedXSprite();
 
   makeOneSprite();
   makeNumericSprite(sprites->two, 2, config::GREEN);
@@ -360,14 +361,33 @@ void SpriteFactory::makeFlaggedCellSprite()
 void SpriteFactory::makeMineCellSprite()
 {
   auto &buff = sprites->mine;
-  buffInsertMine(buff, config::CELL_PIXEL_SIZE, config::GREY);
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+  buffInsert2DBorder(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+  buffInsertMine(buff, config::CELL_PIXEL_SIZE);
 }
 
 void SpriteFactory::makeClickedMineCellSprite()
 {
   auto &buff = sprites->clickedMine;
-  buffInsertMine(buff, config::CELL_PIXEL_SIZE, config::RED);
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::RED);
+  buffInsert2DBorder(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+  buffInsertMine(buff, config::CELL_PIXEL_SIZE);
 };
+
+void SpriteFactory::makeMineCellWithRedXSprite()
+{
+  auto &buff = sprites->redXMine;
+  buffInsertRectangle(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+  buffInsert2DBorder(
+      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+  buffInsertMine(buff, config::CELL_PIXEL_SIZE);
+  buffInsertRedX(buff, config::CELL_PIXEL_SIZE);
+}
 
 void SpriteFactory::makeNumericSprite(uint32_t *buff, const int n, const uint32_t c)
 {
@@ -595,19 +615,15 @@ void SpriteFactory::buffInsertDigit(
   }
 }
 
-void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth, const uint32_t backgroundColor)
+void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth)
 {
-  buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, backgroundColor);
-  buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
-
   const int size = buffWidth;
-  const int mineCenter = size / 2;
-  const int glintCenter = 7 * size / 16;
-  const int glintRadius = size / 20;
-  const int mineRadius = size / 4;
-  const int mineRadiusSqrd = mineRadius * mineRadius;
+  const double mineCenter = size / 2;
+  const double drawRadius = size / 3;
+  const double glintCenter = 7 * size / 16;
+  const double glintRadius = size / 20;
+  const double mineRadius = size / 4;
+  const double mineRadiusSqrd = mineRadius * mineRadius;
   const double spikeThickness = 3;
   const double spikeRadius = spikeThickness / std::sqrt(2);
 
@@ -615,8 +631,8 @@ void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth, const ui
   {
     for (int x = 0; x < size; x++)
     {
-      const int glintDx = x - glintCenter;
-      const int glintDy = y - glintCenter;
+      const double glintDx = x - glintCenter;
+      const double glintDy = y - glintCenter;
       const bool glint = glintDx * glintDx + glintDy * glintDy <= glintRadius * glintRadius;
 
       if (glint)
@@ -625,10 +641,10 @@ void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth, const ui
         continue;
       }
 
-      const int dx = x - mineCenter;
-      const int dy = y - mineCenter;
+      const double dx = x - mineCenter;
+      const double dy = y - mineCenter;
 
-      const bool inBounds = dx * dx + dy * dy <= size * size / 3 / 3;
+      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
       if (!inBounds)
       {
         continue;
@@ -643,6 +659,39 @@ void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth, const ui
       if (circle || verticalLine || horizontalLine || positiveDiag || negativeDiag)
       {
         buff[y * size + x] = config::BLACK;
+      }
+    }
+  }
+}
+
+void SpriteFactory::buffInsertRedX(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double mineCenter = size / 2;
+  const double drawRadius = size / 2 * 0.9;
+  const double diagThickness = 4;
+  const double diagRadius = diagThickness / std::sqrt(2);
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+
+      const double dx = x - mineCenter;
+      const double dy = y - mineCenter;
+
+      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
+      if (!inBounds)
+      {
+        continue;
+      }
+
+      const bool positiveDiag = dy <= dx + diagRadius && dy >= dx - diagRadius;
+      const bool negativeDiag = dy <= -dx + diagRadius && dy >= -dx - diagRadius;
+
+      if (positiveDiag || negativeDiag)
+      {
+        buff[y * size + x] = config::RED;
       }
     }
   }

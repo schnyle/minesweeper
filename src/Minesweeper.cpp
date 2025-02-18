@@ -188,21 +188,7 @@ void Minesweeper::revealAdjacentCells(const int row, const int col)
     const auto currentCell = minefield[rowColToIndex(currentRow, currentCol)];
     if (currentCell.isFlagged)
     {
-      if (currentCell.isMine)
-      {
-        ++numAdjacentFlags;
-      }
-      else
-      {
-        for (auto &cell : minefield)
-        {
-          if (cell.isMine)
-          {
-            cell.isHidden = false;
-          }
-        }
-        isGameOver = true;
-      }
+      ++numAdjacentFlags;
     }
     else if (currentCell.isHidden)
     {
@@ -211,17 +197,14 @@ void Minesweeper::revealAdjacentCells(const int row, const int col)
   }
 
   const bool allAdjacentMinesAreFlagged = numAdjacentFlags == minefield[rowColToIndex(row, col)].nAdjacentMines;
-  if (allAdjacentMinesAreFlagged)
+  if (!allAdjacentMinesAreFlagged)
   {
-    for (const auto &[currentRow, currentCol] : hidden)
-    {
-      const auto currentIndex = rowColToIndex(currentRow, currentCol);
-      minefield[currentIndex].isHidden = false;
-      if (minefield[currentIndex].nAdjacentMines == 0)
-      {
-        floodFillEmptyCells(currentRow, currentCol);
-      }
-    }
+    return;
+  }
+
+  for (const auto &[currentRow, currentCol] : hidden)
+  {
+    handleLeftClick(currentRow, currentCol);
   }
 }
 

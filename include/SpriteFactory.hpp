@@ -21,6 +21,7 @@ public:
     uint32_t flag[cellSpriteSize];
     uint32_t mine[cellSpriteSize];
     uint32_t clickedMine[cellSpriteSize];
+    uint32_t redXMine[cellSpriteSize];
     uint32_t zero[cellSpriteSize];
     uint32_t one[cellSpriteSize];
     uint32_t two[cellSpriteSize];
@@ -64,6 +65,7 @@ private:
   void makeFlaggedCellSprite();
   void makeMineCellSprite();
   void makeClickedMineCellSprite();
+  void makeMineCellWithRedXSprite();
   void makeNumericSprite(uint32_t *buff, const int n, const uint32_t c);
   void makeOneSprite();
 
@@ -112,7 +114,8 @@ private:
       const int h,
       const int n,
       const int c);
-  static void buffInsertMine(uint32_t *buff, const int buffWidth, const uint32_t backgroundColor);
+  static void buffInsertMine(uint32_t *buff, const int buffWidth);
+  static void buffInsertRedX(uint32_t *buff, const int buffWidth);
 
   struct DigitSegments
   {
