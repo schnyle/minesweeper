@@ -47,6 +47,11 @@ void GameLoop::handleEvents()
 
 void GameLoop::updateTimer(Uint32 &lastTime, Uint32 &timerAccumulator)
 {
+  if (game.getIsGameOver())
+  {
+    return;
+  }
+
   static const int oneSecondMs = 1000;
 
   auto currentTime = SDL_GetTicks();

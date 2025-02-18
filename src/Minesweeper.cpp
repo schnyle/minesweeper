@@ -30,15 +30,16 @@ void Minesweeper::handleLeftClick(const int row, const int col)
 
   cell.isHidden = false;
 
-  if (cell.isMine) // will be gameover here
+  if (cell.isMine)
   {
+    isGameOver = true;
     cell.isClicked = true;
     ++numFlags;
-    for (auto &xCell : minefield)
+    for (auto &ele : minefield)
     {
-      if (xCell.isMine)
+      if (ele.isMine)
       {
-        xCell.isHidden = false;
+        ele.isHidden = false;
       }
     }
     return;
@@ -84,7 +85,9 @@ void Minesweeper::handleMiddleClick(const int row, const int col)
 void Minesweeper::reset()
 {
   minefield = initMinefield();
+  isGameOver = false;
   isFirstClick = true;
+  secondsElapsed = 0;
 }
 
 std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
@@ -170,7 +173,7 @@ int Minesweeper::rowColToIndex(const int row, const int col) const { return row 
 
 void Minesweeper::revealAdjacentCells(const int row, const int col)
 {
-  unsigned int nFlags = 0;
+  unsigned int numAdjacentFlags = 0;
   std::set<std::pair<int, int>> hidden;
 
   for (const auto &[dRow, dCol] : ADJACENCY_OFFSETS)
@@ -182,18 +185,33 @@ void Minesweeper::revealAdjacentCells(const int row, const int col)
       continue;
     }
 
-    const auto currentIndex = rowColToIndex(currentRow, currentCol);
-    if (minefield[currentIndex].isFlagged)
+    const auto currentCell = minefield[rowColToIndex(currentRow, currentCol)];
+    if (currentCell.isFlagged)
     {
-      ++nFlags;
+      if (currentCell.isMine)
+      {
+        ++numAdjacentFlags;
+      }
+      else
+      {
+        for (auto &cell : minefield)
+        {
+          if (cell.isMine)
+          {
+            cell.isHidden = false;
+          }
+        }
+        isGameOver = true;
+      }
     }
-    else if (minefield[currentIndex].isHidden)
+    else if (currentCell.isHidden)
     {
       hidden.insert({currentRow, currentCol});
     }
   }
 
-  if (nFlags == minefield[rowColToIndex(row, col)].nAdjacentMines)
+  const bool allAdjacentMinesAreFlagged = numAdjacentFlags == minefield[rowColToIndex(row, col)].nAdjacentMines;
+  if (allAdjacentMinesAreFlagged)
   {
     for (const auto &[currentRow, currentCol] : hidden)
     {
@@ -278,7 +296,7 @@ bool Minesweeper::updateGameState(SDL_Event &event)
   case SDL_MOUSEBUTTONDOWN:
   {
 
-    if (inGameArea)
+    if (inGameArea && !isGameOver)
     {
       switch (event.button.button)
       {
@@ -292,6 +310,8 @@ bool Minesweeper::updateGameState(SDL_Event &event)
         handleRightClick(row, col);
         break;
       }
+
+      checkForGameWon();
     }
 
     if (inResetButton && event.button.button == SDL_BUTTON_LEFT)
@@ -334,3 +354,18 @@ bool Minesweeper::updateGameState(SDL_Event &event)
 
   return true;
 }
+
+void Minesweeper::checkForGameWon()
+{
+  for (auto &cell : minefield)
+  {
+    const auto isFlaggedMine = cell.isMine && cell.isFlagged;
+    const auto isRevealed = !cell.isHidden;
+    if (!(isFlaggedMine || isRevealed))
+    {
+      return;
+    }
+  }
+
+  isGameOver = true;
+};

@@ -31,6 +31,7 @@ public:
   int getNumFlags() { return numFlags; }
   int getRemainingFlags() { return numMines - numFlags; }
   int getSecondsElapsed() { return secondsElapsed; }
+  bool getIsGameOver() { return isGameOver; }
   bool getIsResetButtonPressed() { return isResetButtonPressed; }
   bool getIsConfigButtonPressed() { return isConfigButtonPressed; }
   bool getShowConfigButton() { return showConfigWindow; };
@@ -46,6 +47,8 @@ private:
   int numMines = 0;
   int numFlags = 0;
   int secondsElapsed = 0;
+  bool isGameOver = false;
+  bool isGameWon = false;
   bool isFirstClick = true;
   bool isResetButtonPressed = false;
   bool isConfigButtonPressed = false;
@@ -65,4 +68,5 @@ private:
   void floodFillEmptyCells(const int row, const int col);
   void floodFillEmptyCellsRecursive(const int row, const int col, std::set<std::pair<int, int>> &visited);
   bool updateGameState(SDL_Event &event);
+  void checkForGameWon();
 };
