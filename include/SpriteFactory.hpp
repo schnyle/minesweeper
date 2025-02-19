@@ -41,17 +41,6 @@ public:
   SpriteFactory(Sprites *spriteObjs);
 
   static std::unique_ptr<Sprites> createSprites();
-  static void buffInsertInterface(uint32_t *buff, const int buffWidth, const int buffSize);
-  static void buffInsertRemainingFlags(
-      uint32_t *buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const int n);
-  static void
-  buffInsertTimer(uint32_t *buff, const int buffWidth, const int x, const int y, const int w, const int h, const int t);
   static void copySprite(uint32_t *buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y);
   static void
   copySprite(std::unique_ptr<uint32_t[]> &buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y);
@@ -62,6 +51,7 @@ private:
   static const int NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
   static const int NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
   static const int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+
   void makeRaisedResetButtonSprite();
   void makePressedResetButtonSprite();
   void makeRaisedButtonSprite();
@@ -76,79 +66,6 @@ private:
   void makeMineCellWithRedXSprite();
   void makeNumericSprite(uint32_t *buff, const int n, const uint32_t c);
   void makeOneSprite();
-
-  static void buffInsertRectangle(
-      uint32_t *buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const uint32_t c);
-  static void buffInsert2DBorder(
-      uint32_t *buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const uint32_t c);
-  static void buffInsert3DBorder(
-      uint32_t *buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const uint32_t cTop,
-      const uint32_t cMid,
-      const uint32_t cBot);
-  static void buffInsert3DCorner(
-      uint32_t *buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const uint32_t cTop,
-      const uint32_t cMid,
-      const uint32_t cBot);
-  static void buffInsertDigit(
-      uint32_t *buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const int n,
-      const int c);
-  static void buffInsertMine(uint32_t *buff, const int buffWidth);
-  static void buffInsertFaceBase(uint32_t *buff, const int buffWidth);
-  static void buffInsertFaceSmile(uint32_t *buff, const int buffWidth);
-  static void buffInsertFaceFrown(uint32_t *buff, const int buffWidth);
-  static void buffInsertFaceAliveEyes(uint32_t *buff, const int buffWidth);
-  static void buffInsertFaceDeadEyes(uint32_t *buff, const int buffWidth);
-  static void buffInsertFaceShades(uint32_t *buff, const int buffWidth);
-  static void buffInsertX(
-      uint32_t *buff,
-      const int buffWidth,
-      const uint32_t color,
-      const double xCenter,
-      const double yCenter,
-      const double xSize,
-      const double xThickness);
-
-  struct DigitSegments
-  {
-    bool topMiddle;
-    bool topLeft;
-    bool topRight;
-    bool middleMiddle;
-    bool bottomMiddle;
-    bool bottomLeft;
-    bool bottomRight;
-  };
-  static DigitSegments intToDigitSegments(const int n);
 
   static int rowColToWindowIndex(const int row, const int col);
   static int rowColToCellIndex(const int row, const int col);

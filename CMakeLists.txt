@@ -20,6 +20,10 @@ set(SOURCES
   src/window/SettingsWindow.cpp
   src/GameLoop.cpp
   src/SpriteFactory.cpp
+  src/BufferCompositor/BufferCompositor.cpp
+  src/BufferCompositor/HeaderCompositor.cpp
+  src/BufferCompositor/FaceCompositor.cpp
+  src/BufferCompositor/MinefieldElementCompositor.cpp
 )
 
 # setup font embedding
@@ -44,6 +48,7 @@ target_include_directories(${PROJECT_NAME}
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include/window
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/BufferCompositor
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_BINARY_DIR}/generated

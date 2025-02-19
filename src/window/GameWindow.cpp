@@ -1,6 +1,6 @@
 #include <GameWindow.hpp>
+#include <HeaderCompositor.hpp>
 #include <SDL2/SDL.h>
-#include <SpriteFactory.hpp>
 #include <config.hpp>
 #include <cstdint>
 #include <cstring>
@@ -14,7 +14,7 @@ GameWindow::GameWindow()
     std::cerr << "error allocating frame buffer" << std::endl;
   }
 
-  SpriteFactory::buffInsertInterface(
+  HeaderCompositor::buffInsertHeader(
       frameBuffer.get(),
       config::GAME_WINDOW_PIXEL_WIDTH,
       config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
@@ -88,7 +88,7 @@ void GameWindow::update(Minesweeper &minesweeper)
 void GameWindow::updateInterface(Minesweeper &minesweeper)
 {
   // remaining flags
-  SpriteFactory::buffInsertRemainingFlags(
+  HeaderCompositor::buffInsertRemainingFlags(
       frameBuffer.get(),
       config::GAME_WINDOW_PIXEL_WIDTH,
       config::REMAINING_FLAGS_X,
@@ -124,7 +124,7 @@ void GameWindow::updateInterface(Minesweeper &minesweeper)
       config::CONFIG_BUTTON_Y);
 
   // timer
-  SpriteFactory::buffInsertRemainingFlags(
+  HeaderCompositor::buffInsertRemainingFlags(
       frameBuffer.get(),
       config::GAME_WINDOW_PIXEL_WIDTH,
       config::TIMER_X,
