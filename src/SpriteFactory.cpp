@@ -6,6 +6,8 @@
 
 SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
 {
+  makeRaisedResetButtonSprite();
+  makePressedResetButtonSprite();
   makeRaisedButtonSprite();
   makePressedButtonSprite();
 
@@ -227,6 +229,57 @@ void SpriteFactory::copySprite(
 }
 
 // private
+
+void SpriteFactory::makeRaisedResetButtonSprite()
+{
+  auto &buff = sprites->raisedResetButton;
+  buffInsertRectangle(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
+  buffInsert3DBorder(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+  buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  // buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+};
+
+void SpriteFactory::makePressedResetButtonSprite()
+{
+  auto &buff = sprites->pressedResetButton;
+  buffInsertRectangle(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
+  buffInsert2DBorder(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::DARK_GREY);
+  buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+};
 
 void SpriteFactory::makeRaisedButtonSprite()
 {
@@ -696,6 +749,163 @@ void SpriteFactory::buffInsertRedX(uint32_t *buff, const int buffWidth)
     }
   }
 }
+
+void SpriteFactory::buffInsertFaceBase(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double drawRadius = size / 2 * 0.9;
+  const double faceCenter = size / 2;
+  const double faceRadius = size / 2 * 0.6;
+  const double faceRadiusSqrd = faceRadius * faceRadius;
+  const double outlineRadiusSqrd = faceRadiusSqrd * 1.3;
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const double dx = x - faceCenter;
+      const double dy = y - faceCenter;
+
+      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
+      if (!inBounds)
+      {
+        continue;
+      }
+
+      const bool faceCircle = dx * dx + dy * dy <= faceRadiusSqrd;
+
+      if (faceCircle)
+      {
+        buff[y * size + x] = config::YELLOW;
+        continue;
+      }
+
+      const bool outlineCircle = dx * dx + dy * dy <= outlineRadiusSqrd;
+      if (outlineCircle)
+      {
+        buff[y * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+};
+
+void SpriteFactory::buffInsertFaceSmile(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double drawRadius = size / 2 * 0.9;
+  const double faceCenter = size / 2;
+  const double smileBigRadius = size / 2 * 0.4;
+  const double smileBigRadiusSqrd = smileBigRadius * smileBigRadius;
+  const double smileSmallRadius = size / 2 * 0.3;
+  const double smileSmallRadiusSqrd = smileSmallRadius * smileSmallRadius;
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const double dx = x - faceCenter;
+      const double dy = y - faceCenter;
+      const double theta = std::atan2(dy, dx);
+
+      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
+      if (!inBounds)
+      {
+        continue;
+      }
+
+      const bool smileBigCircle = dx * dx + dy * dy <= smileBigRadiusSqrd;
+      const bool smileSmallCircle = dx * dx + dy * dy <= smileSmallRadiusSqrd;
+      const bool smileAngle = (theta >= 0) && (theta <= (M_PI * 2));
+
+      if (smileBigCircle && !smileSmallCircle && smileAngle)
+      {
+        buff[y * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+};
+
+void SpriteFactory::buffInsertFaceFrown(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double drawRadius = size / 2 * 0.9;
+  const double faceCenter = size / 2;
+  const double frownBigRadius = size / 2 * 0.4;
+  const double frownBigRadiusSqrd = frownBigRadius * frownBigRadius;
+  const double frownSmallRadius = size / 2 * 0.3;
+  const double frownSmallRadiusSqrd = frownSmallRadius * frownSmallRadius;
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const double dx = x - faceCenter;
+      const double dy = y - faceCenter;
+      const double theta = std::atan2(dy, dx);
+
+      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
+      if (!inBounds)
+      {
+        continue;
+      }
+
+      const bool smileBigCircle = dx * dx + dy * dy <= frownBigRadiusSqrd;
+      const bool smileSmallCircle = dx * dx + dy * dy <= frownSmallRadiusSqrd;
+      const bool smileAngle = (theta >= 0) && (theta <= (M_PI * 2));
+
+      if (smileBigCircle && !smileSmallCircle && smileAngle)
+      {
+        buff[(size - y + (size / 5)) * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+};
+
+void SpriteFactory::buffInsertFaceAliveEyes(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double drawRadius = size / 2 * 0.9;
+  const double leftEyeX = size * 13 / 32;
+  const double leftEyeY = size * 3 / 8;
+  const double rightEyeX = size * 19 / 32;
+  const double rightEyeY = size * 3 / 8;
+  const double eyeRadius = size / 2 * 0.1;
+  const double eyeRadiusSqrd = eyeRadius * eyeRadius;
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const double leftDx = x - leftEyeX;
+      const double leftDy = y - leftEyeY;
+
+      const double rightDx = x - rightEyeX;
+      const double rightDy = y - rightEyeY;
+
+      const bool leftInBounds = leftDx * leftDx + leftDy * leftDy <= drawRadius * drawRadius;
+      const bool rightInBounds = rightDx * rightDx + rightDy * rightDy <= drawRadius * drawRadius;
+      if (!leftInBounds && !rightInBounds)
+      {
+        continue;
+      }
+
+      const bool leftCircle = leftDx * leftDx + leftDy * leftDy <= eyeRadiusSqrd;
+      const bool rightCircle = rightDx * rightDx + rightDy * rightDy <= eyeRadiusSqrd;
+
+      if (leftCircle || rightCircle)
+      {
+        buff[y * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+};
+
+void SpriteFactory::buffInsertFaceDeadEyes(uint32_t *buff, const int buffWidth) {};
+void SpriteFactory::buffInsertFaceShades(uint32_t *buff, const int buffWidth) {};
 
 SpriteFactory::DigitSegments SpriteFactory::intToDigitSegments(const int n)
 {

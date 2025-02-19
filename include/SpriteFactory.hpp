@@ -14,6 +14,8 @@ public:
   static constexpr int cellSpriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE;
   struct Sprites
   {
+    uint32_t raisedResetButton[resetButtonSize];
+    uint32_t pressedResetButton[resetButtonSize];
     uint32_t raisedButton[resetButtonSize];
     uint32_t pressedButton[resetButtonSize];
     uint32_t empty[cellSpriteSize];
@@ -58,6 +60,8 @@ private:
   static const int NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
   static const int NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
   static const int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+  void makeRaisedResetButtonSprite();
+  void makePressedResetButtonSprite();
   void makeRaisedButtonSprite();
   void makePressedButtonSprite();
   void makeEmptyCellSprite();
@@ -116,6 +120,12 @@ private:
       const int c);
   static void buffInsertMine(uint32_t *buff, const int buffWidth);
   static void buffInsertRedX(uint32_t *buff, const int buffWidth);
+  static void buffInsertFaceBase(uint32_t *buff, const int buffWidth);
+  static void buffInsertFaceSmile(uint32_t *buff, const int buffWidth);
+  static void buffInsertFaceFrown(uint32_t *buff, const int buffWidth);
+  static void buffInsertFaceAliveEyes(uint32_t *buff, const int buffWidth);
+  static void buffInsertFaceDeadEyes(uint32_t *buff, const int buffWidth);
+  static void buffInsertFaceShades(uint32_t *buff, const int buffWidth);
 
   struct DigitSegments
   {
