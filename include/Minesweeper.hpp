@@ -32,6 +32,7 @@ public:
   int getRemainingFlags() { return numMines - numFlags; }
   int getSecondsElapsed() { return secondsElapsed; }
   bool getIsGameOver() { return isGameOver; }
+  bool getIsGameWon() { return isGameWon; }
   bool getIsResetButtonPressed() { return isResetButtonPressed; }
   bool getIsConfigButtonPressed() { return isConfigButtonPressed; }
   bool getShowConfigButton() { return showConfigWindow; };

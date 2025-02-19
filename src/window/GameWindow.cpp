@@ -98,8 +98,18 @@ void GameWindow::updateInterface(Minesweeper &minesweeper)
       minesweeper.getRemainingFlags());
 
   // reset button
-  const auto resetButtonSprite = minesweeper.getIsResetButtonPressed() ? sprites->pressedResetButton
-                                                                       : sprites->raisedResetButton;
+  auto resetButtonSprite = sprites->raisedResetButton;
+
+  if (minesweeper.getIsGameOver())
+  {
+    resetButtonSprite = minesweeper.getIsGameWon() ? sprites->winnerResetButton : sprites->loserResetButton;
+  }
+
+  if (minesweeper.getIsResetButtonPressed())
+  {
+    resetButtonSprite = sprites->pressedResetButton;
+  }
+
   SpriteFactory::copySprite(
       frameBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 

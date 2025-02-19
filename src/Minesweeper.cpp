@@ -351,4 +351,5 @@ void Minesweeper::checkForGameWon()
   }
 
   isGameOver = true;
+  isGameWon = true;
 };

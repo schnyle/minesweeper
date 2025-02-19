@@ -18,6 +18,8 @@ public:
     uint32_t pressedResetButton[resetButtonSize];
     uint32_t raisedButton[resetButtonSize];
     uint32_t pressedButton[resetButtonSize];
+    uint32_t winnerResetButton[resetButtonSize];
+    uint32_t loserResetButton[resetButtonSize];
     uint32_t empty[cellSpriteSize];
     uint32_t hidden[cellSpriteSize];
     uint32_t flag[cellSpriteSize];
@@ -64,6 +66,8 @@ private:
   void makePressedResetButtonSprite();
   void makeRaisedButtonSprite();
   void makePressedButtonSprite();
+  void makeWinnerResetButtonSprite();
+  void makeLoserResetButtonSprite();
   void makeEmptyCellSprite();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();
@@ -119,13 +123,20 @@ private:
       const int n,
       const int c);
   static void buffInsertMine(uint32_t *buff, const int buffWidth);
-  static void buffInsertRedX(uint32_t *buff, const int buffWidth);
   static void buffInsertFaceBase(uint32_t *buff, const int buffWidth);
   static void buffInsertFaceSmile(uint32_t *buff, const int buffWidth);
   static void buffInsertFaceFrown(uint32_t *buff, const int buffWidth);
   static void buffInsertFaceAliveEyes(uint32_t *buff, const int buffWidth);
   static void buffInsertFaceDeadEyes(uint32_t *buff, const int buffWidth);
   static void buffInsertFaceShades(uint32_t *buff, const int buffWidth);
+  static void buffInsertX(
+      uint32_t *buff,
+      const int buffWidth,
+      const uint32_t color,
+      const double xCenter,
+      const double yCenter,
+      const double xSize,
+      const double xThickness);
 
   struct DigitSegments
   {

@@ -10,6 +10,8 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   makePressedResetButtonSprite();
   makeRaisedButtonSprite();
   makePressedButtonSprite();
+  makeWinnerResetButtonSprite();
+  makeLoserResetButtonSprite();
 
   makeEmptyCellSprite();
   makeHiddenCellSprite();
@@ -252,8 +254,7 @@ void SpriteFactory::makeRaisedResetButtonSprite()
       config::GREY,
       config::DARK_GREY);
   buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  // buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  buffInsertFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
   buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 };
 
@@ -323,6 +324,58 @@ void SpriteFactory::makePressedButtonSprite()
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::DARK_GREY);
+}
+
+void SpriteFactory::makeWinnerResetButtonSprite()
+{
+  auto &buff = sprites->winnerResetButton;
+  buffInsertRectangle(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
+  buffInsert3DBorder(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+  buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceShades(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+}
+
+void SpriteFactory::makeLoserResetButtonSprite()
+{
+  auto &buff = sprites->loserResetButton;
+  buffInsertRectangle(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
+  buffInsert3DBorder(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+  buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  buffInsertFaceDeadEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 }
 
 void SpriteFactory::makeEmptyCellSprite()
@@ -439,7 +492,14 @@ void SpriteFactory::makeMineCellWithRedXSprite()
   buffInsert2DBorder(
       buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
   buffInsertMine(buff, config::CELL_PIXEL_SIZE);
-  buffInsertRedX(buff, config::CELL_PIXEL_SIZE);
+  buffInsertX(
+      buff,
+      config::CELL_PIXEL_SIZE,
+      config::RED,
+      config::CELL_PIXEL_SIZE / 2,
+      config::CELL_PIXEL_SIZE / 2,
+      config::CELL_PIXEL_SIZE * 0.7,
+      4);
 }
 
 void SpriteFactory::makeNumericSprite(uint32_t *buff, const int n, const uint32_t c)
@@ -717,39 +777,6 @@ void SpriteFactory::buffInsertMine(uint32_t *buff, const int buffWidth)
   }
 }
 
-void SpriteFactory::buffInsertRedX(uint32_t *buff, const int buffWidth)
-{
-  const int size = buffWidth;
-  const double mineCenter = size / 2;
-  const double drawRadius = size / 2 * 0.9;
-  const double diagThickness = 4;
-  const double diagRadius = diagThickness / std::sqrt(2);
-
-  for (int y = 0; y < size; y++)
-  {
-    for (int x = 0; x < size; x++)
-    {
-
-      const double dx = x - mineCenter;
-      const double dy = y - mineCenter;
-
-      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
-      if (!inBounds)
-      {
-        continue;
-      }
-
-      const bool positiveDiag = dy <= dx + diagRadius && dy >= dx - diagRadius;
-      const bool negativeDiag = dy <= -dx + diagRadius && dy >= -dx - diagRadius;
-
-      if (positiveDiag || negativeDiag)
-      {
-        buff[y * size + x] = config::RED;
-      }
-    }
-  }
-}
-
 void SpriteFactory::buffInsertFaceBase(uint32_t *buff, const int buffWidth)
 {
   const int size = buffWidth;
@@ -904,8 +931,99 @@ void SpriteFactory::buffInsertFaceAliveEyes(uint32_t *buff, const int buffWidth)
   }
 };
 
-void SpriteFactory::buffInsertFaceDeadEyes(uint32_t *buff, const int buffWidth) {};
-void SpriteFactory::buffInsertFaceShades(uint32_t *buff, const int buffWidth) {};
+void SpriteFactory::buffInsertFaceDeadEyes(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double leftEyeX = size * 25 / 64;
+  const double leftEyeY = size * 3 / 8;
+  const double rightEyeX = size * 39 / 64;
+  const double rightEyeY = size * 3 / 8;
+  const double eyeRadius = size / 8;
+  const int xLineThickness = 2;
+
+  buffInsertX(buff, buffWidth, config::BLACK, leftEyeX, leftEyeY, eyeRadius, xLineThickness);
+  buffInsertX(buff, buffWidth, config::BLACK, rightEyeX, rightEyeY, eyeRadius, xLineThickness);
+}
+
+void SpriteFactory::buffInsertFaceShades(uint32_t *buff, const int buffWidth)
+{
+  const int size = buffWidth;
+  const double drawRadius = size / 2 * 0.9;
+  const double leftEyeX = size * 12 / 32;
+  const double leftEyeY = size * 3 / 8;
+  const double rightEyeX = size * 20 / 32;
+  const double rightEyeY = size * 3 / 8;
+  const double eyeRadius = size / 2 * 0.2;
+  const double eyeRadiusSqrd = eyeRadius * eyeRadius;
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const double leftDx = x - leftEyeX;
+      const double leftDy = y - leftEyeY;
+      const double leftTheta = std::atan2(leftDy, leftDx);
+
+      const double rightDx = x - rightEyeX;
+      const double rightDy = y - rightEyeY;
+      const double rightTheta = std::atan2(rightDy, rightDx);
+
+      const bool leftInBounds = leftDx * leftDx + leftDy * leftDy <= drawRadius * drawRadius;
+      const bool rightInBounds = rightDx * rightDx + rightDy * rightDy <= drawRadius * drawRadius;
+      if (!leftInBounds && !rightInBounds)
+      {
+        continue;
+      }
+
+      const bool leftCircle = leftDx * leftDx + leftDy * leftDy <= eyeRadiusSqrd;
+      const bool rightCircle = rightDx * rightDx + rightDy * rightDy <= eyeRadiusSqrd;
+
+      const bool leftSemiCircle = (leftTheta >= 0) && (leftTheta <= (M_PI * 2));
+      const bool rightSemiCircle = (leftTheta >= 0) && (rightTheta <= (M_PI * 2));
+
+      if ((leftCircle && leftSemiCircle) || (rightCircle && rightSemiCircle))
+      {
+        buff[y * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+}
+
+void SpriteFactory::buffInsertX(
+    uint32_t *buff,
+    const int buffWidth,
+    const uint32_t color,
+    const double xCenter,
+    const double yCenter,
+    const double xSize,
+    const double xThickness)
+{
+  const int size = buffWidth;
+  const double xRadius = xThickness / std::sqrt(2);
+
+  for (int y = 0; y < size; ++y)
+  {
+    for (int x = 0; x < size; ++x)
+    {
+      const int dx = x - xCenter;
+      const int dy = y - yCenter;
+
+      if (std::abs(dx) > xSize / 2 || std::abs(dy) > xSize / 2)
+      {
+        continue;
+      }
+
+      const bool positiveDiag = dy <= dx + xRadius && dy >= dx - xRadius;
+      const bool negativeDiag = dy <= -dx + xRadius && dy >= -dx - xRadius;
+
+      if (positiveDiag || negativeDiag)
+      {
+        buff[y * size + x] = color;
+      }
+    }
+  }
+}
 
 SpriteFactory::DigitSegments SpriteFactory::intToDigitSegments(const int n)
 {
