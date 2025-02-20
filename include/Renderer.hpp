@@ -34,7 +34,7 @@ public:
     return true;
   }
 
-  Renderer() { gameWindow.init(); };
+  Renderer() { gameWindow.init(); }
 
   ~Renderer()
   {

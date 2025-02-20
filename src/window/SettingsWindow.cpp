@@ -23,6 +23,14 @@ SettingsWindow::SettingsWindow()
   }
 }
 
+SettingsWindow::~SettingsWindow()
+{
+  if (font24)
+    TTF_CloseFont(font24);
+  if (font48)
+    TTF_CloseFont(font48);
+}
+
 void SettingsWindow::init()
 {
   WIDTH = config::CONFIG_WINDOW_PIXEL_WIDTH;
@@ -44,58 +52,79 @@ void SettingsWindow::init()
   windowID = SDL_GetWindowID(window);
 }
 
+void SettingsWindow::renderContent()
+{
+  if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0)
+  {
+    std::cerr << "error setting render draw color: " << SDL_GetError() << std::endl;
+    return;
+  }
+
+  if (SDL_RenderClear(renderer) < 0)
+  {
+    std::cerr << "error calling RenderClear: " << SDL_GetError() << std::endl;
+    return;
+  }
+
+  SDL_Surface *textSurface = TTF_RenderText_Solid(font24, setting.c_str(), {255, 0, 0, 255});
+  if (textSurface == nullptr)
+  {
+    std::cerr << "error creating text surface: " << TTF_GetError() << std::endl;
+    return;
+  }
+
+  SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+  if (textTexture == nullptr)
+  {
+    std::cerr << "error creating text texture: " << SDL_GetError() << std::endl;
+    SDL_FreeSurface(textSurface);
+    return;
+  }
+
+  SDL_Rect textRect = {0, 0, textSurface->w, textSurface->h};
+  SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
+
+  SDL_RenderPresent(renderer);
+
+  SDL_DestroyTexture(textTexture);
+  SDL_FreeSurface(textSurface);
+}
+
 void SettingsWindow::update(Minesweeper &game)
 {
-  if (showConfigWindow != game.getShowConfigButton())
+  bool newShowConfig = game.getShowConfigButton();
+
+  if (showConfigWindow != newShowConfig)
   {
-    showConfigWindow = game.getShowConfigButton();
+    showConfigWindow = newShowConfig;
     if (showConfigWindow)
     {
       if (window == nullptr)
       {
         init();
       }
-
-      if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0)
-      {
-        std::cerr << "error setting render draw color: " << SDL_GetError() << std::endl;
-      };
-
-      if (SDL_RenderClear(renderer) < 0)
-      {
-        std::cerr << "error calling RenderClear: " << SDL_GetError() << std::endl;
-      };
-
-      SDL_Surface *textSurface = TTF_RenderText_Solid(font24, "hello", {255, 0, 0, 255});
-      if (textSurface == nullptr)
-      {
-        std::cerr << "error creating text surface: " << TTF_GetError() << std::endl;
-        return;
-      }
-
-      if (renderer == nullptr)
-      {
-        printf("fdjakl\n");
-      }
-      SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-      if (textTexture == nullptr)
-      {
-        std::cerr << "error creating text texture: " << TTF_GetError() << std::endl;
-        return;
-      }
-
-      SDL_Rect textRect = {0, 0, textSurface->w, textSurface->h};
-      SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
-
-      SDL_RenderPresent(renderer);
       SDL_ShowWindow(window);
-
-      SDL_DestroyTexture(textTexture);
-      SDL_FreeSurface(textSurface);
+      renderContent();
     }
     else
     {
       SDL_HideWindow(window);
     }
   }
+  else if (showConfigWindow)
+  {
+    renderContent();
+  }
 }
+
+void SettingsWindow::handleEvents(SDL_Event &event)
+{
+  switch (event.type)
+  {
+  case SDL_TEXTINPUT:
+    setting += event.text.text;
+    break;
+  case SDL_KEYDOWN:
+    break;
+  }
+};
