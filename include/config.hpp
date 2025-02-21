@@ -8,6 +8,7 @@ namespace config
 constexpr const char *APP_NAME = "Minesweeper";
 
 constexpr uint32_t BLACK = 0x000000ff;
+constexpr uint32_t LIGHT_BLUE = 0x89cff0ff;
 constexpr uint32_t BLUE = 0x0000ffff;
 constexpr uint32_t DARK_BLUE = 0x01007aff;
 constexpr uint32_t DARK_GREY = 0x7a7a7bff;

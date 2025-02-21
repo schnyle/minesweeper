@@ -42,6 +42,8 @@ void SettingsWindow::init()
   WIDTH = config::CONFIG_WINDOW_PIXEL_WIDTH;
   HEIGHT = config::CONFIG_WINDOW_PIXEL_HEIGHT;
 
+  createMenuItems();
+
   window = SDL_CreateWindow(
       "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
   if (window == nullptr)
@@ -88,20 +90,78 @@ void SettingsWindow::update(Minesweeper &game)
 
 void SettingsWindow::handleEvents(SDL_Event &event)
 {
+  const int cursorX = event.motion.x;
+  const int cursorY = event.motion.y;
+
   switch (event.type)
   {
-  case SDL_TEXTINPUT:
-    setting += event.text.text;
-    break;
-  case SDL_KEYDOWN:
-    const auto keycode = event.key.keysym.sym;
-    if (keycode == SDLK_BACKSPACE)
+  case SDL_MOUSEBUTTONDOWN:
+    for (auto &menuItem : settingsMenuItems)
     {
-      setting = setting.substr(0, setting.size() - 1);
+      if (menuItem.contains(cursorX, cursorY))
+      {
+        menuItem.bgColorHex = config::LIGHT_BLUE;
+        menuItem.isEditing = true;
+      }
+      else
+      {
+        menuItem.bgColorHex = config::DARK_GREY;
+        menuItem.isEditing = false;
+      }
     }
+
     break;
+
+  case SDL_KEYDOWN:
+  {
+    std::string *value = nullptr;
+    for (auto &menuItem : settingsMenuItems)
+    {
+      if (menuItem.isEditing)
+      {
+        value = &menuItem.value;
+      }
+    }
+
+    if (value == nullptr)
+    {
+      return;
+    }
+
+    const auto keycode = event.key.keysym.sym;
+    if (keycode == SDLK_BACKSPACE && value->size() > 0)
+    {
+      value->pop_back();
+    }
+    else if (keycode >= SDLK_0 && keycode <= SDLK_9)
+    {
+      *value += keycode;
+    }
+  }
   }
 };
+
+void SettingsWindow::createMenuItems()
+{
+  const std::vector<std::pair<std::string, std::string>> labelsValues = {
+      {"Cell Size", std::to_string(config::CELL_PIXEL_SIZE)},
+      {"Window Width", std::to_string(config::GAME_WINDOW_PIXEL_WIDTH)},
+      {"Window Height", std::to_string(config::GAME_WINDOW_PIXEL_HEIGHT)}};
+
+  const int leftPad = 15;
+  const int topPad = 15;
+  const int ySep = 50;
+  const int menuItemRectWidth = config::CONFIG_WINDOW_PIXEL_WIDTH * 0.75;
+  const int menuItemRectHeight = 40;
+
+  int currentY = topPad;
+  for (const auto &[label, value] : labelsValues)
+  {
+    settingsMenuItems.emplace_back(SDL_Rect{leftPad, currentY, menuItemRectWidth, menuItemRectHeight}, label, value);
+
+    currentY += ySep;
+  }
+}
 
 void SettingsWindow::renderContent()
 {
@@ -117,12 +177,38 @@ void SettingsWindow::renderContent()
     return;
   }
 
-  renderText(setting, colors.black, 0, 0);
-  renderText("Reset", colors.black, 0, 50);
+  for (const auto &menuItem : settingsMenuItems)
+  {
+    renderMenuItem(menuItem);
+  }
+
+  SDL_RenderPresent(renderer);
+}
+
+void SettingsWindow::renderMenuItem(const MenuItem &menuItem)
+{
+  const auto menuItemRect = menuItem.rect;
+  const auto bgColorHex = menuItem.bgColorHex;
+  const SDL_Color bgColorRGBA = hexToRgba(bgColorHex);
+
+  SDL_SetRenderDrawColor(renderer, bgColorRGBA.r, bgColorRGBA.g, bgColorRGBA.b, bgColorRGBA.a);
+  SDL_RenderFillRect(renderer, &menuItemRect);
+
+  SDL_SetRenderDrawColor(renderer, colors.black.r, colors.black.g, colors.black.b, colors.black.a);
+  SDL_RenderDrawRect(renderer, &menuItemRect);
+
+  const auto [x, y, w, h] = menuItemRect;
+  const std::string text = menuItem.label + ": " + menuItem.value;
+  renderText(text, colors.black, x, y);
 }
 
 void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, const int x, const int y)
 {
+  if (text.size() == 0)
+  {
+    return;
+  }
+
   SDL_Surface *textSurface = TTF_RenderText_Solid(font24, text.c_str(), {rgba.r, rgba.g, rgba.b, rgba.a});
   if (textSurface == nullptr)
   {
@@ -140,8 +226,6 @@ void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, c
 
   SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
   SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
-
-  SDL_RenderPresent(renderer);
 
   SDL_DestroyTexture(textTexture);
   SDL_FreeSurface(textSurface);
