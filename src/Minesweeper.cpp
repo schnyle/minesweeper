@@ -249,7 +249,7 @@ void Minesweeper::floodFillEmptyCellsRecursive(int row, int col, std::set<std::p
   }
 }
 
-bool Minesweeper::updateGameState(SDL_Event &event)
+bool Minesweeper::handleEvents(SDL_Event &event)
 {
   const int cursorX = event.motion.x;
   const int cursorY = event.motion.y;

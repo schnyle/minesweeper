@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <config.hpp>
 #include <cstdint>
 #include <string>
 
@@ -19,8 +20,9 @@ public:
 private:
   TTF_Font *font24 = nullptr;
   TTF_Font *font48 = nullptr;
-  std::string setting = "_";
+  std::string setting = std::to_string(config::GAME_WINDOW_PIXEL_WIDTH);
   bool showConfigWindow = false;
 
   void renderContent();
+  void renderText(const std::string text, const int x, const int y);
 };

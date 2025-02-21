@@ -33,7 +33,7 @@ void GameLoop::handleEvents()
 
     if (event.window.windowID == renderer.gameWindow.getWindowID())
     {
-      if (!game.updateGameState(event))
+      if (!game.handleEvents(event))
       {
         isRunning = false;
       }

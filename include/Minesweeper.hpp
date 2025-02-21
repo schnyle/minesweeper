@@ -68,6 +68,6 @@ private:
   void revealAdjacentCells(const int row, const int col);
   void floodFillEmptyCells(const int row, const int col);
   void floodFillEmptyCellsRecursive(const int row, const int col, std::set<std::pair<int, int>> &visited);
-  bool updateGameState(SDL_Event &event);
+  bool handleEvents(SDL_Event &event);
   void checkForGameWon();
 };
