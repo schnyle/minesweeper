@@ -4,6 +4,7 @@
 #include <SettingsWindow.hpp>
 #include <cstdint>
 #include <iostream>
+#include <unistd.h>
 
 #include "font.h"
 
@@ -96,9 +97,15 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   switch (event.type)
   {
   case SDL_MOUSEBUTTONDOWN:
+    if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
+    {
+      restartButton.isPressed = true;
+      restartButton.bgColorHex = config::RED;
+    }
+
     for (auto &menuItem : settingsMenuItems)
     {
-      if (menuItem.contains(cursorX, cursorY))
+      if (rectContainsPoint(menuItem.rect, cursorX, cursorY))
       {
         menuItem.bgColorHex = config::LIGHT_BLUE;
         menuItem.isEditing = true;
@@ -110,6 +117,18 @@ void SettingsWindow::handleEvents(SDL_Event &event)
       }
     }
 
+    break;
+
+  case SDL_MOUSEBUTTONUP:
+    if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
+    {
+      restart();
+    }
+    else
+    {
+      restartButton.isPressed = false;
+      restartButton.bgColorHex = config::DARK_GREY;
+    }
     break;
 
   case SDL_KEYDOWN:
@@ -163,6 +182,39 @@ void SettingsWindow::createMenuItems()
   }
 }
 
+void SettingsWindow::restart()
+{
+  char *basePath = SDL_GetBasePath();
+  if (!basePath)
+  {
+    throw std::runtime_error("Couldn't get program path");
+  }
+
+  std::string programPath = std::string(basePath) + "minesweeper";
+  SDL_free(basePath);
+
+  char *argv[] = {programPath.data(), nullptr};
+  execv(argv[0], argv);
+
+  throw std::runtime_error("Failed to restart program");
+}
+
+bool SettingsWindow::rectContainsPoint(const SDL_Rect &rect, const int x, const int y)
+{
+  return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
+}
+
+SDL_Color SettingsWindow::hexToRgba(const uint32_t &hexColor)
+{
+  SDL_Color color;
+  color.r = (hexColor >> 24) & 0xff;
+  color.g = (hexColor >> 16) & 0xff;
+  color.b = (hexColor >> 8) & 0xff;
+  color.a = (hexColor >> 0) & 0xff;
+
+  return color;
+}
+
 void SettingsWindow::renderContent()
 {
   if (SDL_SetRenderDrawColor(renderer, colors.grey.r, colors.grey.g, colors.grey.b, colors.grey.a) < 0)
@@ -181,6 +233,7 @@ void SettingsWindow::renderContent()
   {
     renderMenuItem(menuItem);
   }
+  renderTextBox("RESTART", colors.black, hexToRgba(restartButton.bgColorHex), restartButton.rect);
 
   SDL_RenderPresent(renderer);
 }
@@ -190,17 +243,25 @@ void SettingsWindow::renderMenuItem(const MenuItem &menuItem)
   const auto menuItemRect = menuItem.rect;
   const auto bgColorHex = menuItem.bgColorHex;
   const SDL_Color bgColorRGBA = hexToRgba(bgColorHex);
-
-  SDL_SetRenderDrawColor(renderer, bgColorRGBA.r, bgColorRGBA.g, bgColorRGBA.b, bgColorRGBA.a);
-  SDL_RenderFillRect(renderer, &menuItemRect);
-
-  SDL_SetRenderDrawColor(renderer, colors.black.r, colors.black.g, colors.black.b, colors.black.a);
-  SDL_RenderDrawRect(renderer, &menuItemRect);
-
-  const auto [x, y, w, h] = menuItemRect;
   const std::string text = menuItem.label + ": " + menuItem.value;
-  renderText(text, colors.black, x, y);
+
+  renderTextBox(text, colors.black, bgColorRGBA, menuItemRect);
 }
+
+void SettingsWindow::renderTextBox(
+    const std::string &text,
+    const SDL_Color &textColor,
+    const SDL_Color &bgColor,
+    const SDL_Rect &rect)
+{
+  SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+  SDL_RenderFillRect(renderer, &rect);
+
+  SDL_SetRenderDrawColor(renderer, textColor.r, textColor.g, textColor.b, textColor.a);
+  SDL_RenderDrawRect(renderer, &rect);
+
+  renderText(text, colors.black, rect.x, rect.y);
+};
 
 void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, const int x, const int y)
 {
@@ -230,14 +291,3 @@ void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, c
   SDL_DestroyTexture(textTexture);
   SDL_FreeSurface(textSurface);
 };
-
-SDL_Color SettingsWindow::hexToRgba(const uint32_t &hexColor)
-{
-  SDL_Color color;
-  color.r = (hexColor >> 24) & 0xff;
-  color.g = (hexColor >> 16) & 0xff;
-  color.b = (hexColor >> 8) & 0xff;
-  color.a = (hexColor >> 0) & 0xff;
-
-  return color;
-}
