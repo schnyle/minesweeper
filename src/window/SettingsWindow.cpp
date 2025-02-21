@@ -71,6 +71,7 @@ void SettingsWindow::update(Minesweeper &game)
       {
         init();
       }
+
       SDL_ShowWindow(window);
       renderContent();
     }
@@ -104,13 +105,7 @@ void SettingsWindow::handleEvents(SDL_Event &event)
 
 void SettingsWindow::renderContent()
 {
-  renderText(setting, 0, 0);
-  // renderText("Reset", 0, 50);
-}
-
-void SettingsWindow::renderText(const std::string text, const int x, const int y)
-{
-  if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0)
+  if (SDL_SetRenderDrawColor(renderer, colors.grey.r, colors.grey.g, colors.grey.b, colors.grey.a) < 0)
   {
     std::cerr << "error setting render draw color: " << SDL_GetError() << std::endl;
     return;
@@ -122,7 +117,13 @@ void SettingsWindow::renderText(const std::string text, const int x, const int y
     return;
   }
 
-  SDL_Surface *textSurface = TTF_RenderText_Solid(font24, text.c_str(), {255, 0, 0, 255});
+  renderText(setting, colors.black, 0, 0);
+  renderText("Reset", colors.black, 0, 50);
+}
+
+void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, const int x, const int y)
+{
+  SDL_Surface *textSurface = TTF_RenderText_Solid(font24, text.c_str(), {rgba.r, rgba.g, rgba.b, rgba.a});
   if (textSurface == nullptr)
   {
     std::cerr << "error creating text surface: " << TTF_GetError() << std::endl;
@@ -145,3 +146,14 @@ void SettingsWindow::renderText(const std::string text, const int x, const int y
   SDL_DestroyTexture(textTexture);
   SDL_FreeSurface(textSurface);
 };
+
+SDL_Color SettingsWindow::hexToRgba(const uint32_t &hexColor)
+{
+  SDL_Color color;
+  color.r = (hexColor >> 24) & 0xff;
+  color.g = (hexColor >> 16) & 0xff;
+  color.b = (hexColor >> 8) & 0xff;
+  color.a = (hexColor >> 0) & 0xff;
+
+  return color;
+}

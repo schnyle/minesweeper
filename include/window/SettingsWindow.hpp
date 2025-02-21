@@ -23,6 +23,13 @@ private:
   std::string setting = std::to_string(config::GAME_WINDOW_PIXEL_WIDTH);
   bool showConfigWindow = false;
 
+  struct
+  {
+    SDL_Color black = hexToRgba(config::BLACK);
+    SDL_Color grey = hexToRgba(config::GREY);
+  } colors;
+
   void renderContent();
-  void renderText(const std::string text, const int x, const int y);
+  void renderText(const std::string text, const SDL_Color &rgba, const int x, const int y);
+  static SDL_Color hexToRgba(const uint32_t &hexColor);
 };
