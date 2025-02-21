@@ -25,10 +25,16 @@ SettingsWindow::SettingsWindow()
 
 SettingsWindow::~SettingsWindow()
 {
-  if (font24)
+  if (font24 != nullptr)
+  {
     TTF_CloseFont(font24);
-  if (font48)
+  }
+  if (font48 != nullptr)
+  {
     TTF_CloseFont(font48);
+  }
+
+  TTF_Quit();
 }
 
 void SettingsWindow::init()

@@ -36,11 +36,7 @@ public:
 
   Renderer() { gameWindow.init(); }
 
-  ~Renderer()
-  {
-    SDL_Quit();
-    TTF_Quit();
-  };
+  ~Renderer() { SDL_Quit(); };
 
 private:
   GameWindow gameWindow;

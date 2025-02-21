@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <cstdint>
+#include <string>
 
 #include "Window.hpp"
 
@@ -16,8 +17,8 @@ public:
   void handleEvents(SDL_Event &event);
 
 private:
-  TTF_Font *font24;
-  TTF_Font *font48;
+  TTF_Font *font24 = nullptr;
+  TTF_Font *font48 = nullptr;
   std::string setting = "_";
   bool showConfigWindow = false;
 
