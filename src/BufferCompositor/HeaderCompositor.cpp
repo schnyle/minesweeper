@@ -2,10 +2,10 @@
 #include <algorithm>
 #include <config.hpp>
 
-void HeaderCompositor::buffInsertHeader(uint32_t *buff, const int buffWidth, const int buffSize)
+void HeaderCompositor::buffInsertHeader(std::vector<uint32_t> &buff, const int buffWidth, const int buffSize)
 {
   // base
-  std::fill_n(buff, buffSize, config::GREY);
+  std::fill_n(buff.begin(), buffSize, config::GREY);
 
   // border
   BufferCompositor::buffInsert3DBorder(
@@ -93,7 +93,7 @@ void HeaderCompositor::buffInsertHeader(uint32_t *buff, const int buffWidth, con
 };
 
 void HeaderCompositor::buffInsertRemainingFlags(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,
@@ -127,7 +127,7 @@ void HeaderCompositor::buffInsertRemainingFlags(
 };
 
 void HeaderCompositor::buffInsertTimer(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,

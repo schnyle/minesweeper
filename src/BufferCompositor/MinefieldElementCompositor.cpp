@@ -1,7 +1,11 @@
 #include <MinefieldElementCompositor.hpp>
 #include <cstdint>
 
-void MinefieldElementCompositor::buffInsertMine(uint32_t *buff, const int buffWidth)
+int MinefieldElementCompositor::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
+int MinefieldElementCompositor::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
+int MinefieldElementCompositor::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+
+void MinefieldElementCompositor::buffInsertMine(std::vector<uint32_t> &buff, const int buffWidth)
 {
   const int size = buffWidth;
   const double mineCenter = size / 2;
@@ -50,7 +54,7 @@ void MinefieldElementCompositor::buffInsertMine(uint32_t *buff, const int buffWi
   }
 }
 
-void MinefieldElementCompositor::buffInsertFlag(uint32_t *buff, const int buffWidth)
+void MinefieldElementCompositor::buffInsertFlag(std::vector<uint32_t> &buff, const int buffWidth)
 {
   const int totalFlagPoleHeight = 0.55 * config::CELL_PIXEL_SIZE;
 
@@ -104,10 +108,11 @@ void MinefieldElementCompositor::buffInsertFlag(uint32_t *buff, const int buffWi
   }
 }
 
-void MinefieldElementCompositor::buffInsertOne(uint32_t *buff, const int buffWidth)
+void MinefieldElementCompositor::buffInsertOne(std::vector<uint32_t> &buff, const int buffWidth)
 {
-  uint32_t sprite[NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT];
-  std::fill_n(sprite, NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT, config::GREY);
+  std::vector<uint32_t> sprite;
+  sprite.resize(NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT);
+  std::fill_n(sprite.begin(), NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT, config::GREY);
 
   // base
   const int baseHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
@@ -137,9 +142,9 @@ void MinefieldElementCompositor::buffInsertOne(uint32_t *buff, const int buffWid
 
   for (int i = 0; i < NUMERIC_SPRITE_HEIGHT; ++i)
   {
-    const auto spriteStart = sprite + i * NUMERIC_SPRITE_HEIGHT;
-    const auto spriteEnd = sprite + i * NUMERIC_SPRITE_HEIGHT + NUMERIC_SPRITE_HEIGHT;
+    const auto spriteStart = sprite.begin() + i * NUMERIC_SPRITE_HEIGHT;
+    const auto spriteEnd = sprite.begin() + i * NUMERIC_SPRITE_HEIGHT + NUMERIC_SPRITE_HEIGHT;
     const int buffIdx = ((i + NUMERIC_SPRITE_PAD) * buffWidth) + NUMERIC_SPRITE_PAD;
-    std::copy(spriteStart, spriteEnd, buff + buffIdx);
+    std::copy(spriteStart, spriteEnd, buff.begin() + buffIdx);
   }
 }

@@ -39,7 +39,7 @@ BufferCompositor::DigitSegments BufferCompositor::intToDigitSegments(const int n
 }
 
 void BufferCompositor::buffInsertRectangle(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,
@@ -50,12 +50,12 @@ void BufferCompositor::buffInsertRectangle(
   for (int row = y; row < y + h; ++row)
   {
     const int index = row * buffWidth + x;
-    std::fill_n(buff + index, w, c);
+    std::fill_n(buff.begin() + index, w, c);
   }
 };
 
 void BufferCompositor::buffInsert2DBorder(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,
@@ -74,7 +74,7 @@ void BufferCompositor::buffInsert2DBorder(
 }
 
 void BufferCompositor::buffInsert3DBorder(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,
@@ -117,7 +117,7 @@ void BufferCompositor::buffInsert3DBorder(
 }
 
 void BufferCompositor::buffInsert3DCorner(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,
@@ -157,7 +157,7 @@ void BufferCompositor::buffInsert3DCorner(
 }
 
 void BufferCompositor::buffInsertDigit(
-    uint32_t *buff,
+    std::vector<uint32_t> &buff,
     const int buffWidth,
     const int x,
     const int y,
@@ -166,7 +166,7 @@ void BufferCompositor::buffInsertDigit(
     const int n,
     const int c)
 {
-  const int segmentWidth = 0.15 * NUMERIC_SPRITE_HEIGHT;
+  int segmentWidth = 0.15 * 0.6 * config::CELL_PIXEL_SIZE;
 
   const int leftX = x;
   const int rightX = x + w - segmentWidth;

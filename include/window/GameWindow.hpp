@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Minesweeper.hpp>
+#include <config.hpp>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "Window.hpp"
 
@@ -15,7 +17,7 @@ public:
   void update(Minesweeper &) override;
 
 private:
-  std::unique_ptr<uint32_t[]> frameBuffer;
+  std::vector<uint32_t> frameBuffer;
 
   void updateInterface(Minesweeper &);
   void updateGameArea(Minesweeper &);

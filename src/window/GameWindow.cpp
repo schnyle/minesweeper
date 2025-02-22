@@ -5,19 +5,14 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 GameWindow::GameWindow()
 {
-  frameBuffer = std::make_unique<uint32_t[]>(config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
-  if (!frameBuffer)
-  {
-    std::cerr << "error allocating frame buffer" << std::endl;
-  }
+  frameBuffer.resize(config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
 
   HeaderCompositor::buffInsertHeader(
-      frameBuffer.get(),
-      config::GAME_WINDOW_PIXEL_WIDTH,
-      config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
+      frameBuffer, config::GAME_WINDOW_PIXEL_WIDTH, config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
 }
 
 void GameWindow::init()
@@ -78,7 +73,9 @@ void GameWindow::update(Minesweeper &minesweeper)
 
   SDL_LockTexture(texture, nullptr, &pixels, &pitch);
   std::memcpy(
-      pixels, frameBuffer.get(), config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT * sizeof(uint32_t));
+      pixels,
+      frameBuffer.data(),
+      config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT * sizeof(uint32_t));
 
   SDL_UnlockTexture(texture);
   SDL_RenderCopy(renderer, texture, nullptr, nullptr);
@@ -89,7 +86,7 @@ void GameWindow::updateInterface(Minesweeper &minesweeper)
 {
   // remaining flags
   HeaderCompositor::buffInsertRemainingFlags(
-      frameBuffer.get(),
+      frameBuffer,
       config::GAME_WINDOW_PIXEL_WIDTH,
       config::REMAINING_FLAGS_X,
       config::REMAINING_FLAGS_Y,
@@ -125,7 +122,7 @@ void GameWindow::updateInterface(Minesweeper &minesweeper)
 
   // timer
   HeaderCompositor::buffInsertRemainingFlags(
-      frameBuffer.get(),
+      frameBuffer,
       config::GAME_WINDOW_PIXEL_WIDTH,
       config::TIMER_X,
       config::TIMER_Y,
@@ -148,7 +145,7 @@ void GameWindow::updateGameArea(Minesweeper &game)
 
       const int index = row * config::GRID_WIDTH + col;
       const auto &[isMine, isHidden, isFlagged, isClicked, nAdjacentMines] = game.getMinefield()[index];
-      uint32_t *sprite;
+      std::vector<uint32_t> sprite;
 
       if (isHidden && !isFlagged)
       {

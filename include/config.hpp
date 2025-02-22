@@ -2,6 +2,9 @@
 
 #include <SDL2/SDL.h>
 #include <cstdint>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 
 namespace config
 {
@@ -25,15 +28,17 @@ constexpr uint32_t WHITE = 0xffffffff;
 constexpr int FRAME_WIDTH = 20;
 constexpr int INFO_PANEL_HEIGHT = 70;
 constexpr int INFO_PANEL_BUTTONS_HEIGHT = 0.75 * INFO_PANEL_HEIGHT;
-constexpr int CELL_PIXEL_SIZE = 50;
-constexpr int CELL_BORDER_WIDTH_3D = CELL_PIXEL_SIZE / 10;
 constexpr int CELL_BORDER_WIDTH_2D = 2; // even int
 constexpr double GAME_WINDOW_TO_DISPLAY_RATIO = 0.7;
 
 inline int DISPLAY_PIXEL_WIDTH;
 inline int DISPLAY_PIXEL_HEIGHT;
+
+// configurable
 inline int GAME_WINDOW_PIXEL_WIDTH;
 inline int GAME_WINDOW_PIXEL_HEIGHT;
+inline int CELL_PIXEL_SIZE = 50;
+
 inline int CONFIG_WINDOW_PIXEL_WIDTH;
 inline int CONFIG_WINDOW_PIXEL_HEIGHT;
 
@@ -58,6 +63,8 @@ inline int GRID_HEIGHT;
 
 inline int GRID_AREA_X_PAD;
 inline int GRID_AREA_Y_PAD;
+
+inline int CELL_BORDER_WIDTH_3D = CELL_PIXEL_SIZE / 10;
 
 inline void update()
 {
@@ -87,5 +94,29 @@ inline void update()
 
   GRID_AREA_X_PAD = (GAME_AREA_WIDTH % CELL_PIXEL_SIZE) / 2;
   GRID_AREA_Y_PAD = (GAME_AREA_HEIGHT % CELL_PIXEL_SIZE) / 2;
+}
+
+inline void init(const int displayW, const int displayH)
+{
+  config::DISPLAY_PIXEL_WIDTH = displayW;
+  config::DISPLAY_PIXEL_HEIGHT = displayH;
+
+  std::cout << displayW << displayH << "\n";
+
+  const std::string home = std::getenv("HOME");
+  const std::string configPath = home + "/.config/minesweeper.conf";
+
+  if (!std::filesystem::exists(configPath))
+  {
+    config::DISPLAY_PIXEL_WIDTH = displayW;
+    config::DISPLAY_PIXEL_HEIGHT = displayH;
+    std::cout << "does not exist\n";
+
+    std::ofstream of(configPath);
+    of << "text\n";
+    of.close();
+  }
+
+  update();
 }
 } // namespace config

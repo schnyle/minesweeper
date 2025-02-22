@@ -8,7 +8,6 @@ int main(int, char **)
   {
     return 1;
   };
-
   Minesweeper game;
   Renderer renderer;
   GameLoop gameLoop(game, renderer);

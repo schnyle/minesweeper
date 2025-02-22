@@ -5,12 +5,12 @@
 #include <SpriteFactory.hpp>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 class Window
 {
 public:
   Window() { sprites = SpriteFactory::createSprites(); }
-  Window(uint32_t *fb) : frameBuffer(fb) { sprites = SpriteFactory::createSprites(); };
   ~Window()
   {
     SDL_DestroyTexture(texture);
@@ -35,6 +35,6 @@ protected:
   SDL_Texture *texture = nullptr;
   Uint32 windowID;
 
-  uint32_t *frameBuffer;
+  std::vector<uint32_t> frameBuffer;
   std::unique_ptr<SpriteFactory::Sprites> sprites;
 };

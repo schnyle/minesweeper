@@ -27,9 +27,7 @@ public:
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
 
-    config::DISPLAY_PIXEL_WIDTH = dm.w;
-    config::DISPLAY_PIXEL_HEIGHT = dm.h;
-    config::update();
+    config::init(dm.w, dm.h);
 
     return true;
   }

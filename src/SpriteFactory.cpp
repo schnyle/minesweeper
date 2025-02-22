@@ -9,6 +9,28 @@
 
 SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
 {
+  sprites->raisedResetButton.resize(resetButtonSize);
+  sprites->pressedResetButton.resize(resetButtonSize);
+  sprites->raisedButton.resize(resetButtonSize);
+  sprites->pressedButton.resize(resetButtonSize);
+  sprites->winnerResetButton.resize(resetButtonSize);
+  sprites->loserResetButton.resize(resetButtonSize);
+  sprites->empty.resize(cellSpriteSize);
+  sprites->hidden.resize(cellSpriteSize);
+  sprites->flag.resize(cellSpriteSize);
+  sprites->mine.resize(cellSpriteSize);
+  sprites->clickedMine.resize(cellSpriteSize);
+  sprites->redXMine.resize(cellSpriteSize);
+  sprites->zero.resize(cellSpriteSize);
+  sprites->one.resize(cellSpriteSize);
+  sprites->two.resize(cellSpriteSize);
+  sprites->three.resize(cellSpriteSize);
+  sprites->four.resize(cellSpriteSize);
+  sprites->five.resize(cellSpriteSize);
+  sprites->six.resize(cellSpriteSize);
+  sprites->seven.resize(cellSpriteSize);
+  sprites->eight.resize(cellSpriteSize);
+
   makeRaisedResetButtonSprite();
   makePressedResetButtonSprite();
   makeRaisedButtonSprite();
@@ -54,25 +76,20 @@ std::unique_ptr<SpriteFactory::Sprites> SpriteFactory::createSprites()
   return spriteObjs;
 }
 
-void SpriteFactory::copySprite(uint32_t *buff, const uint32_t *sprite, const int spriteWidth, const int x, const int y)
-{
-  for (int row = 0; row < spriteWidth; ++row)
-  {
-    const auto sourceRow = sprite + row * spriteWidth;
-    const auto sourceRowEnd = sprite + row * spriteWidth + spriteWidth;
-    const auto destinationRow = buff + rowColToWindowIndex(row + y, x);
-    std::copy(sourceRow, sourceRowEnd, destinationRow);
-  }
-}
-
 void SpriteFactory::copySprite(
-    std::unique_ptr<uint32_t[]> &buff,
-    const uint32_t *sprite,
+    std::vector<uint32_t> &buff,
+    const std::vector<uint32_t> &sprite,
     const int spriteWidth,
     const int x,
     const int y)
 {
-  copySprite(buff.get(), sprite, spriteWidth, x, y);
+  for (int row = 0; row < spriteWidth; ++row)
+  {
+    const auto sourceRow = sprite.begin() + row * spriteWidth;
+    const auto sourceRowEnd = sprite.begin() + (row * spriteWidth + spriteWidth);
+    const auto destinationRow = buff.begin() + rowColToWindowIndex(row + y, x);
+    std::copy(sourceRow, sourceRowEnd, destinationRow);
+  }
 }
 
 // private:
@@ -255,7 +272,7 @@ void SpriteFactory::makeHiddenCellSprite()
 void SpriteFactory::makeFlaggedCellSprite()
 {
   auto &buff = sprites->flag;
-  std::copy(sprites->hidden, sprites->hidden + cellSpriteSize, buff);
+  buff = sprites->hidden;
   MinefieldElementCompositor::buffInsertFlag(buff, config::CELL_PIXEL_SIZE);
 }
 
@@ -297,9 +314,9 @@ void SpriteFactory::makeMineCellWithRedXSprite()
       4);
 }
 
-void SpriteFactory::makeNumericSprite(uint32_t *buff, const int n, const uint32_t c)
+void SpriteFactory::makeNumericSprite(std::vector<uint32_t> &buff, const int n, const uint32_t c)
 {
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
+  buff = sprites->empty;
   BufferCompositor::buffInsertDigit(
       buff,
       config::CELL_PIXEL_SIZE,
@@ -314,7 +331,7 @@ void SpriteFactory::makeNumericSprite(uint32_t *buff, const int n, const uint32_
 void SpriteFactory::makeOneSprite()
 {
   auto &buff = sprites->one;
-  std::copy(sprites->empty, sprites->empty + cellSpriteSize, buff);
+  buff = sprites->empty;
   MinefieldElementCompositor::buffInsertOne(buff, config::CELL_PIXEL_SIZE);
 }
 
