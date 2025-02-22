@@ -3,6 +3,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SettingsWindow.hpp>
 #include <cstdint>
+#include <filesystem>
 #include <iostream>
 #include <unistd.h>
 
@@ -97,6 +98,12 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   switch (event.type)
   {
   case SDL_MOUSEBUTTONDOWN:
+    if (rectContainsPoint(saveButton.rect, cursorX, cursorY))
+    {
+      saveButton.isPressed = true;
+      saveButton.bgColorHex = config::GREEN;
+    }
+
     if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
     {
       restartButton.isPressed = true;
@@ -120,7 +127,15 @@ void SettingsWindow::handleEvents(SDL_Event &event)
     break;
 
   case SDL_MOUSEBUTTONUP:
-    if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
+    if (rectContainsPoint(saveButton.rect, cursorX, cursorY))
+    {
+      // get these values without indexing - gross
+      const int cellSize = std::stoi(settingsMenuItems[0].value);
+      const int windowW = std::stoi(settingsMenuItems[1].value);
+      const int windowH = std::stoi(settingsMenuItems[2].value);
+      config::writeConfigFile(windowW, windowH, cellSize);
+    }
+    else if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
     {
       restart();
     }
@@ -129,6 +144,9 @@ void SettingsWindow::handleEvents(SDL_Event &event)
       restartButton.isPressed = false;
       restartButton.bgColorHex = config::DARK_GREY;
     }
+
+    saveButton.isPressed = false;
+    saveButton.bgColorHex = config::DARK_GREY;
     break;
 
   case SDL_KEYDOWN:
@@ -199,6 +217,8 @@ void SettingsWindow::restart()
   throw std::runtime_error("Failed to restart program");
 }
 
+void SettingsWindow::saveSettings() { config::writeConfigFile(); }
+
 bool SettingsWindow::rectContainsPoint(const SDL_Rect &rect, const int x, const int y)
 {
   return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
@@ -234,6 +254,7 @@ void SettingsWindow::renderContent()
     renderMenuItem(menuItem);
   }
   renderTextBox("RESTART", colors.black, hexToRgba(restartButton.bgColorHex), restartButton.rect);
+  renderTextBox("SAVE", colors.black, hexToRgba(saveButton.bgColorHex), saveButton.rect);
 
   SDL_RenderPresent(renderer);
 }

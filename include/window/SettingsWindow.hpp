@@ -38,7 +38,14 @@ private:
 
   struct
   {
-    SDL_Rect rect{15, 200, 200, 40};
+    SDL_Rect rect{15, 250, 200, 40};
+    uint32_t bgColorHex = config::DARK_GREY;
+    bool isPressed = false;
+  } saveButton;
+
+  struct
+  {
+    SDL_Rect rect{15, 300, 200, 40};
     uint32_t bgColorHex = config::DARK_GREY;
     bool isPressed = false;
   } restartButton;
@@ -50,6 +57,7 @@ private:
 
   void createMenuItems();
   void restart();
+  void saveSettings();
   bool rectContainsPoint(const SDL_Rect &rect, const int x, const int y);
   static SDL_Color hexToRgba(const uint32_t &hexColor);
 

@@ -96,12 +96,38 @@ inline void update()
   GRID_AREA_Y_PAD = (GAME_AREA_HEIGHT % CELL_PIXEL_SIZE) / 2;
 }
 
+inline void readConfigFile()
+{
+  const std::string home = std::getenv("HOME");
+  const std::string configPath = home + "/.config/minesweeper.conf";
+
+  std::ifstream ifs(configPath);
+  std::string line;
+  while (std::getline(ifs, line))
+  {
+    const auto delim = line.find('=');
+    const std::string key = line.substr(0, delim);
+    const std::string value = line.substr(delim + 1, line.length());
+
+    if (key == "GAME_WINDOW_PIXEL_WIDTH")
+    {
+      GAME_WINDOW_PIXEL_WIDTH = std::stoi(value);
+    }
+    else if (key == "GAME_WINDOW_PIXEL_HEIGHT")
+    {
+      GAME_WINDOW_PIXEL_HEIGHT = std::stoi(value);
+    }
+    else if (key == "CELL_PIXEL_SIZE")
+    {
+      CELL_PIXEL_SIZE = std::stoi(value);
+    }
+  }
+}
+
 inline void init(const int displayW, const int displayH)
 {
-  config::DISPLAY_PIXEL_WIDTH = displayW;
-  config::DISPLAY_PIXEL_HEIGHT = displayH;
-
-  std::cout << displayW << displayH << "\n";
+  DISPLAY_PIXEL_WIDTH = displayW;
+  DISPLAY_PIXEL_HEIGHT = displayH;
 
   const std::string home = std::getenv("HOME");
   const std::string configPath = home + "/.config/minesweeper.conf";
@@ -111,12 +137,27 @@ inline void init(const int displayW, const int displayH)
     config::DISPLAY_PIXEL_WIDTH = displayW;
     config::DISPLAY_PIXEL_HEIGHT = displayH;
     std::cout << "does not exist\n";
-
-    std::ofstream of(configPath);
-    of << "text\n";
-    of.close();
+  }
+  else
+  {
+    readConfigFile();
   }
 
   update();
+}
+
+inline void writeConfigFile(
+    const int gameWindowPixelWidth = config::GAME_WINDOW_PIXEL_WIDTH,
+    const int gameWindowPixelHeight = config::GAME_WINDOW_PIXEL_HEIGHT,
+    const int cellPixelSize = config::CELL_PIXEL_SIZE)
+{
+  const std::string home = std::getenv("HOME");
+  const std::string configPath = home + "/.config/minesweeper.conf";
+
+  std::ofstream ofs(configPath);
+  ofs << "GAME_WINDOW_PIXEL_WIDTH=" << gameWindowPixelWidth << "\n";
+  ofs << "GAME_WINDOW_PIXEL_HEIGHT=" << gameWindowPixelHeight << "\n";
+  ofs << "CELL_PIXEL_SIZE=" << cellPixelSize << "\n";
+  ofs.close();
 }
 } // namespace config
