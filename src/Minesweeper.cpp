@@ -12,22 +12,26 @@ Minesweeper::Minesweeper() { minefield = initMinefield(); }
 void Minesweeper::handleLeftClick(const int row, const int col)
 {
   const auto index = rowColToIndex(row, col);
-  auto &cell = minefield[index];
 
   if (isFirstClick)
   {
     isFirstClick = false;
-    while (cell.nAdjacentMines != 0 || cell.isMine)
+    while (true)
     {
       minefield = initMinefield();
+      auto &firstCell = minefield[index];
+      if (firstCell.nAdjacentMines == 0 && !firstCell.isMine)
+      {
+        break;
+      }
     }
   }
 
+  auto &cell = minefield[index];
   if (cell.isFlagged || !cell.isHidden)
   {
     return;
   }
-
   cell.isHidden = false;
 
   if (cell.isMine)
@@ -165,7 +169,6 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
 
     data[i] = {isMine, isHidden, isFlagged, false, data[i].nAdjacentMines};
   }
-
   return data;
 }
 
