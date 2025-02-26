@@ -45,6 +45,7 @@ void SettingsWindow::init()
   HEIGHT = config::CONFIG_WINDOW_PIXEL_HEIGHT;
 
   createMenuItems();
+  createMenuButtons();
 
   window = SDL_CreateWindow(
       "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
@@ -98,16 +99,16 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   switch (event.type)
   {
   case SDL_MOUSEBUTTONDOWN:
-    if (rectContainsPoint(saveButton.rect, cursorX, cursorY))
+    if (rectContainsPoint(settingsMenuButtons.save.rect, cursorX, cursorY))
     {
-      saveButton.isPressed = true;
-      saveButton.bgColorHex = config::GREEN;
+      settingsMenuButtons.save.isPressed = true;
+      settingsMenuButtons.save.bgColorHex = config::GREEN;
     }
 
-    if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
+    if (rectContainsPoint(settingsMenuButtons.restart.rect, cursorX, cursorY))
     {
-      restartButton.isPressed = true;
-      restartButton.bgColorHex = config::RED;
+      settingsMenuButtons.restart.isPressed = true;
+      settingsMenuButtons.restart.bgColorHex = config::RED;
     }
 
     for (auto &menuItem : settingsMenuItems)
@@ -127,26 +128,22 @@ void SettingsWindow::handleEvents(SDL_Event &event)
     break;
 
   case SDL_MOUSEBUTTONUP:
-    if (rectContainsPoint(saveButton.rect, cursorX, cursorY))
+    if (rectContainsPoint(settingsMenuButtons.save.rect, cursorX, cursorY))
     {
-      // get these values without indexing - gross
-      const int cellSize = std::stoi(settingsMenuItems[0].value);
-      const int windowW = std::stoi(settingsMenuItems[1].value);
-      const int windowH = std::stoi(settingsMenuItems[2].value);
-      config::writeConfigFile(windowW, windowH, cellSize);
+      settingsMenuButtons.save.onClick();
     }
-    else if (rectContainsPoint(restartButton.rect, cursorX, cursorY))
+    else if (rectContainsPoint(settingsMenuButtons.restart.rect, cursorX, cursorY))
     {
-      restart();
+      settingsMenuButtons.restart.onClick();
     }
     else
     {
-      restartButton.isPressed = false;
-      restartButton.bgColorHex = config::DARK_GREY;
+      settingsMenuButtons.restart.isPressed = false;
+      settingsMenuButtons.restart.bgColorHex = config::DARK_GREY;
     }
 
-    saveButton.isPressed = false;
-    saveButton.bgColorHex = config::DARK_GREY;
+    settingsMenuButtons.save.isPressed = false;
+    settingsMenuButtons.save.bgColorHex = config::DARK_GREY;
     break;
 
   case SDL_KEYDOWN:
@@ -198,6 +195,39 @@ void SettingsWindow::createMenuItems()
 
     currentY += ySep;
   }
+}
+
+void SettingsWindow::createMenuButtons()
+{
+  settingsMenuButtons.save.rect = SDL_Rect{15, 250, 200, 40};
+  settingsMenuButtons.save.label = "SAVE";
+  settingsMenuButtons.save.onClick = [&]()
+  {
+    // get these values without indexing - gross
+    const int cellSize = std::stoi(settingsMenuItems[0].value);
+    const int windowW = std::stoi(settingsMenuItems[1].value);
+    const int windowH = std::stoi(settingsMenuItems[2].value);
+    config::writeConfigFile(windowW, windowH, cellSize);
+  };
+
+  settingsMenuButtons.restart.rect = SDL_Rect{15, 300, 200, 40};
+  settingsMenuButtons.restart.label = "RESTART";
+  settingsMenuButtons.restart.onClick = [&]()
+  {
+    char *basePath = SDL_GetBasePath();
+    if (!basePath)
+    {
+      throw std::runtime_error("Couldn't get program path");
+    }
+
+    std::string programPath = std::string(basePath) + "minesweeper";
+    SDL_free(basePath);
+
+    char *argv[] = {programPath.data(), nullptr};
+    execv(argv[0], argv);
+
+    throw std::runtime_error("Failed to restart program");
+  };
 }
 
 void SettingsWindow::restart()
@@ -253,8 +283,16 @@ void SettingsWindow::renderContent()
   {
     renderMenuItem(menuItem);
   }
-  renderTextBox("RESTART", colors.black, hexToRgba(restartButton.bgColorHex), restartButton.rect);
-  renderTextBox("SAVE", colors.black, hexToRgba(saveButton.bgColorHex), saveButton.rect);
+  renderTextBox(
+      settingsMenuButtons.restart.label,
+      colors.black,
+      hexToRgba(settingsMenuButtons.restart.bgColorHex),
+      settingsMenuButtons.restart.rect);
+  renderTextBox(
+      settingsMenuButtons.save.label,
+      colors.black,
+      hexToRgba(settingsMenuButtons.save.bgColorHex),
+      settingsMenuButtons.save.rect);
 
   SDL_RenderPresent(renderer);
 }
