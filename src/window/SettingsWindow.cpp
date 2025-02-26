@@ -111,17 +111,17 @@ void SettingsWindow::handleEvents(SDL_Event &event)
       settingsMenuButtons.restart.bgColorHex = config::RED;
     }
 
-    for (auto &menuItem : settingsMenuItems)
+    for (auto *menuItem : settingsMenuFields.items())
     {
-      if (rectContainsPoint(menuItem.rect, cursorX, cursorY))
+      if (rectContainsPoint(menuItem->rect, cursorX, cursorY))
       {
-        menuItem.bgColorHex = config::LIGHT_BLUE;
-        menuItem.isEditing = true;
+        menuItem->bgColorHex = config::LIGHT_BLUE;
+        menuItem->isEditing = true;
       }
       else
       {
-        menuItem.bgColorHex = config::DARK_GREY;
-        menuItem.isEditing = false;
+        menuItem->bgColorHex = config::DARK_GREY;
+        menuItem->isEditing = false;
       }
     }
 
@@ -149,11 +149,11 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   case SDL_KEYDOWN:
   {
     std::string *value = nullptr;
-    for (auto &menuItem : settingsMenuItems)
+    for (auto *menuItem : settingsMenuFields.items())
     {
-      if (menuItem.isEditing)
+      if (menuItem->isEditing)
       {
-        value = &menuItem.value;
+        value = &menuItem->value;
       }
     }
 
@@ -177,24 +177,23 @@ void SettingsWindow::handleEvents(SDL_Event &event)
 
 void SettingsWindow::createMenuItems()
 {
-  const std::vector<std::pair<std::string, std::string>> labelsValues = {
-      {"Cell Size", std::to_string(config::CELL_PIXEL_SIZE)},
-      {"Window Width", std::to_string(config::GAME_WINDOW_PIXEL_WIDTH)},
-      {"Window Height", std::to_string(config::GAME_WINDOW_PIXEL_HEIGHT)}};
-
   const int leftPad = 15;
   const int topPad = 15;
   const int ySep = 50;
   const int menuItemRectWidth = config::CONFIG_WINDOW_PIXEL_WIDTH * 0.75;
   const int menuItemRectHeight = 40;
 
-  int currentY = topPad;
-  for (const auto &[label, value] : labelsValues)
-  {
-    settingsMenuItems.emplace_back(SDL_Rect{leftPad, currentY, menuItemRectWidth, menuItemRectHeight}, label, value);
+  settingsMenuFields.cellSize.rect = SDL_Rect{leftPad, topPad + 0 * ySep, menuItemRectWidth, menuItemRectHeight};
+  settingsMenuFields.cellSize.label = "Cell Size";
+  settingsMenuFields.cellSize.value = std::to_string(config::CELL_PIXEL_SIZE);
 
-    currentY += ySep;
-  }
+  settingsMenuFields.windowWidth.rect = SDL_Rect{leftPad, topPad + 1 * ySep, menuItemRectWidth, menuItemRectHeight};
+  settingsMenuFields.windowWidth.label = "Window Width";
+  settingsMenuFields.windowWidth.value = std::to_string(config::GAME_WINDOW_PIXEL_WIDTH);
+
+  settingsMenuFields.windowHeight.rect = SDL_Rect{leftPad, topPad + 2 * ySep, menuItemRectWidth, menuItemRectHeight};
+  settingsMenuFields.windowHeight.label = "Window Height";
+  settingsMenuFields.windowHeight.value = std::to_string(config::GAME_WINDOW_PIXEL_HEIGHT);
 }
 
 void SettingsWindow::createMenuButtons()
@@ -203,10 +202,9 @@ void SettingsWindow::createMenuButtons()
   settingsMenuButtons.save.label = "SAVE";
   settingsMenuButtons.save.onClick = [&]()
   {
-    // get these values without indexing - gross
-    const int cellSize = std::stoi(settingsMenuItems[0].value);
-    const int windowW = std::stoi(settingsMenuItems[1].value);
-    const int windowH = std::stoi(settingsMenuItems[2].value);
+    const int cellSize = std::stoi(settingsMenuFields.cellSize.value);
+    const int windowW = std::stoi(settingsMenuFields.windowWidth.value);
+    const int windowH = std::stoi(settingsMenuFields.windowHeight.value);
     config::writeConfigFile(windowW, windowH, cellSize);
   };
 
@@ -279,25 +277,19 @@ void SettingsWindow::renderContent()
     return;
   }
 
-  for (const auto &menuItem : settingsMenuItems)
+  for (const auto *menuItem : settingsMenuFields.items())
   {
-    renderMenuItem(menuItem);
+    renderMenuItem(*menuItem);
   }
-  renderTextBox(
-      settingsMenuButtons.restart.label,
-      colors.black,
-      hexToRgba(settingsMenuButtons.restart.bgColorHex),
-      settingsMenuButtons.restart.rect);
-  renderTextBox(
-      settingsMenuButtons.save.label,
-      colors.black,
-      hexToRgba(settingsMenuButtons.save.bgColorHex),
-      settingsMenuButtons.save.rect);
+  for (const auto *button : settingsMenuButtons.items())
+  {
+    renderTextBox(button->label, colors.black, hexToRgba(button->bgColorHex), button->rect);
+  }
 
   SDL_RenderPresent(renderer);
 }
 
-void SettingsWindow::renderMenuItem(const MenuItem &menuItem)
+void SettingsWindow::renderMenuItem(const SettingsField &menuItem)
 {
   const auto menuItemRect = menuItem.rect;
   const auto bgColorHex = menuItem.bgColorHex;

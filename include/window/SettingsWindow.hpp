@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <array>
 #include <config.hpp>
 #include <cstdint>
 #include <functional>
@@ -21,6 +22,10 @@ public:
 private:
   static SDL_Color hexToRgba(const uint32_t &hexColor);
 
+  TTF_Font *font24 = nullptr;
+  TTF_Font *font48 = nullptr;
+  bool showConfigWindow = false;
+
   struct
   {
     SDL_Color black = hexToRgba(config::BLACK);
@@ -28,7 +33,7 @@ private:
     SDL_Color darkGrey = hexToRgba(config::DARK_GREY);
   } colors;
 
-  struct MenuItem
+  struct SettingsField
   {
     SDL_Rect rect;
     std::string label;
@@ -36,10 +41,11 @@ private:
     uint32_t bgColorHex = config::DARK_GREY;
     bool isEditing = false;
 
-    MenuItem(SDL_Rect r, const std::string &l, const std::string v) : rect(r), label(l), value(v) {}
+    SettingsField() = default;
+    SettingsField(SDL_Rect r, const std::string &l, const std::string v) : rect(r), label(l), value(v) {}
   };
 
-  struct MenuButton
+  struct SettingsButton
   {
     SDL_Rect rect;
     std::string label;
@@ -47,20 +53,25 @@ private:
     uint32_t bgColorHex = config::DARK_GREY;
     bool isPressed = false;
 
-    MenuButton() = default;
-    MenuButton(SDL_Rect r, const std::string &l, std::function<void()> oc) : rect(r), label(l), onClick(oc) {}
+    SettingsButton() = default;
+    SettingsButton(SDL_Rect r, const std::string &l, std::function<void()> oc) : rect(r), label(l), onClick(oc) {}
   };
 
-  TTF_Font *font24 = nullptr;
-  TTF_Font *font48 = nullptr;
-  bool showConfigWindow = false;
+  struct SettingsMenuFields
+  {
+    SettingsField cellSize;
+    SettingsField windowWidth;
+    SettingsField windowHeight;
 
-  std::vector<MenuItem> settingsMenuItems;
+    std::array<SettingsField *, 3> items() { return {&cellSize, &windowWidth, &windowHeight}; }
+  } settingsMenuFields;
 
   struct SettingsMenuButtons
   {
-    MenuButton save;
-    MenuButton restart;
+    SettingsButton save;
+    SettingsButton restart;
+
+    std::array<SettingsButton *, 2> items() { return {&save, &restart}; }
   } settingsMenuButtons;
 
   void createMenuItems();
@@ -70,7 +81,7 @@ private:
   bool rectContainsPoint(const SDL_Rect &rect, const int x, const int y);
 
   void renderContent();
-  void renderMenuItem(const MenuItem &menuItem);
+  void renderMenuItem(const SettingsField &menuItem);
   void
   renderTextBox(const std::string &text, const SDL_Color &textColor, const SDL_Color &bgColor, const SDL_Rect &rect);
   void renderText(const std::string text, const SDL_Color &rgba, const int x, const int y);
