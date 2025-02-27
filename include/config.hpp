@@ -30,6 +30,7 @@ constexpr int INFO_PANEL_HEIGHT = 70;
 constexpr int INFO_PANEL_BUTTONS_HEIGHT = 0.75 * INFO_PANEL_HEIGHT;
 constexpr int CELL_BORDER_WIDTH_2D = 2; // even int
 inline double GAME_WINDOW_TO_DISPLAY_RATIO = 0.7;
+inline int DEFAULT_CELL_PIXEL_SIZE = 50;
 
 inline int DISPLAY_PIXEL_WIDTH;
 inline int DISPLAY_PIXEL_HEIGHT;
@@ -37,7 +38,7 @@ inline int DISPLAY_PIXEL_HEIGHT;
 // configurable
 inline int GAME_WINDOW_PIXEL_WIDTH = DISPLAY_PIXEL_WIDTH * GAME_WINDOW_TO_DISPLAY_RATIO;
 inline int GAME_WINDOW_PIXEL_HEIGHT = DISPLAY_PIXEL_HEIGHT * GAME_WINDOW_TO_DISPLAY_RATIO;
-inline int CELL_PIXEL_SIZE = 50;
+inline int CELL_PIXEL_SIZE = DEFAULT_CELL_PIXEL_SIZE;
 
 inline int CONFIG_WINDOW_PIXEL_WIDTH;
 inline int CONFIG_WINDOW_PIXEL_HEIGHT;
@@ -124,28 +125,6 @@ inline void readConfigFile()
   update();
 }
 
-inline void init(const int displayW, const int displayH)
-{
-  DISPLAY_PIXEL_WIDTH = displayW;
-  DISPLAY_PIXEL_HEIGHT = displayH;
-
-  const std::string home = std::getenv("HOME");
-  const std::string configPath = home + "/.config/minesweeper.conf";
-
-  if (!std::filesystem::exists(configPath))
-  {
-    config::DISPLAY_PIXEL_WIDTH = displayW;
-    config::DISPLAY_PIXEL_HEIGHT = displayH;
-    std::cout << "does not exist\n";
-  }
-  else
-  {
-    readConfigFile();
-  }
-
-  update();
-}
-
 inline void writeConfigFile(
     const int gameWindowPixelWidth = config::GAME_WINDOW_PIXEL_WIDTH,
     const int gameWindowPixelHeight = config::GAME_WINDOW_PIXEL_HEIGHT,
@@ -160,4 +139,30 @@ inline void writeConfigFile(
   ofs << "CELL_PIXEL_SIZE=" << cellPixelSize << "\n";
   ofs.close();
 }
+
+inline void init(const int displayW, const int displayH)
+{
+  DISPLAY_PIXEL_WIDTH = displayW;
+  DISPLAY_PIXEL_HEIGHT = displayH;
+
+  const std::string home = std::getenv("HOME");
+  const std::string configPath = home + "/.config/minesweeper.conf";
+
+  if (!std::filesystem::exists(configPath))
+  {
+    CELL_PIXEL_SIZE = DEFAULT_CELL_PIXEL_SIZE;
+    GAME_WINDOW_PIXEL_WIDTH = DISPLAY_PIXEL_WIDTH * GAME_WINDOW_TO_DISPLAY_RATIO;
+    GAME_WINDOW_PIXEL_HEIGHT = DISPLAY_PIXEL_HEIGHT * GAME_WINDOW_TO_DISPLAY_RATIO;
+
+    writeConfigFile();
+    std::cout << "does not exist\n";
+  }
+  else
+  {
+    readConfigFile();
+  }
+
+  update();
+}
+
 } // namespace config

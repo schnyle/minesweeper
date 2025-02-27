@@ -99,16 +99,13 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   switch (event.type)
   {
   case SDL_MOUSEBUTTONDOWN:
-    if (rectContainsPoint(settingsMenuButtons.save.rect, cursorX, cursorY))
+    for (auto *button : settingsMenuButtons.items())
     {
-      settingsMenuButtons.save.isPressed = true;
-      settingsMenuButtons.save.bgColorHex = config::GREEN;
-    }
-
-    if (rectContainsPoint(settingsMenuButtons.restart.rect, cursorX, cursorY))
-    {
-      settingsMenuButtons.restart.isPressed = true;
-      settingsMenuButtons.restart.bgColorHex = config::RED;
+      if (rectContainsPoint(button->rect, cursorX, cursorY))
+      {
+        button->isPressed = true;
+        button->bgColorHex = config::LIGHT_BLUE;
+      }
     }
 
     for (auto *menuItem : settingsMenuFields.items())
@@ -128,22 +125,15 @@ void SettingsWindow::handleEvents(SDL_Event &event)
     break;
 
   case SDL_MOUSEBUTTONUP:
-    if (rectContainsPoint(settingsMenuButtons.save.rect, cursorX, cursorY))
+    for (auto *button : settingsMenuButtons.items())
     {
-      settingsMenuButtons.save.onClick();
+      if (button->isPressed && rectContainsPoint(button->rect, cursorX, cursorY))
+      {
+        button->handleClick();
+      }
+      button->isPressed = false;
+      button->bgColorHex = config::DARK_GREY;
     }
-    else if (rectContainsPoint(settingsMenuButtons.restart.rect, cursorX, cursorY))
-    {
-      settingsMenuButtons.restart.onClick();
-    }
-    else
-    {
-      settingsMenuButtons.restart.isPressed = false;
-      settingsMenuButtons.restart.bgColorHex = config::DARK_GREY;
-    }
-
-    settingsMenuButtons.save.isPressed = false;
-    settingsMenuButtons.save.bgColorHex = config::DARK_GREY;
     break;
 
   case SDL_KEYDOWN:
@@ -200,7 +190,7 @@ void SettingsWindow::createMenuButtons()
 {
   settingsMenuButtons.save.rect = SDL_Rect{15, 250, 200, 40};
   settingsMenuButtons.save.label = "SAVE";
-  settingsMenuButtons.save.onClick = [&]()
+  settingsMenuButtons.save.handleClick = [&]()
   {
     const int cellSize = std::stoi(settingsMenuFields.cellSize.value);
     const int windowW = std::stoi(settingsMenuFields.windowWidth.value);
@@ -210,7 +200,7 @@ void SettingsWindow::createMenuButtons()
 
   settingsMenuButtons.restart.rect = SDL_Rect{15, 300, 200, 40};
   settingsMenuButtons.restart.label = "RESTART";
-  settingsMenuButtons.restart.onClick = [&]()
+  settingsMenuButtons.restart.handleClick = [&]()
   {
     char *basePath = SDL_GetBasePath();
     if (!basePath)
@@ -226,6 +216,22 @@ void SettingsWindow::createMenuButtons()
 
     throw std::runtime_error("Failed to restart program");
   };
+
+  settingsMenuButtons.defaults.rect = SDL_Rect{15, 350, 200, 40};
+  settingsMenuButtons.defaults.label = "DEFAULT";
+  settingsMenuButtons.defaults.handleClick = [&]()
+  {
+    const int defaultWidth = config::DISPLAY_PIXEL_WIDTH * config::GAME_WINDOW_TO_DISPLAY_RATIO;
+    const int defaultHeight = config::DISPLAY_PIXEL_HEIGHT * config::GAME_WINDOW_TO_DISPLAY_RATIO;
+
+    settingsMenuFields.cellSize.value = std::to_string(config::DEFAULT_CELL_PIXEL_SIZE);
+    settingsMenuFields.windowWidth.value = std::to_string(defaultWidth);
+    settingsMenuFields.windowHeight.value = std::to_string(defaultHeight);
+  };
+
+  settingsMenuButtons.cancel.rect = SDL_Rect{15, 400, 200, 40};
+  settingsMenuButtons.cancel.label = "CANCEL";
+  settingsMenuButtons.cancel.handleClick = [&]() { createMenuItems(); };
 }
 
 void SettingsWindow::restart()
@@ -244,8 +250,6 @@ void SettingsWindow::restart()
 
   throw std::runtime_error("Failed to restart program");
 }
-
-void SettingsWindow::saveSettings() { config::writeConfigFile(); }
 
 bool SettingsWindow::rectContainsPoint(const SDL_Rect &rect, const int x, const int y)
 {

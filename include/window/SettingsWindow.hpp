@@ -49,12 +49,12 @@ private:
   {
     SDL_Rect rect;
     std::string label;
-    std::function<void()> onClick;
+    std::function<void()> handleClick;
     uint32_t bgColorHex = config::DARK_GREY;
     bool isPressed = false;
 
     SettingsButton() = default;
-    SettingsButton(SDL_Rect r, const std::string &l, std::function<void()> oc) : rect(r), label(l), onClick(oc) {}
+    SettingsButton(SDL_Rect r, const std::string &l, std::function<void()> oc) : rect(r), label(l), handleClick(oc) {}
   };
 
   struct SettingsMenuFields
@@ -70,14 +70,15 @@ private:
   {
     SettingsButton save;
     SettingsButton restart;
+    SettingsButton defaults;
+    SettingsButton cancel;
 
-    std::array<SettingsButton *, 2> items() { return {&save, &restart}; }
+    std::array<SettingsButton *, 4> items() { return {&save, &restart, &defaults, &cancel}; }
   } settingsMenuButtons;
 
   void createMenuItems();
   void createMenuButtons();
   void restart();
-  void saveSettings();
   bool rectContainsPoint(const SDL_Rect &rect, const int x, const int y);
 
   void renderContent();
