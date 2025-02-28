@@ -7,10 +7,10 @@
 class FaceCompositor : public BufferCompositor
 {
 public:
-  static void buffInsertFaceBase(std::vector<uint32_t> &buff, const int buffWidth);
-  static void buffInsertFaceSmile(std::vector<uint32_t> &buff, const int buffWidth);
+  static void buffInsertFaceBase(std::vector<uint32_t> &buff, const int buffWidth, const double center);
+  static void buffInsertFaceSmile(std::vector<uint32_t> &buff, const int buffWidth, const double center);
   static void buffInsertFaceFrown(std::vector<uint32_t> &buff, const int buffWidth);
-  static void buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const int buffWidth);
+  static void buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const int buffWidth, const double center);
   static void buffInsertFaceDeadEyes(std::vector<uint32_t> &buff, const int buffWidth);
   static void buffInsertFaceShades(std::vector<uint32_t> &buff, const int buffWidth);
   static void buffInsertX(

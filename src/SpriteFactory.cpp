@@ -120,9 +120,11 @@ void SpriteFactory::makeRaisedResetButtonSprite()
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceCompositor::buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+
+  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
+  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
 };
 
 void SpriteFactory::makePressedResetButtonSprite()
@@ -144,9 +146,11 @@ void SpriteFactory::makePressedResetButtonSprite()
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::DARK_GREY);
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceCompositor::buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+
+  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
+  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
 };
 
 void SpriteFactory::makeRaisedButtonSprite()
@@ -214,8 +218,10 @@ void SpriteFactory::makeWinnerResetButtonSprite()
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+
+  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
+  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
   FaceCompositor::buffInsertFaceShades(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 }
 
@@ -240,7 +246,9 @@ void SpriteFactory::makeLoserResetButtonSprite()
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+
+  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
+  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
   FaceCompositor::buffInsertFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
   FaceCompositor::buffInsertFaceDeadEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 }

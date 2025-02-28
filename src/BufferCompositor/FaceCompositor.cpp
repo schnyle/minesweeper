@@ -1,11 +1,10 @@
 #include <FaceCompositor.hpp>
 #include <cstdint>
 
-void FaceCompositor::buffInsertFaceBase(std::vector<uint32_t> &buff, const int buffWidth)
+void FaceCompositor::buffInsertFaceBase(std::vector<uint32_t> &buff, const int buffWidth, const double center)
 {
   const int size = buffWidth;
   const double drawRadius = size / 2 * 0.9;
-  const double faceCenter = size / 2;
   const double faceRadius = size / 2 * 0.6;
   const double faceRadiusSqrd = faceRadius * faceRadius;
   const double outlineRadiusSqrd = faceRadiusSqrd * 1.3;
@@ -14,8 +13,8 @@ void FaceCompositor::buffInsertFaceBase(std::vector<uint32_t> &buff, const int b
   {
     for (int x = 0; x < size; x++)
     {
-      const double dx = x - faceCenter;
-      const double dy = y - faceCenter;
+      const double dx = x - center;
+      const double dy = y - center;
 
       const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
       if (!inBounds)
@@ -41,11 +40,10 @@ void FaceCompositor::buffInsertFaceBase(std::vector<uint32_t> &buff, const int b
   }
 };
 
-void FaceCompositor::buffInsertFaceSmile(std::vector<uint32_t> &buff, const int buffWidth)
+void FaceCompositor::buffInsertFaceSmile(std::vector<uint32_t> &buff, const int buffWidth, const double center)
 {
   const int size = buffWidth;
   const double drawRadius = size / 2 * 0.9;
-  const double faceCenter = size / 2;
   const double smileBigRadius = size / 2 * 0.4;
   const double smileBigRadiusSqrd = smileBigRadius * smileBigRadius;
   const double smileSmallRadius = size / 2 * 0.3;
@@ -55,8 +53,8 @@ void FaceCompositor::buffInsertFaceSmile(std::vector<uint32_t> &buff, const int 
   {
     for (int x = 0; x < size; x++)
     {
-      const double dx = x - faceCenter;
-      const double dy = y - faceCenter;
+      const double dx = x - center;
+      const double dy = y - center;
       const double theta = std::atan2(dy, dx);
 
       const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
@@ -115,14 +113,14 @@ void FaceCompositor::buffInsertFaceFrown(std::vector<uint32_t> &buff, const int 
   }
 };
 
-void FaceCompositor::buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const int buffWidth)
+void FaceCompositor::buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const int buffWidth, const double center)
 {
   const int size = buffWidth;
   const double drawRadius = size / 2 * 0.9;
-  const double leftEyeX = size * 13 / 32;
-  const double leftEyeY = size * 3 / 8;
-  const double rightEyeX = size * 19 / 32;
-  const double rightEyeY = size * 3 / 8;
+  const double leftEyeX = center * 13 / 16;
+  const double leftEyeY = center * 3 / 4;
+  const double rightEyeX = center * 19 / 16;
+  const double rightEyeY = center * 3 / 4;
   const double eyeRadius = size / 2 * 0.1;
   const double eyeRadiusSqrd = eyeRadius * eyeRadius;
 
