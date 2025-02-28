@@ -25,4 +25,5 @@ public:
       const int w,
       const int h,
       const int t);
+  static void buffInsertGear(std::vector<uint32_t> &buff, const int buffWidth, const double center);
 };

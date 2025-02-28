@@ -21,6 +21,8 @@ public:
     std::vector<uint32_t> pressedButton;
     std::vector<uint32_t> winnerResetButton;
     std::vector<uint32_t> loserResetButton;
+    std::vector<uint32_t> raisedConfigButton;
+    std::vector<uint32_t> pressedConfigButton;
     std::vector<uint32_t> empty;
     std::vector<uint32_t> hidden;
     std::vector<uint32_t> flag;
@@ -62,6 +64,8 @@ private:
   void makePressedButtonSprite();
   void makeWinnerResetButtonSprite();
   void makeLoserResetButtonSprite();
+  void makeRaisedConfigButtonSprite();
+  void makePressedConfigButtonSprite();
   void makeEmptyCellSprite();
   void makeHiddenCellSprite();
   void makeFlaggedCellSprite();

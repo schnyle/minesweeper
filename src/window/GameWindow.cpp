@@ -111,8 +111,8 @@ void GameWindow::updateInterface(Minesweeper &minesweeper)
       frameBuffer, resetButtonSprite, config::INFO_PANEL_BUTTONS_HEIGHT, config::RESET_BUTTON_X, config::RESET_BUTTON_Y);
 
   // config button
-  const auto configButtonSprite = minesweeper.getIsConfigButtonPressed() ? sprites->pressedButton
-                                                                         : sprites->raisedButton;
+  const auto configButtonSprite = minesweeper.getIsConfigButtonPressed() ? sprites->pressedConfigButton
+                                                                         : sprites->raisedConfigButton;
   SpriteFactory::copySprite(
       frameBuffer,
       configButtonSprite,

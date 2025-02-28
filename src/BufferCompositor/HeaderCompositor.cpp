@@ -159,3 +159,73 @@ void HeaderCompositor::buffInsertTimer(
     buffInsertDigit(buff, buffWidth, digitX, digitY, digitWidth, digitHeight, digits[i], config::RED);
   }
 }
+
+void HeaderCompositor::buffInsertGear(std::vector<uint32_t> &buff, const int buffWidth, const double center)
+{
+  const int size = buffWidth;
+  const double drawRadius = size / 2 * 0.9;
+  const double radius = size / 2 * 0.2;
+  const double radiusSqrd = radius * radius;
+  const double outerRadius = size / 2 * 0.5;
+  const double outerRadiusSqrd = outerRadius * outerRadius;
+  const double teethOuterRadius = size / 2 * 0.625;
+  const double teethOuterRadiusSqrd = teethOuterRadius * teethOuterRadius;
+
+  for (int y = 0; y < size; y++)
+  {
+    for (int x = 0; x < size; x++)
+    {
+      const double dx = x - center;
+      const double dy = y - center;
+
+      const bool inBounds = dx * dx + dy * dy <= drawRadius * drawRadius;
+      if (!inBounds)
+      {
+        continue;
+      }
+
+      const bool innerCircle = dx * dx + dy * dy <= radiusSqrd;
+      if (innerCircle)
+      {
+        buff[y * size + x] = config::GREY;
+        continue;
+      }
+
+      const bool outerCircle = dx * dx + dy * dy <= outerRadiusSqrd;
+      if (outerCircle)
+      {
+        buff[y * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+
+  const int numTeeth = 8;
+  for (int y = 0; y < size; ++y)
+  {
+    for (int x = 0; x < size; ++x)
+    {
+      const double dx = x - center;
+      const double dy = y - center;
+      const double distSqrd = dx * dx + dy * dy;
+
+      if (distSqrd < outerRadiusSqrd || distSqrd > teethOuterRadiusSqrd)
+      {
+        continue;
+      }
+
+      double theta = std::atan2(dy, dx);
+      if (theta < 0)
+      {
+        theta += 2 * M_PI;
+      }
+
+      const int n = theta * (numTeeth * 2) / (2 * M_PI);
+      if (n % 2 != 0)
+      {
+        buff[y * size + x] = config::BLACK;
+        continue;
+      }
+    }
+  }
+}

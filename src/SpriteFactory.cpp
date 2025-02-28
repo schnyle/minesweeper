@@ -1,5 +1,6 @@
 #include <BufferCompositor.hpp>
 #include <FaceCompositor.hpp>
+#include <HeaderCompositor.hpp>
 #include <MinefieldElementCompositor.hpp>
 #include <SpriteFactory.hpp>
 #include <cmath>
@@ -15,6 +16,8 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   sprites->pressedButton.resize(resetButtonSize);
   sprites->winnerResetButton.resize(resetButtonSize);
   sprites->loserResetButton.resize(resetButtonSize);
+  sprites->raisedConfigButton.resize(resetButtonSize);
+  sprites->pressedConfigButton.resize(resetButtonSize);
   sprites->empty.resize(cellSpriteSize);
   sprites->hidden.resize(cellSpriteSize);
   sprites->flag.resize(cellSpriteSize);
@@ -37,6 +40,8 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   makePressedButtonSprite();
   makeWinnerResetButtonSprite();
   makeLoserResetButtonSprite();
+  makeRaisedConfigButtonSprite();
+  makePressedConfigButtonSprite();
 
   makeEmptyCellSprite();
   makeHiddenCellSprite();
@@ -238,6 +243,56 @@ void SpriteFactory::makeLoserResetButtonSprite()
   FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
   FaceCompositor::buffInsertFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
   FaceCompositor::buffInsertFaceDeadEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+}
+
+void SpriteFactory::makeRaisedConfigButtonSprite()
+{
+  auto &buff = sprites->raisedConfigButton;
+  BufferCompositor::buffInsertRectangle(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
+  BufferCompositor::buffInsert3DBorder(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::LIGHT_GREY,
+      config::GREY,
+      config::DARK_GREY);
+
+  const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
+  HeaderCompositor::buffInsertGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
+}
+
+void SpriteFactory::makePressedConfigButtonSprite()
+{
+  auto &buff = sprites->pressedConfigButton;
+  BufferCompositor::buffInsertRectangle(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::GREY);
+  BufferCompositor::buffInsert2DBorder(
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      0,
+      0,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::DARK_GREY);
+
+  const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
+  HeaderCompositor::buffInsertGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
 }
 
 void SpriteFactory::makeEmptyCellSprite()
