@@ -13,7 +13,7 @@ class SettingsWindow : public Window
 {
 public:
   SettingsWindow();
-  ~SettingsWindow();
+  ~SettingsWindow() override;
 
   void init() override;
   void update(Minesweeper &) override;
@@ -22,8 +22,8 @@ public:
 private:
   static SDL_Color hexToRgba(const uint32_t &hexColor);
 
-  TTF_Font *font24 = nullptr;
-  TTF_Font *font48 = nullptr;
+  std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font24{nullptr, &TTF_CloseFont};
+  std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font48{nullptr, &TTF_CloseFont};
   bool showConfigWindow = false;
 
   struct

@@ -10,11 +10,7 @@
 class Window
 {
 public:
-  Window()
-      : window(nullptr, SDL_DestroyWindow), renderer(nullptr, SDL_DestroyRenderer), texture(nullptr, SDL_DestroyTexture)
-  {
-  }
-
+  Window() = default;
   virtual ~Window() = default;
 
   virtual void init() = 0;
@@ -29,9 +25,9 @@ protected:
   int pixelWidth;
   int pixelHeight;
 
-  std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window;
-  std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer;
-  std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> texture;
+  std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window{nullptr, &SDL_DestroyWindow};
+  std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer{nullptr, &SDL_DestroyRenderer};
+  std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> texture{nullptr, &SDL_DestroyTexture};
   Uint32 windowID;
 
   std::vector<uint32_t> frameBuffer = {};

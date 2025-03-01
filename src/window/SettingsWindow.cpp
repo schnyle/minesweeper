@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 
 #include "font.h"
@@ -13,29 +14,22 @@ SettingsWindow::SettingsWindow() : Window()
 {
   if (TTF_Init() < 0)
   {
-    std::cerr << "error initializing SDL TTF: " << TTF_GetError() << std::endl;
+    throw std::runtime_error(std::string("error initializing SDL TTF: ") + TTF_GetError());
   }
 
   SDL_RWops *rw = SDL_RWFromMem(assets_UbuntuMono_B_ttf, assets_UbuntuMono_B_ttf_len);
-  font24 = TTF_OpenFontRW(rw, 0, 24);
-  font48 = TTF_OpenFontRW(rw, 0, 48);
-  if (font24 == nullptr || font48 == nullptr)
+  font24.reset(TTF_OpenFontRW(rw, 0, 24));
+  font48.reset(TTF_OpenFontRW(rw, 0, 48));
+  if (!font24 || !font48)
   {
-    std::cout << "failed to load font: " << TTF_GetError() << std::endl;
+    throw std::runtime_error(std::string("failed to load font: ") + TTF_GetError());
   }
 }
 
 SettingsWindow::~SettingsWindow()
 {
-  if (font24 != nullptr)
-  {
-    TTF_CloseFont(font24);
-  }
-  if (font48 != nullptr)
-  {
-    TTF_CloseFont(font48);
-  }
-
+  font24.reset(nullptr);
+  font48.reset(nullptr);
   TTF_Quit();
 }
 
@@ -325,7 +319,7 @@ void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, c
     return;
   }
 
-  SDL_Surface *textSurface = TTF_RenderText_Solid(font24, text.c_str(), {rgba.r, rgba.g, rgba.b, rgba.a});
+  SDL_Surface *textSurface = TTF_RenderText_Solid(font24.get(), text.c_str(), {rgba.r, rgba.g, rgba.b, rgba.a});
   if (textSurface == nullptr)
   {
     std::cerr << "error creating text surface: " << TTF_GetError() << std::endl;
