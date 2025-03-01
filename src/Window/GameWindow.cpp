@@ -178,10 +178,10 @@ void GameWindow::updateInterface(const Minesweeper &gameState)
   HeaderCompositor::buffInsertRemainingFlags(
       frameBuffer,
       config::GAME_WINDOW_PIXEL_WIDTH,
-      config::REMAINING_FLAGS_X,
-      config::REMAINING_FLAGS_Y,
-      config::INFO_PANEL_BUTTONS_HEIGHT * 2,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {config::REMAINING_FLAGS_X,
+       config::REMAINING_FLAGS_Y,
+       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
+       config::INFO_PANEL_BUTTONS_HEIGHT},
       gameState.getRemainingFlags());
 
   SpriteFactory::copySprite(
@@ -201,10 +201,7 @@ void GameWindow::updateInterface(const Minesweeper &gameState)
   HeaderCompositor::buffInsertRemainingFlags(
       frameBuffer,
       config::GAME_WINDOW_PIXEL_WIDTH,
-      config::TIMER_X,
-      config::TIMER_Y,
-      config::INFO_PANEL_BUTTONS_HEIGHT * 2,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {config::TIMER_X, config::TIMER_Y, config::INFO_PANEL_BUTTONS_HEIGHT * 2, config::INFO_PANEL_BUTTONS_HEIGHT},
       gameState.getSecondsElapsed());
 }
 

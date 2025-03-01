@@ -4,26 +4,13 @@
 #include <vector>
 
 #include "BufferCompositor.hpp"
+#include "Rect.h"
 
 class HeaderCompositor : public BufferCompositor
 {
 public:
-  static void buffInsertHeader(std::vector<uint32_t> &buff, const int buffWidth, const int buffSize);
-  static void buffInsertRemainingFlags(
-      std::vector<uint32_t> &buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const int n);
-  static void buffInsertTimer(
-      std::vector<uint32_t> &buff,
-      const int buffWidth,
-      const int x,
-      const int y,
-      const int w,
-      const int h,
-      const int t);
-  static void buffInsertGear(std::vector<uint32_t> &buff, const int buffWidth, const double center);
+  static void buffInsertHeader(std::vector<uint32_t> &buff, const int width, const int buffSize);
+  static void buffInsertRemainingFlags(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n);
+  static void buffInsertTimer(std::vector<uint32_t> &buff, const int width, const Rect rect, const int t);
+  static void buffInsertGear(std::vector<uint32_t> &buff, const int width, const double center);
 };

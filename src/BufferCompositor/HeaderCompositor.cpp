@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <config.hpp>
 
-void HeaderCompositor::buffInsertHeader(std::vector<uint32_t> &buff, const int buffWidth, const int buffSize)
+#include "Rect.h"
+
+void HeaderCompositor::buffInsertHeader(std::vector<uint32_t> &buff, const int width, const int buffSize)
 {
   // base
   std::fill_n(buff.begin(), buffSize, config::GREY);
@@ -10,22 +12,19 @@ void HeaderCompositor::buffInsertHeader(std::vector<uint32_t> &buff, const int b
   // border
   BufferCompositor::buffInsert3DBorder(
       buff,
-      buffWidth,
-      0,
-      0,
-      config::GAME_WINDOW_PIXEL_WIDTH,
-      config::GAME_WINDOW_PIXEL_HEIGHT,
+      width,
+      {0, 0, config::GAME_WINDOW_PIXEL_WIDTH, config::GAME_WINDOW_PIXEL_HEIGHT},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
 
   BufferCompositor::buffInsert3DBorder(
       buff,
-      buffWidth,
-      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-      config::GAME_WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+      width,
+      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+       config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+       config::GAME_WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D)},
       config::DARK_GREY,
       config::GREY,
       config::LIGHT_GREY);
@@ -33,60 +32,60 @@ void HeaderCompositor::buffInsertHeader(std::vector<uint32_t> &buff, const int b
   // header / game separator
   BufferCompositor::buffInsert3DBorder(
       buff,
-      buffWidth,
-      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-      config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-      config::FRAME_WIDTH,
+      width,
+      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+       config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+       config::FRAME_WIDTH},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
   // fill overlap
   BufferCompositor::buffInsertRectangle(
       buff,
-      buffWidth,
-      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
-      config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-      config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D,
+      width,
+      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
+       config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+       config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D},
       config::GREY);
   // top-left corner
   BufferCompositor::buffInsert3DCorner(
       buff,
-      buffWidth,
-      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-      config::CELL_BORDER_WIDTH_3D,
-      config::CELL_BORDER_WIDTH_3D,
+      width,
+      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+       config::CELL_BORDER_WIDTH_3D,
+       config::CELL_BORDER_WIDTH_3D},
       config::DARK_GREY,
       config::GREY,
       config::LIGHT_GREY);
   // top-right corner
   BufferCompositor::buffInsertRectangle(
       buff,
-      buffWidth,
-      config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
-      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-      config::CELL_BORDER_WIDTH_3D,
-      config::CELL_BORDER_WIDTH_3D,
+      width,
+      {config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
+       config::CELL_BORDER_WIDTH_3D,
+       config::CELL_BORDER_WIDTH_3D},
       config::LIGHT_GREY);
   // bottom-left corner
   BufferCompositor::buffInsertRectangle(
       buff,
-      buffWidth,
-      config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-      config::CELL_BORDER_WIDTH_3D,
-      config::CELL_BORDER_WIDTH_3D,
+      width,
+      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+       config::CELL_BORDER_WIDTH_3D,
+       config::CELL_BORDER_WIDTH_3D},
       config::DARK_GREY);
   // bottom-right corner
   BufferCompositor::buffInsert3DCorner(
       buff,
-      buffWidth,
-      config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
-      config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-      config::CELL_BORDER_WIDTH_3D,
-      config::CELL_BORDER_WIDTH_3D,
+      width,
+      {config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+       config::CELL_BORDER_WIDTH_3D,
+       config::CELL_BORDER_WIDTH_3D},
       config::DARK_GREY,
       config::GREY,
       config::LIGHT_GREY);
@@ -94,14 +93,11 @@ void HeaderCompositor::buffInsertHeader(std::vector<uint32_t> &buff, const int b
 
 void HeaderCompositor::buffInsertRemainingFlags(
     std::vector<uint32_t> &buff,
-    const int buffWidth,
-    const int x,
-    const int y,
-    const int w,
-    const int h,
+    const int width,
+    const Rect rect,
     const int n)
 {
-  BufferCompositor::buffInsertRectangle(buff, buffWidth, x, y, w, h, config::BLACK);
+  BufferCompositor::buffInsertRectangle(buff, width, rect, config::BLACK);
 
   const int leftDigit = n / 100;
   const int middleDigit = (n % 100) / 10;
@@ -109,33 +105,26 @@ void HeaderCompositor::buffInsertRemainingFlags(
   const int digits[3]{leftDigit, middleDigit, rightDigit};
 
   int pad = config::REMAINING_FLAGS_PAD;
-  while ((w - 4 * pad) % 3 != 0)
+  while ((rect.w - 4 * pad) % 3 != 0)
   {
     ++pad;
   }
 
-  const int digitWidth = (w - 4 * pad) / 3;
-  const int digitHeight = h - 2 * pad;
+  const int digitWidth = (rect.w - 4 * pad) / 3;
+  const int digitHeight = rect.h - 2 * pad;
 
   for (int i = 0; i < 3; ++i)
   {
-    const int digitX = x + pad + i * (digitWidth + pad);
-    const int digitY = y + pad;
+    const int digitX = rect.x + pad + i * (digitWidth + pad);
+    const int digitY = rect.y + pad;
 
-    buffInsertDigit(buff, buffWidth, digitX, digitY, digitWidth, digitHeight, digits[i], config::RED);
+    buffInsertDigit(buff, width, {digitX, digitY, digitWidth, digitHeight}, digits[i], config::RED);
   }
 };
 
-void HeaderCompositor::buffInsertTimer(
-    std::vector<uint32_t> &buff,
-    const int buffWidth,
-    const int x,
-    const int y,
-    const int w,
-    const int h,
-    const int t)
+void HeaderCompositor::buffInsertTimer(std::vector<uint32_t> &buff, const int width, const Rect rect, const int t)
 {
-  BufferCompositor::buffInsertRectangle(buff, buffWidth, x, y, w, h, config::BLACK);
+  BufferCompositor::buffInsertRectangle(buff, width, rect, config::BLACK);
 
   const int leftDigit = t / 100;
   const int middleDigit = (t % 100) / 10;
@@ -143,26 +132,26 @@ void HeaderCompositor::buffInsertTimer(
   const int digits[3]{leftDigit, middleDigit, rightDigit};
 
   int pad = config::REMAINING_FLAGS_PAD;
-  while ((w - 4 * pad) % 3 != 0)
+  while ((rect.w - 4 * pad) % 3 != 0)
   {
     ++pad;
   }
 
-  const int digitWidth = (w - 4 * pad) / 3;
-  const int digitHeight = h - 2 * pad;
+  const int digitWidth = (rect.w - 4 * pad) / 3;
+  const int digitHeight = rect.h - 2 * pad;
 
   for (int i = 0; i < 3; ++i)
   {
-    const int digitX = x + pad + i * (digitWidth + pad);
-    const int digitY = y + pad;
+    const int digitX = rect.x + pad + i * (digitWidth + pad);
+    const int digitY = rect.y + pad;
 
-    buffInsertDigit(buff, buffWidth, digitX, digitY, digitWidth, digitHeight, digits[i], config::RED);
+    buffInsertDigit(buff, width, {digitX, digitY, digitWidth, digitHeight}, digits[i], config::RED);
   }
 }
 
-void HeaderCompositor::buffInsertGear(std::vector<uint32_t> &buff, const int buffWidth, const double center)
+void HeaderCompositor::buffInsertGear(std::vector<uint32_t> &buff, const int width, const double center)
 {
-  const int size = buffWidth;
+  const int size = width;
   const double drawRadius = size / 2 * 0.9;
   const double radius = size / 2 * 0.2;
   const double radiusSqrd = radius * radius;

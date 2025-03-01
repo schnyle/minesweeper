@@ -5,9 +5,9 @@ int MinefieldElementCompositor::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL
 int MinefieldElementCompositor::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
 int MinefieldElementCompositor::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
 
-void MinefieldElementCompositor::buffInsertMine(std::vector<uint32_t> &buff, const int buffWidth)
+void MinefieldElementCompositor::buffInsertMine(std::vector<uint32_t> &buff, const int width)
 {
-  const int size = buffWidth;
+  const int size = width;
   const double mineCenter = size / 2;
   const double drawRadius = size / 3;
   const double glintCenter = 7 * size / 16;
@@ -54,7 +54,7 @@ void MinefieldElementCompositor::buffInsertMine(std::vector<uint32_t> &buff, con
   }
 }
 
-void MinefieldElementCompositor::buffInsertFlag(std::vector<uint32_t> &buff, const int buffWidth)
+void MinefieldElementCompositor::buffInsertFlag(std::vector<uint32_t> &buff, const int width)
 {
   const int totalFlagPoleHeight = 0.55 * config::CELL_PIXEL_SIZE;
 
@@ -68,10 +68,7 @@ void MinefieldElementCompositor::buffInsertFlag(std::vector<uint32_t> &buff, con
   BufferCompositor::buffInsertRectangle(
       buff,
       config::CELL_PIXEL_SIZE,
-      bottomBaseRectX,
-      bottomBaseRectY,
-      bottomBaseRectWidth,
-      bottomBaseRectHeight,
+      {bottomBaseRectX, bottomBaseRectY, bottomBaseRectWidth, bottomBaseRectHeight},
       config::BLACK);
 
   // top base rectangle
@@ -80,14 +77,14 @@ void MinefieldElementCompositor::buffInsertFlag(std::vector<uint32_t> &buff, con
   const int topBaseRectX = (config::CELL_PIXEL_SIZE - topBaseRectWidth) / 2;
   const int topBaseRectY = flagPoleBottomY - bottomBaseRectHeight - topBaseRectHeight;
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight, config::BLACK);
+      buff, config::CELL_PIXEL_SIZE, {topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight}, config::BLACK);
 
   // pole
   const int poleWidth = 0.05 * config::CELL_PIXEL_SIZE;
   const int poleX = (config::CELL_PIXEL_SIZE - poleWidth) / 2;
   const int poleY = (config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2;
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, poleX, poleY, poleWidth, totalFlagPoleHeight, config::BLACK);
+      buff, config::CELL_PIXEL_SIZE, {poleX, poleY, poleWidth, totalFlagPoleHeight}, config::BLACK);
 
   // flag
   const int flagSize = 0.3 * config::CELL_PIXEL_SIZE;
@@ -102,13 +99,13 @@ void MinefieldElementCompositor::buffInsertFlag(std::vector<uint32_t> &buff, con
       if (y <= (flagSlope * x) + (flagSize / 2) - 1 && y >= -(flagSlope * x) + (flagSize / 2) + 1)
       {
         const int buffX = x + flagX;
-        buff[buffY * buffWidth + buffX] = config::RED;
+        buff[buffY * width + buffX] = config::RED;
       }
     }
   }
 }
 
-void MinefieldElementCompositor::buffInsertOne(std::vector<uint32_t> &buff, const int buffWidth)
+void MinefieldElementCompositor::buffInsertOne(std::vector<uint32_t> &buff, const int width)
 {
   std::vector<uint32_t> sprite;
   sprite.resize(NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT);
@@ -121,30 +118,27 @@ void MinefieldElementCompositor::buffInsertOne(std::vector<uint32_t> &buff, cons
   BufferCompositor::buffInsertRectangle(
       sprite,
       NUMERIC_SPRITE_HEIGHT,
-      baseLeftPad,
-      NUMERIC_SPRITE_HEIGHT - baseHeight,
-      baseWidth,
-      baseHeight,
+      {baseLeftPad, NUMERIC_SPRITE_HEIGHT - baseHeight, baseWidth, baseHeight},
       config::BLUE);
 
   // stem
   const int stemWidth = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int stemLeftPad = (NUMERIC_SPRITE_HEIGHT - stemWidth) / 2;
   BufferCompositor::buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_HEIGHT, stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_HEIGHT, config::BLUE);
+      sprite, NUMERIC_SPRITE_HEIGHT, {stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_HEIGHT}, config::BLUE);
 
   // topper
   const int topperWidth = 0.2 * NUMERIC_SPRITE_HEIGHT;
   const int topperHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int topperX = stemLeftPad - topperWidth;
   BufferCompositor::buffInsertRectangle(
-      sprite, NUMERIC_SPRITE_HEIGHT, topperX, 0, topperWidth, topperHeight, config::BLUE);
+      sprite, NUMERIC_SPRITE_HEIGHT, {topperX, 0, topperWidth, topperHeight}, config::BLUE);
 
   for (int i = 0; i < NUMERIC_SPRITE_HEIGHT; ++i)
   {
     const auto spriteStart = sprite.begin() + i * NUMERIC_SPRITE_HEIGHT;
     const auto spriteEnd = sprite.begin() + i * NUMERIC_SPRITE_HEIGHT + NUMERIC_SPRITE_HEIGHT;
-    const int buffIdx = ((i + NUMERIC_SPRITE_PAD) * buffWidth) + NUMERIC_SPRITE_PAD;
+    const int buffIdx = ((i + NUMERIC_SPRITE_PAD) * width) + NUMERIC_SPRITE_PAD;
     std::copy(spriteStart, spriteEnd, buff.begin() + buffIdx);
   }
 }

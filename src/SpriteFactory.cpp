@@ -105,18 +105,12 @@ void SpriteFactory::makeRaisedResetButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert3DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -133,18 +127,12 @@ void SpriteFactory::makePressedResetButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert2DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::DARK_GREY);
 
   const double center = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
@@ -159,18 +147,12 @@ void SpriteFactory::makeRaisedButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert3DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -182,18 +164,12 @@ void SpriteFactory::makePressedButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert2DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::DARK_GREY);
 }
 
@@ -203,18 +179,12 @@ void SpriteFactory::makeWinnerResetButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert3DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -231,18 +201,12 @@ void SpriteFactory::makeLoserResetButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert3DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -259,18 +223,12 @@ void SpriteFactory::makeRaisedConfigButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert3DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -285,18 +243,12 @@ void SpriteFactory::makePressedConfigButtonSprite()
   BufferCompositor::buffInsertRectangle(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::GREY);
   BufferCompositor::buffInsert2DBorder(
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      0,
-      0,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
+      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
       config::DARK_GREY);
 
   const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
@@ -307,9 +259,9 @@ void SpriteFactory::makeEmptyCellSprite()
 {
   auto &buff = sprites->empty;
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
   BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
 }
 
 void SpriteFactory::makeHiddenCellSprite()
@@ -318,15 +270,12 @@ void SpriteFactory::makeHiddenCellSprite()
 
   // base
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
 
   BufferCompositor::buffInsert3DBorder(
       buff,
       config::CELL_PIXEL_SIZE,
-      0,
-      0,
-      config::CELL_PIXEL_SIZE,
-      config::CELL_PIXEL_SIZE,
+      {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE},
       config::LIGHT_GREY,
       config::GREY,
       config::DARK_GREY);
@@ -343,9 +292,9 @@ void SpriteFactory::makeMineCellSprite()
 {
   auto &buff = sprites->mine;
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
   BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
   MinefieldElementCompositor::buffInsertMine(buff, config::CELL_PIXEL_SIZE);
 }
 
@@ -353,9 +302,9 @@ void SpriteFactory::makeClickedMineCellSprite()
 {
   auto &buff = sprites->clickedMine;
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::RED);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::RED);
   BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
   MinefieldElementCompositor::buffInsertMine(buff, config::CELL_PIXEL_SIZE);
 };
 
@@ -363,9 +312,9 @@ void SpriteFactory::makeMineCellWithRedXSprite()
 {
   auto &buff = sprites->redXMine;
   BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
   BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, 0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE, config::DARK_GREY);
+      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
   MinefieldElementCompositor::buffInsertMine(buff, config::CELL_PIXEL_SIZE);
   FaceCompositor::buffInsertX(
       buff,
@@ -383,10 +332,10 @@ void SpriteFactory::makeNumericSprite(std::vector<uint32_t> &buff, const int n, 
   BufferCompositor::buffInsertDigit(
       buff,
       config::CELL_PIXEL_SIZE,
-      config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_WIDTH / 2,
-      config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_HEIGHT / 2,
-      NUMERIC_SPRITE_WIDTH,
-      NUMERIC_SPRITE_HEIGHT,
+      {config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_WIDTH / 2,
+       config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_HEIGHT / 2,
+       NUMERIC_SPRITE_WIDTH,
+       NUMERIC_SPRITE_HEIGHT},
       n,
       c);
 };

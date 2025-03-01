@@ -12,7 +12,7 @@ public:
   static int NUMERIC_SPRITE_WIDTH;
   static int NUMERIC_SPRITE_PAD;
 
-  static void buffInsertMine(std::vector<uint32_t> &buff, const int buffWidth);
-  static void buffInsertFlag(std::vector<uint32_t> &buff, const int buffWidth);
-  static void buffInsertOne(std::vector<uint32_t> &buff, const int buffWidth);
+  static void buffInsertMine(std::vector<uint32_t> &buff, const int width);
+  static void buffInsertFlag(std::vector<uint32_t> &buff, const int width);
+  static void buffInsertOne(std::vector<uint32_t> &buff, const int width);
 };
