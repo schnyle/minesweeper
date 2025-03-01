@@ -1,5 +1,8 @@
 #include <SDL2/SDL.h>
 #include <cstdint>
+#include <stdexcept>
+#include <string>
+#include <unistd.h>
 #include <utils.hpp>
 
 namespace utils
@@ -18,4 +21,21 @@ bool isPointInRect(const int x, const int y, const SDL_Rect &rect)
 {
   return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
 };
+
+void restartApplication()
+{
+  char *basePath = SDL_GetBasePath();
+  if (!basePath)
+  {
+    throw std::runtime_error("Couldn't get program path");
+  }
+
+  std::string programPath = std::string(basePath) + "minesweeper";
+  SDL_free(basePath);
+
+  char *argv[] = {programPath.data(), nullptr};
+  execv(argv[0], argv);
+
+  throw std::runtime_error("Failed to restart program");
+}
 } // namespace utils

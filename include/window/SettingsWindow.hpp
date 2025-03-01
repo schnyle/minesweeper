@@ -77,7 +77,6 @@ private:
 
   void createMenuItems();
   void createMenuButtons();
-  void restart();
 
   void renderContent();
   void renderMenuItem(const SettingsField &menuItem);

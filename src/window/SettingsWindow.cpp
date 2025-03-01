@@ -11,6 +11,13 @@
 
 #include "font.h"
 
+const int MENU_ITEM_X = 15;
+const int FIRST_MENU_FIELD_Y = 15;
+const int FIRST_MENU_BUTTON_Y = 250;
+const int MENU_ITEM_WIDTH = 300;
+const int MENU_ITEM_HEIGHT = 40;
+const int MENU_ITEM_VERT_SPACING = 1.5 * MENU_ITEM_HEIGHT;
+
 SettingsWindow::SettingsWindow() : Window()
 {
   if (TTF_Init() < 0)
@@ -46,13 +53,13 @@ void SettingsWindow::init()
       "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, pixelWidth, pixelHeight, SDL_WINDOW_SHOWN));
   if (window == nullptr)
   {
-    std::cerr << "error creating window: " << SDL_GetError() << std::endl;
+    throw std::runtime_error(std::string("error creating window: ") + SDL_GetError());
   }
 
   renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
   if (renderer == nullptr)
   {
-    std::cerr << "error getting config renderer: " << SDL_GetError() << std::endl;
+    throw std::runtime_error(std::string("error getting config renderer: ") + SDL_GetError());
   }
 
   windowID = SDL_GetWindowID(window.get());
@@ -154,7 +161,8 @@ void SettingsWindow::handleEvents(SDL_Event &event)
     }
     else if (keycode >= SDLK_0 && keycode <= SDLK_9)
     {
-      *value += keycode;
+      char digit = '0' + keycode - SDLK_0;
+      *value += digit;
     }
   }
   }
@@ -162,30 +170,28 @@ void SettingsWindow::handleEvents(SDL_Event &event)
 
 void SettingsWindow::createMenuItems()
 {
-  const int leftPad = 15;
-  const int topPad = 15;
-  const int ySep = 50;
-  const int menuItemRectWidth = config::CONFIG_WINDOW_PIXEL_WIDTH * 0.75;
-  const int menuItemRectHeight = 40;
-
-  settingsMenuFields.cellSize.rect = SDL_Rect{leftPad, topPad + 0 * ySep, menuItemRectWidth, menuItemRectHeight};
+  settingsMenuFields.cellSize.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_FIELD_Y + 0 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuFields.cellSize.label = "Cell Size";
   settingsMenuFields.cellSize.value = std::to_string(config::CELL_PIXEL_SIZE);
 
-  settingsMenuFields.windowWidth.rect = SDL_Rect{leftPad, topPad + 1 * ySep, menuItemRectWidth, menuItemRectHeight};
+  settingsMenuFields.windowWidth.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_FIELD_Y + 1 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuFields.windowWidth.label = "Window Width";
   settingsMenuFields.windowWidth.value = std::to_string(config::GAME_WINDOW_PIXEL_WIDTH);
 
-  settingsMenuFields.windowHeight.rect = SDL_Rect{leftPad, topPad + 2 * ySep, menuItemRectWidth, menuItemRectHeight};
+  settingsMenuFields.windowHeight.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_FIELD_Y + 2 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuFields.windowHeight.label = "Window Height";
   settingsMenuFields.windowHeight.value = std::to_string(config::GAME_WINDOW_PIXEL_HEIGHT);
 }
 
 void SettingsWindow::createMenuButtons()
 {
-  settingsMenuButtons.save.rect = SDL_Rect{15, 250, 200, 40};
+  settingsMenuButtons.save.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_BUTTON_Y + 0 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuButtons.save.label = "SAVE";
-  settingsMenuButtons.save.handleClick = [&]()
+  settingsMenuButtons.save.handleClick = [this]()
   {
     const int cellSize = std::stoi(settingsMenuFields.cellSize.value);
     const int windowW = std::stoi(settingsMenuFields.windowWidth.value);
@@ -193,28 +199,15 @@ void SettingsWindow::createMenuButtons()
     config::writeConfigFile(windowW, windowH, cellSize);
   };
 
-  settingsMenuButtons.restart.rect = SDL_Rect{15, 300, 200, 40};
+  settingsMenuButtons.restart.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_BUTTON_Y + 1 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuButtons.restart.label = "RESTART";
-  settingsMenuButtons.restart.handleClick = [&]()
-  {
-    char *basePath = SDL_GetBasePath();
-    if (!basePath)
-    {
-      throw std::runtime_error("Couldn't get program path");
-    }
+  settingsMenuButtons.restart.handleClick = []() { utils::restartApplication(); };
 
-    std::string programPath = std::string(basePath) + "minesweeper";
-    SDL_free(basePath);
-
-    char *argv[] = {programPath.data(), nullptr};
-    execv(argv[0], argv);
-
-    throw std::runtime_error("Failed to restart program");
-  };
-
-  settingsMenuButtons.defaults.rect = SDL_Rect{15, 350, 200, 40};
+  settingsMenuButtons.defaults.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_BUTTON_Y + 2 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuButtons.defaults.label = "DEFAULT";
-  settingsMenuButtons.defaults.handleClick = [&]()
+  settingsMenuButtons.defaults.handleClick = [this]()
   {
     const int defaultWidth = config::DISPLAY_PIXEL_WIDTH * config::GAME_WINDOW_TO_DISPLAY_RATIO;
     const int defaultHeight = config::DISPLAY_PIXEL_HEIGHT * config::GAME_WINDOW_TO_DISPLAY_RATIO;
@@ -224,40 +217,22 @@ void SettingsWindow::createMenuButtons()
     settingsMenuFields.windowHeight.value = std::to_string(defaultHeight);
   };
 
-  settingsMenuButtons.cancel.rect = SDL_Rect{15, 400, 200, 40};
+  settingsMenuButtons.cancel.rect = SDL_Rect{
+      MENU_ITEM_X, FIRST_MENU_BUTTON_Y + 3 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuButtons.cancel.label = "CANCEL";
   settingsMenuButtons.cancel.handleClick = [&]() { createMenuItems(); };
-}
-
-void SettingsWindow::restart()
-{
-  char *basePath = SDL_GetBasePath();
-  if (!basePath)
-  {
-    throw std::runtime_error("Couldn't get program path");
-  }
-
-  std::string programPath = std::string(basePath) + "minesweeper";
-  SDL_free(basePath);
-
-  char *argv[] = {programPath.data(), nullptr};
-  execv(argv[0], argv);
-
-  throw std::runtime_error("Failed to restart program");
 }
 
 void SettingsWindow::renderContent()
 {
   if (SDL_SetRenderDrawColor(renderer.get(), colors.grey.r, colors.grey.g, colors.grey.b, colors.grey.a) < 0)
   {
-    std::cerr << "error setting render draw color: " << SDL_GetError() << std::endl;
-    return;
+    throw std::runtime_error(std::string("error setting render draw color: ") + SDL_GetError());
   }
 
   if (SDL_RenderClear(renderer.get()) < 0)
   {
-    std::cerr << "error calling RenderClear: " << SDL_GetError() << std::endl;
-    return;
+    throw std::runtime_error(std::string("error calling RenderClear: ") + SDL_GetError());
   }
 
   for (const auto *menuItem : settingsMenuFields.items())
@@ -307,16 +282,14 @@ void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, c
   SDL_Surface *textSurface = TTF_RenderText_Solid(font24.get(), text.c_str(), {rgba.r, rgba.g, rgba.b, rgba.a});
   if (textSurface == nullptr)
   {
-    std::cerr << "error creating text surface: " << TTF_GetError() << std::endl;
-    return;
+    throw std::runtime_error(std::string("error creating text surface: ") + TTF_GetError());
   }
 
   SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer.get(), textSurface);
   if (textTexture == nullptr)
   {
-    std::cerr << "error creating text texture: " << SDL_GetError() << std::endl;
     SDL_FreeSurface(textSurface);
-    return;
+    throw std::runtime_error(std::string("error creating text texture: ") + SDL_GetError());
   }
 
   SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
