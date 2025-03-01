@@ -9,6 +9,7 @@
 class Minesweeper
 {
   friend class GameLoop;
+  friend class GameWindow;
 
 private:
   struct Cell
@@ -68,6 +69,5 @@ private:
   void revealAdjacentCells(const int row, const int col);
   void floodFillEmptyCells(const int row, const int col);
   void floodFillEmptyCellsRecursive(const int row, const int col, std::set<std::pair<int, int>> &visited);
-  bool handleEvents(SDL_Event &event);
   void checkForGameWon();
 };

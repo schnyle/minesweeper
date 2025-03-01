@@ -93,7 +93,7 @@ void SettingsWindow::update(Minesweeper &game)
   }
 }
 
-void SettingsWindow::handleEvents(SDL_Event &event)
+void SettingsWindow::handleEvent(SDL_Event &event)
 {
   const int cursorX = event.motion.x;
   const int cursorY = event.motion.y;

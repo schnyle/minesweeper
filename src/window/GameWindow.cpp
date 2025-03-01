@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <utils.hpp>
 #include <vector>
 
 GameWindow::GameWindow() : Window()
@@ -84,6 +85,94 @@ void GameWindow::update(Minesweeper &gameState)
   SDL_RenderPresent(renderer.get());
 };
 
+void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isGameLoopRunning)
+{
+  const int cursorX = event.motion.x;
+  const int cursorY = event.motion.y;
+
+  const SDL_Rect resetButtonRect{
+      config::RESET_BUTTON_X,
+      config::RESET_BUTTON_Y,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT};
+  const bool inResetButton = utils::isPointInRect(cursorX, cursorY, resetButtonRect);
+
+  const SDL_Rect configButtonRect{
+      config::CONFIG_BUTTON_X,
+      config::CONFIG_BUTTON_Y,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::INFO_PANEL_BUTTONS_HEIGHT};
+  const bool inConfigButton = utils::isPointInRect(cursorX, cursorY, configButtonRect);
+
+  const int row = (cursorY - gameAreaY) / config::CELL_PIXEL_SIZE;
+  const int col = (cursorX - gameAreaX) / config::CELL_PIXEL_SIZE;
+
+  const bool inXBounds = cursorX >= gameAreaX && col >= 0 && col < config::GRID_WIDTH;
+  const bool inYBounds = cursorY >= gameAreaY && row >= 0 && row < config::GRID_HEIGHT;
+  const bool inGameArea = inXBounds && inYBounds;
+
+  switch (event.type)
+  {
+  case SDL_MOUSEBUTTONDOWN:
+  {
+
+    if (inGameArea && !gameState.isGameOver)
+    {
+      switch (event.button.button)
+      {
+      case SDL_BUTTON_LEFT:
+        gameState.handleLeftClick(row, col);
+        break;
+      case SDL_BUTTON_MIDDLE:
+        gameState.handleMiddleClick(row, col);
+        break;
+      case SDL_BUTTON_RIGHT:
+        gameState.handleRightClick(row, col);
+        break;
+      }
+
+      gameState.checkForGameWon();
+    }
+
+    if (inResetButton && event.button.button == SDL_BUTTON_LEFT)
+    {
+      gameState.isResetButtonPressed = true;
+    }
+
+    if (inConfigButton && event.button.button == SDL_BUTTON_LEFT)
+    {
+      gameState.isConfigButtonPressed = true;
+    }
+
+    break;
+  }
+
+  case SDL_MOUSEBUTTONUP:
+  {
+    if (inResetButton && gameState.isResetButtonPressed)
+    {
+      gameState.reset();
+    }
+
+    if (inConfigButton && gameState.isConfigButtonPressed)
+    {
+      gameState.showConfigWindow = !gameState.showConfigWindow;
+    }
+
+    gameState.isConfigButtonPressed = false;
+    gameState.isResetButtonPressed = false;
+    break;
+  }
+
+  case SDL_KEYDOWN:
+    const auto keycode = event.key.keysym.sym;
+    if (keycode == SDLK_q || keycode == SDLK_x || keycode == SDLK_ESCAPE)
+    {
+      isGameLoopRunning = false;
+    }
+  }
+}
+
 void GameWindow::updateInterface(const Minesweeper &gameState)
 {
   HeaderCompositor::buffInsertRemainingFlags(
@@ -129,8 +218,8 @@ void GameWindow::updateFrameBuffer(const Minesweeper &gameState)
       const auto &sprite = getCellSprite(gameState, cellIndex);
 
       // could cache these values so they are only calculated once during construction/init...
-      const int x = gameAreaX + config::GRID_AREA_X_PAD + col * config::CELL_PIXEL_SIZE;
-      const int y = gameAreaY + config::GRID_AREA_Y_PAD + row * config::CELL_PIXEL_SIZE;
+      const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
+      const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
       SpriteFactory::copySprite(frameBuffer, sprite, config::CELL_PIXEL_SIZE, x, y);
     }
   }

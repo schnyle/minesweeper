@@ -18,7 +18,7 @@ public:
 
   void init() override;
   void update(Minesweeper &) override;
-  void handleEvents(SDL_Event &event);
+  void handleEvent(SDL_Event &event);
 
 private:
   std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font24{nullptr, &TTF_CloseFont};

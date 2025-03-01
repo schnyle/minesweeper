@@ -33,15 +33,12 @@ void GameLoop::handleEvents()
 
     if (event.window.windowID == renderer.gameWindow.getWindowID())
     {
-      if (!game.handleEvents(event))
-      {
-        isRunning = false;
-      }
+      renderer.gameWindow.handleEvent(event, game, isRunning);
     }
 
     if (event.window.windowID == renderer.settingsWindow.getWindowID())
     {
-      renderer.settingsWindow.handleEvents(event);
+      renderer.settingsWindow.handleEvent(event);
     }
   }
 }
