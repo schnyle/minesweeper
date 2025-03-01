@@ -14,16 +14,17 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
 set(SOURCES
+  src/BufferCompositor/BufferCompositor.cpp
+  src/BufferCompositor/FaceCompositor.cpp
+  src/BufferCompositor/HeaderCompositor.cpp
+  src/BufferCompositor/MinefieldElementCompositor.cpp
+  src/GameLoop.cpp
   src/main.cpp
   src/Minesweeper.cpp
+  src/SpriteFactory.cpp
+  src/utils.cpp
   src/window/GameWindow.cpp
   src/window/SettingsWindow.cpp
-  src/GameLoop.cpp
-  src/SpriteFactory.cpp
-  src/BufferCompositor/BufferCompositor.cpp
-  src/BufferCompositor/HeaderCompositor.cpp
-  src/BufferCompositor/FaceCompositor.cpp
-  src/BufferCompositor/MinefieldElementCompositor.cpp
 )
 
 # setup font embedding

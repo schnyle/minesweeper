@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <unistd.h>
+#include <utils.hpp>
 
 #include "font.h"
 
@@ -95,7 +96,7 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   case SDL_MOUSEBUTTONDOWN:
     for (auto *button : settingsMenuButtons.items())
     {
-      if (rectContainsPoint(button->rect, cursorX, cursorY))
+      if (utils::isPointInRect(cursorX, cursorY, button->rect))
       {
         button->isPressed = true;
         button->bgColorHex = config::LIGHT_BLUE;
@@ -104,7 +105,7 @@ void SettingsWindow::handleEvents(SDL_Event &event)
 
     for (auto *menuItem : settingsMenuFields.items())
     {
-      if (rectContainsPoint(menuItem->rect, cursorX, cursorY))
+      if (utils::isPointInRect(cursorX, cursorY, menuItem->rect))
       {
         menuItem->bgColorHex = config::LIGHT_BLUE;
         menuItem->isEditing = true;
@@ -121,7 +122,7 @@ void SettingsWindow::handleEvents(SDL_Event &event)
   case SDL_MOUSEBUTTONUP:
     for (auto *button : settingsMenuButtons.items())
     {
-      if (button->isPressed && rectContainsPoint(button->rect, cursorX, cursorY))
+      if (button->isPressed && utils::isPointInRect(cursorX, cursorY, button->rect))
       {
         button->handleClick();
       }
@@ -245,22 +246,6 @@ void SettingsWindow::restart()
   throw std::runtime_error("Failed to restart program");
 }
 
-bool SettingsWindow::rectContainsPoint(const SDL_Rect &rect, const int x, const int y)
-{
-  return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
-}
-
-SDL_Color SettingsWindow::hexToRgba(const uint32_t &hexColor)
-{
-  SDL_Color color;
-  color.r = (hexColor >> 24) & 0xff;
-  color.g = (hexColor >> 16) & 0xff;
-  color.b = (hexColor >> 8) & 0xff;
-  color.a = (hexColor >> 0) & 0xff;
-
-  return color;
-}
-
 void SettingsWindow::renderContent()
 {
   if (SDL_SetRenderDrawColor(renderer.get(), colors.grey.r, colors.grey.g, colors.grey.b, colors.grey.a) < 0)
@@ -281,7 +266,7 @@ void SettingsWindow::renderContent()
   }
   for (const auto *button : settingsMenuButtons.items())
   {
-    renderTextBox(button->label, colors.black, hexToRgba(button->bgColorHex), button->rect);
+    renderTextBox(button->label, colors.black, utils::hexToRgba(button->bgColorHex), button->rect);
   }
 
   SDL_RenderPresent(renderer.get());
@@ -291,7 +276,7 @@ void SettingsWindow::renderMenuItem(const SettingsField &menuItem)
 {
   const auto menuItemRect = menuItem.rect;
   const auto bgColorHex = menuItem.bgColorHex;
-  const SDL_Color bgColorRGBA = hexToRgba(bgColorHex);
+  const SDL_Color bgColorRGBA = utils::hexToRgba(bgColorHex);
   const std::string text = menuItem.label + ": " + menuItem.value;
 
   renderTextBox(text, colors.black, bgColorRGBA, menuItemRect);

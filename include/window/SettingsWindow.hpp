@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <utils.hpp>
 
 #include "Window.hpp"
 
@@ -20,17 +21,15 @@ public:
   void handleEvents(SDL_Event &event);
 
 private:
-  static SDL_Color hexToRgba(const uint32_t &hexColor);
-
   std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font24{nullptr, &TTF_CloseFont};
   std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> font48{nullptr, &TTF_CloseFont};
   bool showConfigWindow = false;
 
   struct
   {
-    SDL_Color black = hexToRgba(config::BLACK);
-    SDL_Color grey = hexToRgba(config::GREY);
-    SDL_Color darkGrey = hexToRgba(config::DARK_GREY);
+    SDL_Color black = utils::hexToRgba(config::BLACK);
+    SDL_Color grey = utils::hexToRgba(config::GREY);
+    SDL_Color darkGrey = utils::hexToRgba(config::DARK_GREY);
   } colors;
 
   struct SettingsField
@@ -79,7 +78,6 @@ private:
   void createMenuItems();
   void createMenuButtons();
   void restart();
-  bool rectContainsPoint(const SDL_Rect &rect, const int x, const int y);
 
   void renderContent();
   void renderMenuItem(const SettingsField &menuItem);
