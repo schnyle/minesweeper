@@ -23,8 +23,8 @@ set(SOURCES
   src/Minesweeper.cpp
   src/SpriteFactory.cpp
   src/utils.cpp
-  src/window/GameWindow.cpp
-  src/window/SettingsWindow.cpp
+  src/Window/GameWindow.cpp
+  src/Window/SettingsWindow.cpp
 )
 
 # setup font embedding
@@ -48,7 +48,7 @@ endif()
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/window
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Window
   ${CMAKE_CURRENT_SOURCE_DIR}/include/BufferCompositor
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src

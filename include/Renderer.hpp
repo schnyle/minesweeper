@@ -8,8 +8,8 @@
 #include <iostream>
 #include <memory>
 
-#include "window/GameWindow.hpp"
-#include "window/SettingsWindow.hpp"
+#include "Window/GameWindow.hpp"
+#include "Window/SettingsWindow.hpp"
 
 class Renderer
 {
