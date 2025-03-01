@@ -26,16 +26,16 @@ public:
   Minesweeper();
   ~Minesweeper() = default;
 
-  const Minefield &getMinefield() { return minefield; }
-  int getNumMines() { return numMines; }
-  int getNumFlags() { return numFlags; }
-  int getRemainingFlags() { return numMines - numFlags; }
-  int getSecondsElapsed() { return secondsElapsed; }
-  bool getIsGameOver() { return isGameOver; }
-  bool getIsGameWon() { return isGameWon; }
-  bool getIsResetButtonPressed() { return isResetButtonPressed; }
-  bool getIsConfigButtonPressed() { return isConfigButtonPressed; }
-  bool getShowConfigButton() { return showConfigWindow; };
+  const Minefield &getMinefield() const { return minefield; }
+  int getNumMines() const { return numMines; }
+  int getNumFlags() const { return numFlags; }
+  int getRemainingFlags() const { return numMines - numFlags; }
+  int getSecondsElapsed() const { return secondsElapsed; }
+  bool getIsGameOver() const { return isGameOver; }
+  bool getIsGameWon() const { return isGameWon; }
+  bool getIsResetButtonPressed() const { return isResetButtonPressed; }
+  bool getIsConfigButtonPressed() const { return isConfigButtonPressed; }
+  bool getShowConfigButton() const { return showConfigWindow; };
 
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);

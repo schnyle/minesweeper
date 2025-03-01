@@ -9,7 +9,7 @@
 
 #include "font.h"
 
-SettingsWindow::SettingsWindow()
+SettingsWindow::SettingsWindow() : Window()
 {
   if (TTF_Init() < 0)
   {
