@@ -26,41 +26,41 @@ void GameWindow::init()
   const int windowX = bounds.x + leftPad;
   const int windowY = bounds.y + topPad;
 
-  window = SDL_CreateWindow(
+  window.reset(SDL_CreateWindow(
       "Minesweeper",
       windowX,
       windowY,
       config::GAME_WINDOW_PIXEL_WIDTH,
       config::GAME_WINDOW_PIXEL_HEIGHT,
-      SDL_WINDOW_SHOWN);
-  SDL_SetWindowPosition(window, windowX, windowY);
-  SDL_ShowWindow(window);
+      SDL_WINDOW_SHOWN));
+  SDL_SetWindowPosition(window.get(), windowX, windowY);
+  SDL_ShowWindow(window.get());
 
   if (window == nullptr)
   {
     std::cerr << "error creating game window: " << SDL_GetError() << std::endl;
   }
 
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
 
   if (renderer == nullptr)
   {
     std::cerr << "error creating game window renderer: " << SDL_GetError() << std::endl;
   }
 
-  texture = SDL_CreateTexture(
-      renderer,
+  texture.reset(SDL_CreateTexture(
+      renderer.get(),
       SDL_PIXELFORMAT_RGBA8888,
       SDL_TEXTUREACCESS_STREAMING,
       config::GAME_WINDOW_PIXEL_WIDTH,
-      config::GAME_WINDOW_PIXEL_HEIGHT);
+      config::GAME_WINDOW_PIXEL_HEIGHT));
 
   if (texture == nullptr)
   {
     std::cerr << "error creating game window texture" << SDL_GetError() << std::endl;
   }
 
-  windowID = SDL_GetWindowID(window);
+  windowID = SDL_GetWindowID(window.get());
 };
 
 void GameWindow::update(Minesweeper &minesweeper)
@@ -71,15 +71,15 @@ void GameWindow::update(Minesweeper &minesweeper)
   void *pixels;
   int pitch;
 
-  SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+  SDL_LockTexture(texture.get(), nullptr, &pixels, &pitch);
   std::memcpy(
       pixels,
       frameBuffer.data(),
       config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT * sizeof(uint32_t));
 
-  SDL_UnlockTexture(texture);
-  SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-  SDL_RenderPresent(renderer);
+  SDL_UnlockTexture(texture.get());
+  SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
+  SDL_RenderPresent(renderer.get());
 };
 
 void GameWindow::updateInterface(Minesweeper &minesweeper)

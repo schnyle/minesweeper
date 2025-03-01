@@ -41,26 +41,26 @@ SettingsWindow::~SettingsWindow()
 
 void SettingsWindow::init()
 {
-  WIDTH = config::CONFIG_WINDOW_PIXEL_WIDTH;
-  HEIGHT = config::CONFIG_WINDOW_PIXEL_HEIGHT;
+  pixelWidth = config::CONFIG_WINDOW_PIXEL_WIDTH;
+  pixelHeight = config::CONFIG_WINDOW_PIXEL_HEIGHT;
 
   createMenuItems();
   createMenuButtons();
 
-  window = SDL_CreateWindow(
-      "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+  window.reset(SDL_CreateWindow(
+      "Minesweeper Settings", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, pixelWidth, pixelHeight, SDL_WINDOW_SHOWN));
   if (window == nullptr)
   {
     std::cerr << "error creating window: " << SDL_GetError() << std::endl;
   }
 
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
   if (renderer == nullptr)
   {
     std::cerr << "error getting config renderer: " << SDL_GetError() << std::endl;
   }
 
-  windowID = SDL_GetWindowID(window);
+  windowID = SDL_GetWindowID(window.get());
 }
 
 void SettingsWindow::update(Minesweeper &game)
@@ -77,12 +77,12 @@ void SettingsWindow::update(Minesweeper &game)
         init();
       }
 
-      SDL_ShowWindow(window);
+      SDL_ShowWindow(window.get());
       renderContent();
     }
     else
     {
-      SDL_HideWindow(window);
+      SDL_HideWindow(window.get());
     }
   }
   else if (showConfigWindow)
@@ -269,13 +269,13 @@ SDL_Color SettingsWindow::hexToRgba(const uint32_t &hexColor)
 
 void SettingsWindow::renderContent()
 {
-  if (SDL_SetRenderDrawColor(renderer, colors.grey.r, colors.grey.g, colors.grey.b, colors.grey.a) < 0)
+  if (SDL_SetRenderDrawColor(renderer.get(), colors.grey.r, colors.grey.g, colors.grey.b, colors.grey.a) < 0)
   {
     std::cerr << "error setting render draw color: " << SDL_GetError() << std::endl;
     return;
   }
 
-  if (SDL_RenderClear(renderer) < 0)
+  if (SDL_RenderClear(renderer.get()) < 0)
   {
     std::cerr << "error calling RenderClear: " << SDL_GetError() << std::endl;
     return;
@@ -290,7 +290,7 @@ void SettingsWindow::renderContent()
     renderTextBox(button->label, colors.black, hexToRgba(button->bgColorHex), button->rect);
   }
 
-  SDL_RenderPresent(renderer);
+  SDL_RenderPresent(renderer.get());
 }
 
 void SettingsWindow::renderMenuItem(const SettingsField &menuItem)
@@ -309,11 +309,11 @@ void SettingsWindow::renderTextBox(
     const SDL_Color &bgColor,
     const SDL_Rect &rect)
 {
-  SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-  SDL_RenderFillRect(renderer, &rect);
+  SDL_SetRenderDrawColor(renderer.get(), bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+  SDL_RenderFillRect(renderer.get(), &rect);
 
-  SDL_SetRenderDrawColor(renderer, textColor.r, textColor.g, textColor.b, textColor.a);
-  SDL_RenderDrawRect(renderer, &rect);
+  SDL_SetRenderDrawColor(renderer.get(), textColor.r, textColor.g, textColor.b, textColor.a);
+  SDL_RenderDrawRect(renderer.get(), &rect);
 
   renderText(text, colors.black, rect.x, rect.y);
 };
@@ -332,7 +332,7 @@ void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, c
     return;
   }
 
-  SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+  SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer.get(), textSurface);
   if (textTexture == nullptr)
   {
     std::cerr << "error creating text texture: " << SDL_GetError() << std::endl;
@@ -341,7 +341,7 @@ void SettingsWindow::renderText(const std::string text, const SDL_Color &rgba, c
   }
 
   SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
-  SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
+  SDL_RenderCopy(renderer.get(), textTexture, nullptr, &textRect);
 
   SDL_DestroyTexture(textTexture);
   SDL_FreeSurface(textSurface);

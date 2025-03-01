@@ -10,31 +10,29 @@
 class Window
 {
 public:
-  Window() { sprites = SpriteFactory::createSprites(); }
-  ~Window()
+  Window()
+      : window(nullptr, SDL_DestroyWindow), renderer(nullptr, SDL_DestroyRenderer), texture(nullptr, SDL_DestroyTexture)
   {
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
   }
+
+  virtual ~Window() = default;
 
   virtual void init() = 0;
   virtual void update(Minesweeper &) = 0;
 
-  SDL_Window *getWindow() const { return window; }
-  SDL_Renderer *getRenderer() const { return renderer; }
-  SDL_Texture *getTexture() const { return texture; }
+  SDL_Window *getWindow() const { return window.get(); }
+  SDL_Renderer *getRenderer() const { return renderer.get(); }
+  SDL_Texture *getTexture() const { return texture.get(); }
   Uint32 getWindowID() const { return windowID; }
 
 protected:
-  int WIDTH;
-  int HEIGHT;
+  int pixelWidth;
+  int pixelHeight;
 
-  SDL_Window *window = nullptr;
-  SDL_Renderer *renderer = nullptr;
-  SDL_Texture *texture = nullptr;
+  std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window;
+  std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer;
+  std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> texture;
   Uint32 windowID;
 
-  std::vector<uint32_t> frameBuffer;
-  std::unique_ptr<SpriteFactory::Sprites> sprites;
+  std::vector<uint32_t> frameBuffer = {};
 };
