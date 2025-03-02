@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <sprites.hpp>
 #include <stdexcept>
 #include <string>
 #include <utils.hpp>
@@ -184,16 +185,16 @@ void GameWindow::updateInterface(const Minesweeper &gameState)
        config::INFO_PANEL_BUTTONS_HEIGHT},
       gameState.getRemainingFlags());
 
-  SpriteFactory::copySprite(
-      frameBuffer,
+  sprites::copy(
       getResetButtonSprite(gameState),
+      frameBuffer,
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::RESET_BUTTON_X,
       config::RESET_BUTTON_Y);
 
-  SpriteFactory::copySprite(
-      frameBuffer,
+  sprites::copy(
       getConfigButtonSprite(gameState),
+      frameBuffer,
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::CONFIG_BUTTON_X,
       config::CONFIG_BUTTON_Y);
@@ -217,7 +218,7 @@ void GameWindow::updateFrameBuffer(const Minesweeper &gameState)
       // could cache these values so they are only calculated once during construction/init...
       const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
       const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
-      SpriteFactory::copySprite(frameBuffer, sprite, config::CELL_PIXEL_SIZE, x, y);
+      sprites::copy(sprite, frameBuffer, config::CELL_PIXEL_SIZE, x, y);
     }
   }
 };
@@ -226,20 +227,21 @@ const std::vector<uint32_t> &GameWindow::getResetButtonSprite(const Minesweeper 
 {
   if (gameState.getIsResetButtonPressed())
   {
-    return sprites->pressedResetButton;
+    return sprites::get()->pressedResetButton;
   }
 
   if (gameState.getIsGameOver())
   {
-    return gameState.getIsGameWon() ? sprites->winnerResetButton : sprites->loserResetButton;
+    return gameState.getIsGameWon() ? sprites::get()->winnerResetButton : sprites::get()->loserResetButton;
   }
 
-  return sprites->raisedResetButton;
+  return sprites::get()->raisedResetButton;
 }
 
 const std::vector<uint32_t> &GameWindow::getConfigButtonSprite(const Minesweeper &gameState) const
 {
-  return gameState.getIsConfigButtonPressed() ? sprites->pressedConfigButton : sprites->raisedConfigButton;
+  return gameState.getIsConfigButtonPressed() ? sprites::get()->pressedConfigButton
+                                              : sprites::get()->raisedConfigButton;
 }
 
 const std::vector<uint32_t> &GameWindow::getCellSprite(const Minesweeper &gameState, const int cellIndex) const
@@ -248,25 +250,25 @@ const std::vector<uint32_t> &GameWindow::getCellSprite(const Minesweeper &gameSt
 
   if (isHidden && !isFlagged)
   {
-    return sprites->hidden;
+    return sprites::get()->hidden;
   }
   else if (isHidden && isFlagged && !isMine && gameState.getIsGameOver())
   {
-    return sprites->redXMine;
+    return sprites::get()->redXMine;
   }
   else if (isHidden && isFlagged)
   {
-    return sprites->flag;
+    return sprites::get()->flag;
   }
   else
   {
     if (isMine)
     {
-      return isClicked ? sprites->clickedMine : sprites->mine;
+      return isClicked ? sprites::get()->clickedMine : sprites::get()->mine;
     }
     else
     {
-      return sprites->intToSpriteMap[nAdjacentMines];
+      return sprites::get()->intToSpriteMap.at(nAdjacentMines);
     }
   }
 }

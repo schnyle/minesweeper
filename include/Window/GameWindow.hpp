@@ -2,7 +2,6 @@
 
 #include <Minesweeper.hpp>
 #include <SDL2/SDL.h>
-#include <SpriteFactory.hpp>
 #include <config.hpp>
 #include <cstdint>
 #include <memory>
@@ -23,7 +22,6 @@ public:
 private:
   const int gameAreaX = config::GRID_AREA_X_PAD + config::FRAME_WIDTH;
   const int gameAreaY = config::GRID_AREA_Y_PAD + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
-  std::unique_ptr<SpriteFactory::Sprites> sprites = SpriteFactory::createSprites();
 
   void updateInterface(const Minesweeper &gameState);
   void updateFrameBuffer(const Minesweeper &gameState);

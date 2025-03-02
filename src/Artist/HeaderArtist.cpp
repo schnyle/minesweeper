@@ -1,7 +1,6 @@
 #include <FaceArtist.hpp>
 #include <HeaderArtist.hpp>
 #include <MinefieldElementArtist.hpp>
-#include <SpriteFactory.hpp>
 #include <algorithm>
 #include <config.hpp>
 #include <cstdint>

@@ -21,7 +21,7 @@ set(SOURCES
   src/GameLoop.cpp
   src/main.cpp
   src/Minesweeper.cpp
-  src/SpriteFactory.cpp
+  src/sprites.cpp
   src/utils.cpp
   src/Window/GameWindow.cpp
   src/Window/SettingsWindow.cpp

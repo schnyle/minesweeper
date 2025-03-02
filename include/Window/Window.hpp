@@ -2,7 +2,6 @@
 
 #include <Minesweeper.hpp>
 #include <SDL2/SDL.h>
-#include <SpriteFactory.hpp>
 #include <cstdint>
 #include <memory>
 #include <vector>
