@@ -6,7 +6,7 @@
 
 #include "Rect.h"
 
-class BufferCompositor
+class BaseArtist
 {
 protected:
   struct DigitSegments

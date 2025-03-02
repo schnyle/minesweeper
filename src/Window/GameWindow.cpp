@@ -1,5 +1,5 @@
 #include <GameWindow.hpp>
-#include <HeaderCompositor.hpp>
+#include <HeaderArtist.hpp>
 #include <SDL2/SDL.h>
 #include <config.hpp>
 #include <cstdint>
@@ -14,7 +14,7 @@ GameWindow::GameWindow() : Window()
 {
   frameBuffer.resize(config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
 
-  HeaderCompositor::drawHeader(
+  HeaderArtist::drawHeader(
       frameBuffer, config::GAME_WINDOW_PIXEL_WIDTH, config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
 }
 
@@ -175,7 +175,7 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
 
 void GameWindow::updateInterface(const Minesweeper &gameState)
 {
-  HeaderCompositor::drawRemainingFlags(
+  HeaderArtist::drawRemainingFlags(
       frameBuffer,
       config::GAME_WINDOW_PIXEL_WIDTH,
       {config::REMAINING_FLAGS_X,
@@ -198,7 +198,7 @@ void GameWindow::updateInterface(const Minesweeper &gameState)
       config::CONFIG_BUTTON_X,
       config::CONFIG_BUTTON_Y);
 
-  HeaderCompositor::drawRemainingFlags(
+  HeaderArtist::drawRemainingFlags(
       frameBuffer,
       config::GAME_WINDOW_PIXEL_WIDTH,
       {config::TIMER_X, config::TIMER_Y, config::INFO_PANEL_BUTTONS_HEIGHT * 2, config::INFO_PANEL_BUTTONS_HEIGHT},

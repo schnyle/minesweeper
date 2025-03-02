@@ -3,9 +3,9 @@
 #include <config.hpp>
 #include <vector>
 
-#include "BufferCompositor.hpp"
+#include "BaseArtist.hpp"
 
-class MinefieldElementCompositor : public BufferCompositor
+class MinefieldElementArtist : public BaseArtist
 {
 public:
   static int NUMERIC_SPRITE_HEIGHT;

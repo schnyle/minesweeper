@@ -1,21 +1,21 @@
-#include <HeaderCompositor.hpp>
+#include <HeaderArtist.hpp>
 #include <algorithm>
 #include <config.hpp>
 
 #include "Rect.h"
 
-void HeaderCompositor::drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c)
+void HeaderArtist::drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c)
 {
-  BufferCompositor::drawDigit(buff, width, rect, n, c);
+  BaseArtist::drawDigit(buff, width, rect, n, c);
 }
 
-void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, const int buffSize)
+void HeaderArtist::drawHeader(std::vector<uint32_t> &buff, const int width, const int buffSize)
 {
   // base
   std::fill_n(buff.begin(), buffSize, config::GREY);
 
   // border
-  BufferCompositor::draw3DBorder(
+  BaseArtist::draw3DBorder(
       buff,
       width,
       {0, 0, config::GAME_WINDOW_PIXEL_WIDTH, config::GAME_WINDOW_PIXEL_HEIGHT},
@@ -23,7 +23,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
       config::GREY,
       config::DARK_GREY);
 
-  BufferCompositor::draw3DBorder(
+  BaseArtist::draw3DBorder(
       buff,
       width,
       {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
@@ -35,7 +35,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
       config::LIGHT_GREY);
 
   // header / game separator
-  BufferCompositor::draw3DBorder(
+  BaseArtist::draw3DBorder(
       buff,
       width,
       {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
@@ -46,7 +46,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
       config::GREY,
       config::DARK_GREY);
   // fill overlap
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       buff,
       width,
       {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
@@ -55,7 +55,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
        config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D},
       config::GREY);
   // top-left corner
-  BufferCompositor::draw3DCorner(
+  BaseArtist::draw3DCorner(
       buff,
       width,
       {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
@@ -66,7 +66,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
       config::GREY,
       config::LIGHT_GREY);
   // top-right corner
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       buff,
       width,
       {config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
@@ -75,7 +75,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
        config::CELL_BORDER_WIDTH_3D},
       config::LIGHT_GREY);
   // bottom-left corner
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       buff,
       width,
       {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
@@ -84,7 +84,7 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
        config::CELL_BORDER_WIDTH_3D},
       config::DARK_GREY);
   // bottom-right corner
-  BufferCompositor::draw3DCorner(
+  BaseArtist::draw3DCorner(
       buff,
       width,
       {config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
@@ -96,9 +96,9 @@ void HeaderCompositor::drawHeader(std::vector<uint32_t> &buff, const int width, 
       config::LIGHT_GREY);
 };
 
-void HeaderCompositor::drawRemainingFlags(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n)
+void HeaderArtist::drawRemainingFlags(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n)
 {
-  BufferCompositor::drawRectangle(buff, width, rect, config::BLACK);
+  BaseArtist::drawRectangle(buff, width, rect, config::BLACK);
 
   const int leftDigit = n / 100;
   const int middleDigit = (n % 100) / 10;
@@ -123,9 +123,9 @@ void HeaderCompositor::drawRemainingFlags(std::vector<uint32_t> &buff, const int
   }
 };
 
-void HeaderCompositor::drawTimer(std::vector<uint32_t> &buff, const int width, const Rect rect, const int t)
+void HeaderArtist::drawTimer(std::vector<uint32_t> &buff, const int width, const Rect rect, const int t)
 {
-  BufferCompositor::drawRectangle(buff, width, rect, config::BLACK);
+  BaseArtist::drawRectangle(buff, width, rect, config::BLACK);
 
   const int leftDigit = t / 100;
   const int middleDigit = (t % 100) / 10;
@@ -150,7 +150,7 @@ void HeaderCompositor::drawTimer(std::vector<uint32_t> &buff, const int width, c
   }
 }
 
-void HeaderCompositor::drawGear(std::vector<uint32_t> &buff, const int width, const double center)
+void HeaderArtist::drawGear(std::vector<uint32_t> &buff, const int width, const double center)
 {
   const int size = width;
   const double drawRadius = size / 2 * 0.9;

@@ -14,10 +14,10 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
 set(SOURCES
-  src/BufferCompositor/BufferCompositor.cpp
-  src/BufferCompositor/FaceCompositor.cpp
-  src/BufferCompositor/HeaderCompositor.cpp
-  src/BufferCompositor/MinefieldElementCompositor.cpp
+  src/Artist/BaseArtist.cpp
+  src/Artist/FaceArtist.cpp
+  src/Artist/HeaderArtist.cpp
+  src/Artist/MinefieldElementArtist.cpp
   src/GameLoop.cpp
   src/main.cpp
   src/Minesweeper.cpp
@@ -48,8 +48,8 @@ endif()
 target_include_directories(${PROJECT_NAME}
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Artist
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Window
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/BufferCompositor
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_BINARY_DIR}/generated

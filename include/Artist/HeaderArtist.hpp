@@ -3,10 +3,10 @@
 #include <cstdint>
 #include <vector>
 
-#include "BufferCompositor.hpp"
+#include "BaseArtist.hpp"
 #include "Rect.h"
 
-class HeaderCompositor : public BufferCompositor
+class HeaderArtist : public BaseArtist
 {
 public:
   static void drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c);

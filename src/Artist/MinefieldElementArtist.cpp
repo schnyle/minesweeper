@@ -1,17 +1,17 @@
-#include <MinefieldElementCompositor.hpp>
+#include <MinefieldElementArtist.hpp>
 #include <cstdint>
 
-int MinefieldElementCompositor::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
-int MinefieldElementCompositor::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
-int MinefieldElementCompositor::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+int MinefieldElementArtist::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
+int MinefieldElementArtist::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
+int MinefieldElementArtist::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
 
-void MinefieldElementCompositor::drawMineCell(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::drawMineCell(std::vector<uint32_t> &buff, const int width)
 {
   draw2DCellBase(buff, width);
   drawMine(buff, width);
 };
 
-void MinefieldElementCompositor::drawClickedMineCell(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::drawClickedMineCell(std::vector<uint32_t> &buff, const int width)
 {
   const int height = buff.size() / width;
   const Rect rect = {0, 0, width, height};
@@ -20,7 +20,7 @@ void MinefieldElementCompositor::drawClickedMineCell(std::vector<uint32_t> &buff
   drawMine(buff, width);
 };
 
-void MinefieldElementCompositor::draw2DCellBase(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::draw2DCellBase(std::vector<uint32_t> &buff, const int width)
 {
   const int height = buff.size() / width;
   const Rect rect = {0, 0, width, height};
@@ -28,7 +28,7 @@ void MinefieldElementCompositor::draw2DCellBase(std::vector<uint32_t> &buff, con
   draw2DBorder(buff, width, rect, config::DARK_GREY);
 };
 
-void MinefieldElementCompositor::draw3DCellBase(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::draw3DCellBase(std::vector<uint32_t> &buff, const int width)
 {
   const int height = buff.size() / width;
   const Rect rect = {0, 0, width, height};
@@ -36,7 +36,7 @@ void MinefieldElementCompositor::draw3DCellBase(std::vector<uint32_t> &buff, con
   draw3DBorder(buff, width, rect, config::LIGHT_GREY, config::GREY, config::DARK_GREY);
 };
 
-void MinefieldElementCompositor::drawMine(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::drawMine(std::vector<uint32_t> &buff, const int width)
 {
   const int size = width;
   const double mineCenter = size / 2;
@@ -85,7 +85,7 @@ void MinefieldElementCompositor::drawMine(std::vector<uint32_t> &buff, const int
   }
 }
 
-void MinefieldElementCompositor::drawFlag(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::drawFlag(std::vector<uint32_t> &buff, const int width)
 {
   const int totalFlagPoleHeight = 0.55 * config::CELL_PIXEL_SIZE;
 
@@ -96,7 +96,7 @@ void MinefieldElementCompositor::drawFlag(std::vector<uint32_t> &buff, const int
   const int bottomBaseRectWidth = 0.5 * config::CELL_PIXEL_SIZE;
   const int bottomBaseRectX = (config::CELL_PIXEL_SIZE - bottomBaseRectWidth) / 2;
   const int bottomBaseRectY = flagPoleBottomY - bottomBaseRectHeight;
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       buff,
       config::CELL_PIXEL_SIZE,
       {bottomBaseRectX, bottomBaseRectY, bottomBaseRectWidth, bottomBaseRectHeight},
@@ -107,14 +107,14 @@ void MinefieldElementCompositor::drawFlag(std::vector<uint32_t> &buff, const int
   const int topBaseRectWidth = 0.33 * config::CELL_PIXEL_SIZE;
   const int topBaseRectX = (config::CELL_PIXEL_SIZE - topBaseRectWidth) / 2;
   const int topBaseRectY = flagPoleBottomY - bottomBaseRectHeight - topBaseRectHeight;
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       buff, config::CELL_PIXEL_SIZE, {topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight}, config::BLACK);
 
   // pole
   const int poleWidth = 0.05 * config::CELL_PIXEL_SIZE;
   const int poleX = (config::CELL_PIXEL_SIZE - poleWidth) / 2;
   const int poleY = (config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2;
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       buff, config::CELL_PIXEL_SIZE, {poleX, poleY, poleWidth, totalFlagPoleHeight}, config::BLACK);
 
   // flag
@@ -136,7 +136,7 @@ void MinefieldElementCompositor::drawFlag(std::vector<uint32_t> &buff, const int
   }
 }
 
-void MinefieldElementCompositor::drawOne(std::vector<uint32_t> &buff, const int width)
+void MinefieldElementArtist::drawOne(std::vector<uint32_t> &buff, const int width)
 {
   std::vector<uint32_t> sprite;
   sprite.resize(NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT);
@@ -146,7 +146,7 @@ void MinefieldElementCompositor::drawOne(std::vector<uint32_t> &buff, const int 
   const int baseHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int baseWidth = NUMERIC_SPRITE_WIDTH;
   const int baseLeftPad = (NUMERIC_SPRITE_HEIGHT - baseWidth) / 2;
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       sprite,
       NUMERIC_SPRITE_HEIGHT,
       {baseLeftPad, NUMERIC_SPRITE_HEIGHT - baseHeight, baseWidth, baseHeight},
@@ -155,14 +155,14 @@ void MinefieldElementCompositor::drawOne(std::vector<uint32_t> &buff, const int 
   // stem
   const int stemWidth = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int stemLeftPad = (NUMERIC_SPRITE_HEIGHT - stemWidth) / 2;
-  BufferCompositor::drawRectangle(
+  BaseArtist::drawRectangle(
       sprite, NUMERIC_SPRITE_HEIGHT, {stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_HEIGHT}, config::BLUE);
 
   // topper
   const int topperWidth = 0.2 * NUMERIC_SPRITE_HEIGHT;
   const int topperHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int topperX = stemLeftPad - topperWidth;
-  BufferCompositor::drawRectangle(sprite, NUMERIC_SPRITE_HEIGHT, {topperX, 0, topperWidth, topperHeight}, config::BLUE);
+  BaseArtist::drawRectangle(sprite, NUMERIC_SPRITE_HEIGHT, {topperX, 0, topperWidth, topperHeight}, config::BLUE);
 
   for (int i = 0; i < NUMERIC_SPRITE_HEIGHT; ++i)
   {

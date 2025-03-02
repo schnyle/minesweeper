@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "BufferCompositor.hpp"
+#include "BaseArtist.hpp"
 
-class FaceCompositor : public BufferCompositor
+class FaceArtist : public BaseArtist
 {
 public:
   static void drawFaceBase(std::vector<uint32_t> &buff, const int width, const double center);
