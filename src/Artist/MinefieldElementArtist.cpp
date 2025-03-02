@@ -1,10 +1,31 @@
 #include <FaceArtist.hpp>
 #include <MinefieldElementArtist.hpp>
 #include <cstdint>
+#include <sprites.hpp>
 
 int MinefieldElementArtist::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
 int MinefieldElementArtist::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
 int MinefieldElementArtist::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+
+void MinefieldElementArtist::updateMinefield(std::vector<uint32_t> &buff, const int width, Minesweeper &gameState)
+{
+  static int gameAreaX = config::GRID_AREA_X_PAD + config::FRAME_WIDTH;
+  static int gameAreaY = config::GRID_AREA_Y_PAD + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+
+  for (int row = 0; row < config::GRID_HEIGHT; ++row)
+  {
+    for (int col = 0; col < config::GRID_WIDTH; ++col)
+    {
+      const int cellIndex = row * config::GRID_WIDTH + col;
+      const auto &sprite = getCellSprite(gameState, cellIndex);
+
+      // could cache these values so they are only calculated once during construction/init...
+      const int x = gameAreaX + col * width;
+      const int y = gameAreaY + row * width;
+      sprites::copy(sprite, buff, width, x, y);
+    }
+  }
+};
 
 void MinefieldElementArtist::drawFlaggedCellSprite(std::vector<uint32_t> &buff, const int width)
 {
@@ -222,3 +243,32 @@ void MinefieldElementArtist::drawOne(std::vector<uint32_t> &buff, const int widt
     std::copy(spriteStart, spriteEnd, buff.begin() + buffIdx);
   }
 }
+
+const std::vector<uint32_t> &MinefieldElementArtist::getCellSprite(const Minesweeper &gameState, const int cellIndex)
+{
+  const auto &[isMine, isHidden, isFlagged, isClicked, nAdjacentMines] = gameState.getMinefield()[cellIndex];
+
+  if (isHidden && !isFlagged)
+  {
+    return sprites::get()->hidden;
+  }
+  else if (isHidden && isFlagged && !isMine && gameState.getIsGameOver())
+  {
+    return sprites::get()->redXMine;
+  }
+  else if (isHidden && isFlagged)
+  {
+    return sprites::get()->flag;
+  }
+  else
+  {
+    if (isMine)
+    {
+      return isClicked ? sprites::get()->clickedMine : sprites::get()->mine;
+    }
+    else
+    {
+      return sprites::get()->intToSpriteMap.at(nAdjacentMines);
+    }
+  }
+};

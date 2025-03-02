@@ -22,11 +22,4 @@ public:
 private:
   const int gameAreaX = config::GRID_AREA_X_PAD + config::FRAME_WIDTH;
   const int gameAreaY = config::GRID_AREA_Y_PAD + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
-
-  void updateInterface(const Minesweeper &gameState);
-  void updateFrameBuffer(const Minesweeper &gameState);
-
-  const std::vector<uint32_t> &getResetButtonSprite(const Minesweeper &gameState) const;
-  const std::vector<uint32_t> &getConfigButtonSprite(const Minesweeper &gameState) const;
-  const std::vector<uint32_t> &getCellSprite(const Minesweeper &gameState, const int cellIndex) const;
 };

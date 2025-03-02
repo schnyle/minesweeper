@@ -1,5 +1,6 @@
 #include <GameWindow.hpp>
 #include <HeaderArtist.hpp>
+#include <MinefieldElementArtist.hpp>
 #include <SDL2/SDL.h>
 #include <config.hpp>
 #include <cstdint>
@@ -69,8 +70,8 @@ void GameWindow::init()
 
 void GameWindow::update(Minesweeper &gameState)
 {
-  updateInterface(gameState);
-  updateFrameBuffer(gameState);
+  HeaderArtist::updateHeader(frameBuffer, config::GAME_WINDOW_PIXEL_WIDTH, gameState);
+  MinefieldElementArtist::updateMinefield(frameBuffer, config::CELL_PIXEL_SIZE, gameState);
 
   void *pixels;
   int pitch;
@@ -170,105 +171,6 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
     if (keycode == SDLK_q || keycode == SDLK_x || keycode == SDLK_ESCAPE)
     {
       isGameLoopRunning = false;
-    }
-  }
-}
-
-void GameWindow::updateInterface(const Minesweeper &gameState)
-{
-  HeaderArtist::drawRemainingFlags(
-      frameBuffer,
-      config::GAME_WINDOW_PIXEL_WIDTH,
-      {config::REMAINING_FLAGS_X,
-       config::REMAINING_FLAGS_Y,
-       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
-       config::INFO_PANEL_BUTTONS_HEIGHT},
-      gameState.getRemainingFlags());
-
-  sprites::copy(
-      getResetButtonSprite(gameState),
-      frameBuffer,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::RESET_BUTTON_X,
-      config::RESET_BUTTON_Y);
-
-  sprites::copy(
-      getConfigButtonSprite(gameState),
-      frameBuffer,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::CONFIG_BUTTON_X,
-      config::CONFIG_BUTTON_Y);
-
-  HeaderArtist::drawRemainingFlags(
-      frameBuffer,
-      config::GAME_WINDOW_PIXEL_WIDTH,
-      {config::TIMER_X, config::TIMER_Y, config::INFO_PANEL_BUTTONS_HEIGHT * 2, config::INFO_PANEL_BUTTONS_HEIGHT},
-      gameState.getSecondsElapsed());
-}
-
-void GameWindow::updateFrameBuffer(const Minesweeper &gameState)
-{
-  for (int row = 0; row < config::GRID_HEIGHT; ++row)
-  {
-    for (int col = 0; col < config::GRID_WIDTH; ++col)
-    {
-      const int cellIndex = row * config::GRID_WIDTH + col;
-      const auto &sprite = getCellSprite(gameState, cellIndex);
-
-      // could cache these values so they are only calculated once during construction/init...
-      const int x = gameAreaX + col * config::CELL_PIXEL_SIZE;
-      const int y = gameAreaY + row * config::CELL_PIXEL_SIZE;
-      sprites::copy(sprite, frameBuffer, config::CELL_PIXEL_SIZE, x, y);
-    }
-  }
-};
-
-const std::vector<uint32_t> &GameWindow::getResetButtonSprite(const Minesweeper &gameState) const
-{
-  if (gameState.getIsResetButtonPressed())
-  {
-    return sprites::get()->pressedResetButton;
-  }
-
-  if (gameState.getIsGameOver())
-  {
-    return gameState.getIsGameWon() ? sprites::get()->winnerResetButton : sprites::get()->loserResetButton;
-  }
-
-  return sprites::get()->raisedResetButton;
-}
-
-const std::vector<uint32_t> &GameWindow::getConfigButtonSprite(const Minesweeper &gameState) const
-{
-  return gameState.getIsConfigButtonPressed() ? sprites::get()->pressedConfigButton
-                                              : sprites::get()->raisedConfigButton;
-}
-
-const std::vector<uint32_t> &GameWindow::getCellSprite(const Minesweeper &gameState, const int cellIndex) const
-{
-  const auto &[isMine, isHidden, isFlagged, isClicked, nAdjacentMines] = gameState.getMinefield()[cellIndex];
-
-  if (isHidden && !isFlagged)
-  {
-    return sprites::get()->hidden;
-  }
-  else if (isHidden && isFlagged && !isMine && gameState.getIsGameOver())
-  {
-    return sprites::get()->redXMine;
-  }
-  else if (isHidden && isFlagged)
-  {
-    return sprites::get()->flag;
-  }
-  else
-  {
-    if (isMine)
-    {
-      return isClicked ? sprites::get()->clickedMine : sprites::get()->mine;
-    }
-    else
-    {
-      return sprites::get()->intToSpriteMap.at(nAdjacentMines);
     }
   }
 }

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <config.hpp>
 #include <cstdint>
+#include <sprites.hpp>
 #include <vector>
 
 #include "Rect.h"
@@ -26,7 +27,7 @@ void HeaderArtist::drawPressedResetButtonSprite(std::vector<uint32_t> &buff, con
   FaceArtist::drawFaceBase(buff, width, center);
   FaceArtist::drawFaceSmile(buff, width, center);
   FaceArtist::drawFaceAliveEyes(buff, width, center);
-};
+}
 
 void HeaderArtist::drawWinnerResetButtonSprite(std::vector<uint32_t> &buff, const int width)
 {
@@ -36,7 +37,7 @@ void HeaderArtist::drawWinnerResetButtonSprite(std::vector<uint32_t> &buff, cons
   FaceArtist::drawFaceBase(buff, width, center);
   FaceArtist::drawFaceSmile(buff, width, center);
   FaceArtist::drawFaceShade(buff, width);
-};
+}
 
 void HeaderArtist::drawLoserResetButtonSprite(std::vector<uint32_t> &buff, const int width)
 {
@@ -46,7 +47,7 @@ void HeaderArtist::drawLoserResetButtonSprite(std::vector<uint32_t> &buff, const
   FaceArtist::drawFaceBase(buff, width, center);
   FaceArtist::drawFaceFrown(buff, width);
   FaceArtist::drawFaceDeadEye(buff, width);
-};
+}
 
 void HeaderArtist::drawRaisedConfigButtonSprite(std::vector<uint32_t> &buff, const int width)
 {
@@ -54,7 +55,7 @@ void HeaderArtist::drawRaisedConfigButtonSprite(std::vector<uint32_t> &buff, con
 
   const double gearCenter = width * 0.5;
   HeaderArtist::drawGear(buff, width, gearCenter);
-};
+}
 
 void HeaderArtist::drawPressedConfigButtonSprite(std::vector<uint32_t> &buff, const int width)
 {
@@ -62,7 +63,39 @@ void HeaderArtist::drawPressedConfigButtonSprite(std::vector<uint32_t> &buff, co
 
   const double gearCenter = width * (0.5 + 0.025);
   HeaderArtist::drawGear(buff, width, gearCenter);
-};
+}
+
+void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, const Minesweeper &gameState)
+{
+  drawRemainingFlags(
+      buff,
+      width,
+      {config::REMAINING_FLAGS_X,
+       config::REMAINING_FLAGS_Y,
+       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
+       config::INFO_PANEL_BUTTONS_HEIGHT},
+      gameState.getRemainingFlags());
+
+  sprites::copy(
+      getResetButtonSprite(gameState),
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::RESET_BUTTON_X,
+      config::RESET_BUTTON_Y);
+
+  sprites::copy(
+      getConfigButtonSprite(gameState),
+      buff,
+      config::INFO_PANEL_BUTTONS_HEIGHT,
+      config::CONFIG_BUTTON_X,
+      config::CONFIG_BUTTON_Y);
+
+  drawRemainingFlags(
+      buff,
+      width,
+      {config::TIMER_X, config::TIMER_Y, config::INFO_PANEL_BUTTONS_HEIGHT * 2, config::INFO_PANEL_BUTTONS_HEIGHT},
+      gameState.getSecondsElapsed());
+}
 
 void HeaderArtist::drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c)
 {
@@ -280,4 +313,25 @@ void HeaderArtist::drawGear(std::vector<uint32_t> &buff, const int width, const 
       }
     }
   }
+}
+
+const std::vector<uint32_t> &HeaderArtist::getResetButtonSprite(const Minesweeper &gameState)
+{
+  if (gameState.getIsResetButtonPressed())
+  {
+    return sprites::get()->pressedResetButton;
+  }
+
+  if (gameState.getIsGameOver())
+  {
+    return gameState.getIsGameWon() ? sprites::get()->winnerResetButton : sprites::get()->loserResetButton;
+  }
+
+  return sprites::get()->raisedResetButton;
+}
+
+const std::vector<uint32_t> &HeaderArtist::getConfigButtonSprite(const Minesweeper &gameState)
+{
+  return gameState.getIsConfigButtonPressed() ? sprites::get()->pressedConfigButton
+                                              : sprites::get()->raisedConfigButton;
 }
