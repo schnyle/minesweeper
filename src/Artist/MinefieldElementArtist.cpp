@@ -1,3 +1,4 @@
+#include <FaceArtist.hpp>
 #include <MinefieldElementArtist.hpp>
 #include <cstdint>
 
@@ -5,11 +6,60 @@ int MinefieldElementArtist::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZ
 int MinefieldElementArtist::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
 int MinefieldElementArtist::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
 
+void MinefieldElementArtist::drawFlaggedCellSprite(std::vector<uint32_t> &buff, const int width)
+{
+  draw3DCellBase(buff, width);
+  drawFlag(buff, width);
+}
+
+void MinefieldElementArtist::drawMineCellSprite(std::vector<uint32_t> &buff, const int width)
+{
+  draw2DCellBase(buff, width);
+  drawMine(buff, width);
+};
+
+void MinefieldElementArtist::drawClickedMineCellSprite(std::vector<uint32_t> &buff, const int width)
+{
+  drawClickedMineCell(buff, width);
+}
+
+void MinefieldElementArtist::drawNumericSprite(
+    std::vector<uint32_t> &buff,
+    const int width,
+    const int n,
+    const uint32_t c)
+{
+  draw2DCellBase(buff, width);
+  if (n != 1)
+  {
+    drawDigit(
+        buff,
+        width,
+        {width / 2 - NUMERIC_SPRITE_WIDTH / 2,
+         width / 2 - NUMERIC_SPRITE_HEIGHT / 2,
+         NUMERIC_SPRITE_WIDTH,
+         NUMERIC_SPRITE_HEIGHT},
+        n,
+        c);
+  }
+  else
+  {
+    drawOne(buff, width);
+  }
+};
+
 void MinefieldElementArtist::drawMineCell(std::vector<uint32_t> &buff, const int width)
 {
   draw2DCellBase(buff, width);
   drawMine(buff, width);
 };
+
+void MinefieldElementArtist::drawMineCellRedXSprite(std::vector<uint32_t> &buff, const int width)
+{
+  draw2DCellBase(buff, width);
+  drawMine(buff, width);
+  FaceArtist::drawX(buff, width, config::RED, width / 2, width / 2, width * 0.7, 4);
+}
 
 void MinefieldElementArtist::drawClickedMineCell(std::vector<uint32_t> &buff, const int width)
 {

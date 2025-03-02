@@ -32,28 +32,28 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
   sprites->seven.resize(cellSpriteSize);
   sprites->eight.resize(cellSpriteSize);
 
-  makeRaisedResetButtonSprite();
-  makePressedResetButtonSprite();
-  makeWinnerResetButtonSprite();
-  makeLoserResetButtonSprite();
-  makeRaisedConfigButtonSprite();
-  makePressedConfigButtonSprite();
+  HeaderArtist::drawRaisedResetButtonSprite(sprites->raisedResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
+  HeaderArtist::drawPressedResetButtonSprite(sprites->pressedResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
+  HeaderArtist::drawWinnerResetButtonSprite(sprites->winnerResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
+  HeaderArtist::drawLoserResetButtonSprite(sprites->loserResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
+  HeaderArtist::drawRaisedConfigButtonSprite(sprites->raisedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
+  HeaderArtist::drawPressedConfigButtonSprite(sprites->pressedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
 
-  makeEmptyCellSprite();
-  makeHiddenCellSprite();
-  makeFlaggedCellSprite();
-  makeMineCellSprite();
-  makeClickedMineCellSprite();
-  makeMineCellWithRedXSprite();
+  MinefieldElementArtist::draw2DCellBase(sprites->empty, config::CELL_PIXEL_SIZE);
+  MinefieldElementArtist::draw3DCellBase(sprites->hidden, config::CELL_PIXEL_SIZE);
+  MinefieldElementArtist::drawFlaggedCellSprite(sprites->flag, config::CELL_PIXEL_SIZE);
+  MinefieldElementArtist::drawMineCellSprite(sprites->mine, config::CELL_PIXEL_SIZE);
+  MinefieldElementArtist::drawClickedMineCell(sprites->clickedMine, config::CELL_PIXEL_SIZE);
+  MinefieldElementArtist::drawMineCellRedXSprite(sprites->redXMine, config::CELL_PIXEL_SIZE);
 
-  makeOneSprite();
-  makeNumericSprite(sprites->two, 2, config::GREEN);
-  makeNumericSprite(sprites->three, 3, config::RED);
-  makeNumericSprite(sprites->four, 4, config::DARK_BLUE);
-  makeNumericSprite(sprites->five, 5, config::DARK_RED);
-  makeNumericSprite(sprites->six, 6, config::TURQUOISE);
-  makeNumericSprite(sprites->seven, 7, config::PURPLE);
-  makeNumericSprite(sprites->eight, 8, config::DARK_GREY);
+  MinefieldElementArtist::drawNumericSprite(sprites->one, config::CELL_PIXEL_SIZE, 1, config::BLUE);
+  MinefieldElementArtist::drawNumericSprite(sprites->two, config::CELL_PIXEL_SIZE, 2, config::GREEN);
+  MinefieldElementArtist::drawNumericSprite(sprites->three, config::CELL_PIXEL_SIZE, 3, config::RED);
+  MinefieldElementArtist::drawNumericSprite(sprites->four, config::CELL_PIXEL_SIZE, 4, config::DARK_BLUE);
+  MinefieldElementArtist::drawNumericSprite(sprites->five, config::CELL_PIXEL_SIZE, 5, config::DARK_RED);
+  MinefieldElementArtist::drawNumericSprite(sprites->six, config::CELL_PIXEL_SIZE, 6, config::TURQUOISE);
+  MinefieldElementArtist::drawNumericSprite(sprites->seven, config::CELL_PIXEL_SIZE, 7, config::PURPLE);
+  MinefieldElementArtist::drawNumericSprite(sprites->eight, config::CELL_PIXEL_SIZE, 7, config::DARK_GREY);
 
   sprites->intToSpriteMap = {
       {0, sprites->empty},
@@ -88,149 +88,7 @@ void SpriteFactory::copySprite(
   {
     const auto sourceRow = sprite.begin() + row * spriteWidth;
     const auto sourceRowEnd = sprite.begin() + (row * spriteWidth + spriteWidth);
-    const auto destinationRow = buff.begin() + rowColToWindowIndex(row + y, x);
+    const auto destinationRow = buff.begin() + (row + y) * config::GAME_WINDOW_PIXEL_WIDTH + x;
     std::copy(sourceRow, sourceRowEnd, destinationRow);
   }
 }
-
-void SpriteFactory::makeRaisedResetButtonSprite()
-{
-  auto &buff = sprites->raisedResetButton;
-  MinefieldElementArtist::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-
-  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  FaceArtist::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-};
-
-void SpriteFactory::makePressedResetButtonSprite()
-{
-  auto &buff = sprites->pressedResetButton;
-  MinefieldElementArtist::draw2DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-
-  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
-  FaceArtist::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-};
-
-void SpriteFactory::makeWinnerResetButtonSprite()
-{
-  auto &buff = sprites->winnerResetButton;
-  MinefieldElementArtist::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-
-  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  FaceArtist::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceShade(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-}
-
-void SpriteFactory::makeLoserResetButtonSprite()
-{
-  auto &buff = sprites->loserResetButton;
-  MinefieldElementArtist::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-
-  const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  FaceArtist::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceArtist::drawFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceArtist::drawFaceDeadEye(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-}
-
-void SpriteFactory::makeRaisedConfigButtonSprite()
-{
-  auto &buff = sprites->raisedConfigButton;
-  MinefieldElementArtist::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-
-  const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  HeaderArtist::drawGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
-}
-
-void SpriteFactory::makePressedConfigButtonSprite()
-{
-  auto &buff = sprites->pressedConfigButton;
-  MinefieldElementArtist::draw2DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-
-  const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
-  HeaderArtist::drawGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
-}
-
-void SpriteFactory::makeEmptyCellSprite()
-{
-  auto &buff = sprites->empty;
-  MinefieldElementArtist::draw2DCellBase(buff, config::CELL_PIXEL_SIZE);
-}
-
-void SpriteFactory::makeHiddenCellSprite()
-{
-  auto &buff = sprites->hidden;
-  MinefieldElementArtist::draw3DCellBase(buff, config::CELL_PIXEL_SIZE);
-}
-
-void SpriteFactory::makeFlaggedCellSprite()
-{
-  auto &buff = sprites->flag;
-  MinefieldElementArtist::draw3DCellBase(buff, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawFlag(buff, config::CELL_PIXEL_SIZE);
-}
-
-void SpriteFactory::makeMineCellSprite()
-{
-  auto &buff = sprites->mine;
-  MinefieldElementArtist::draw2DCellBase(buff, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawMine(buff, config::CELL_PIXEL_SIZE);
-}
-
-void SpriteFactory::makeClickedMineCellSprite()
-{
-  auto &buff = sprites->clickedMine;
-  MinefieldElementArtist::drawClickedMineCell(buff, config::CELL_PIXEL_SIZE);
-};
-
-void SpriteFactory::makeMineCellWithRedXSprite()
-{
-  auto &buff = sprites->redXMine;
-  MinefieldElementArtist::draw2DCellBase(buff, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawMine(buff, config::CELL_PIXEL_SIZE);
-  FaceArtist::drawX(
-      buff,
-      config::CELL_PIXEL_SIZE,
-      config::RED,
-      config::CELL_PIXEL_SIZE / 2,
-      config::CELL_PIXEL_SIZE / 2,
-      config::CELL_PIXEL_SIZE * 0.7,
-      4);
-}
-
-void SpriteFactory::makeNumericSprite(std::vector<uint32_t> &buff, const int n, const uint32_t c)
-{
-  buff = sprites->empty;
-  HeaderArtist::drawDigit(
-      buff,
-      config::CELL_PIXEL_SIZE,
-      {config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_WIDTH / 2,
-       config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_HEIGHT / 2,
-       NUMERIC_SPRITE_WIDTH,
-       NUMERIC_SPRITE_HEIGHT},
-      n,
-      c);
-};
-
-void SpriteFactory::makeOneSprite()
-{
-  auto &buff = sprites->one;
-  buff = sprites->empty;
-  MinefieldElementArtist::drawOne(buff, config::CELL_PIXEL_SIZE);
-}
-
-int SpriteFactory::rowColToWindowIndex(const int row, const int col)
-{
-  return row * config::GAME_WINDOW_PIXEL_WIDTH + col;
-}
-
-int SpriteFactory::rowColToCellIndex(const int row, const int col) { return row * config::CELL_PIXEL_SIZE + col; }
-
-std::pair<int, int> SpriteFactory::rowColToPixelPoint(const int row, const int col)
-{
-  return {col * config::CELL_PIXEL_SIZE, row * config::CELL_PIXEL_SIZE};
-};

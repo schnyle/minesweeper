@@ -51,27 +51,4 @@ public:
 
 private:
   Sprites *sprites;
-
-  int NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
-  int NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
-  int NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
-
-  void makeRaisedResetButtonSprite();
-  void makePressedResetButtonSprite();
-  void makeWinnerResetButtonSprite();
-  void makeLoserResetButtonSprite();
-  void makeRaisedConfigButtonSprite();
-  void makePressedConfigButtonSprite();
-  void makeEmptyCellSprite();
-  void makeHiddenCellSprite();
-  void makeFlaggedCellSprite();
-  void makeMineCellSprite();
-  void makeClickedMineCellSprite();
-  void makeMineCellWithRedXSprite();
-  void makeNumericSprite(std::vector<uint32_t> &buff, const int n, const uint32_t c);
-  void makeOneSprite();
-
-  static int rowColToWindowIndex(const int row, const int col);
-  static int rowColToCellIndex(const int row, const int col);
-  static std::pair<int, int> rowColToPixelPoint(const int row, const int col);
 };
