@@ -2,11 +2,11 @@
 #include <HeaderArtist.hpp>
 #include <MinefieldArtist.hpp>
 #include <SDL2/SDL.h>
+#include <Sprites.hpp>
 #include <config.hpp>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
-#include <sprites.hpp>
 #include <stdexcept>
 #include <string>
 #include <utils.hpp>

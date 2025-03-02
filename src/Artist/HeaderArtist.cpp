@@ -1,10 +1,10 @@
 #include <FaceArtist.hpp>
 #include <HeaderArtist.hpp>
 #include <MinefieldArtist.hpp>
+#include <Sprites.hpp>
 #include <algorithm>
 #include <config.hpp>
 #include <cstdint>
-#include <sprites.hpp>
 #include <vector>
 
 #include "Rect.h"
@@ -109,14 +109,14 @@ void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, co
        config::INFO_PANEL_BUTTONS_HEIGHT},
       gameState.getRemainingFlags());
 
-  sprites::copy(
+  Sprites::getInstance().copy(
       getResetButtonSprite(gameState),
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::RESET_BUTTON_X,
       config::RESET_BUTTON_Y);
 
-  sprites::copy(
+  Sprites::getInstance().copy(
       getConfigButtonSprite(gameState),
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
@@ -316,19 +316,20 @@ const std::vector<uint32_t> &HeaderArtist::getResetButtonSprite(const Minesweepe
 {
   if (gameState.getIsResetButtonPressed())
   {
-    return sprites::get()->pressedResetButton;
+    return Sprites::getInstance().get()->pressedResetButton;
   }
 
   if (gameState.getIsGameOver())
   {
-    return gameState.getIsGameWon() ? sprites::get()->winnerResetButton : sprites::get()->loserResetButton;
+    return gameState.getIsGameWon() ? Sprites::getInstance().get()->winnerResetButton
+                                    : Sprites::getInstance().get()->loserResetButton;
   }
 
-  return sprites::get()->raisedResetButton;
+  return Sprites::getInstance().get()->raisedResetButton;
 }
 
 const std::vector<uint32_t> &HeaderArtist::getConfigButtonSprite(const Minesweeper &gameState)
 {
-  return gameState.getIsConfigButtonPressed() ? sprites::get()->pressedConfigButton
-                                              : sprites::get()->raisedConfigButton;
+  return gameState.getIsConfigButtonPressed() ? Sprites::getInstance().get()->pressedConfigButton
+                                              : Sprites::getInstance().get()->raisedConfigButton;
 }

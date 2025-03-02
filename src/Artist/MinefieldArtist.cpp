@@ -1,7 +1,7 @@
 #include <FaceArtist.hpp>
 #include <MinefieldArtist.hpp>
+#include <Sprites.hpp>
 #include <cstdint>
-#include <sprites.hpp>
 
 // private static ints
 
@@ -26,7 +26,7 @@ void MinefieldArtist::updateMinefield(std::vector<uint32_t> &buff, const int wid
       // could cache these values so they are only calculaated once during construction/init...
       const int x = gameAreaX + col * width;
       const int y = gameAreaY + row * width;
-      sprites::copy(sprite, buff, width, x, y);
+      Sprites::getInstance().copy(sprite, buff, width, x, y);
     }
   }
 };
@@ -235,25 +235,25 @@ const std::vector<uint32_t> &MinefieldArtist::getCellSprite(const Minesweeper &g
 
   if (isHidden && !isFlagged)
   {
-    return sprites::get()->hidden;
+    return Sprites::getInstance().get()->hidden;
   }
   else if (isHidden && isFlagged && !isMine && gameState.getIsGameOver())
   {
-    return sprites::get()->redXMine;
+    return Sprites::getInstance().get()->redXMine;
   }
   else if (isHidden && isFlagged)
   {
-    return sprites::get()->flag;
+    return Sprites::getInstance().get()->flag;
   }
   else
   {
     if (isMine)
     {
-      return isClicked ? sprites::get()->clickedMine : sprites::get()->mine;
+      return isClicked ? Sprites::getInstance().get()->clickedMine : Sprites::getInstance().get()->mine;
     }
     else
     {
-      return sprites::get()->intToSpriteMap.at(nAdjacentMines);
+      return Sprites::getInstance().get()->intToSpriteMap.at(nAdjacentMines);
     }
   }
 };

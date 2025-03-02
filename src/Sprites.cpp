@@ -1,15 +1,43 @@
 #include <HeaderArtist.hpp>
 #include <MinefieldArtist.hpp>
+#include <Sprites.hpp>
 #include <config.hpp>
 #include <cstdint>
 #include <memory>
-#include <sprites.hpp>
 #include <vector>
 
-namespace sprites
+Sprites::Sprites()
 {
-std::unique_ptr<SpriteData> data = std::make_unique<SpriteData>();
-void init()
+  allocateMemory();
+  drawSprites();
+  createIntToSpriteMap();
+}
+
+Sprites &Sprites::getInstance()
+{
+  static Sprites instance;
+  return instance;
+}
+
+const Sprites::SpriteData *Sprites::get() { return data.get(); };
+
+void Sprites::copy(
+    const std::vector<uint32_t> &source,
+    std::vector<uint32_t> &target,
+    const int width,
+    const int x,
+    const int y)
+{
+  for (int row = 0; row < width; ++row)
+  {
+    const auto first = source.begin() + row * width;
+    const auto last = source.begin() + (row * width + width);
+    const auto result = target.begin() + (row + y) * config::GAME_WINDOW_PIXEL_WIDTH + x;
+    std::copy(first, last, result);
+  }
+};
+
+void Sprites::allocateMemory()
 {
   int resetButtonSize = config::INFO_PANEL_BUTTONS_HEIGHT * config::INFO_PANEL_BUTTONS_HEIGHT;
   int cellSpriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE;
@@ -35,7 +63,10 @@ void init()
   data->six.resize(cellSpriteSize);
   data->seven.resize(cellSpriteSize);
   data->eight.resize(cellSpriteSize);
+};
 
+void Sprites::drawSprites()
+{
   HeaderArtist::drawRaisedResetButtonSprite(data->raisedResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
   HeaderArtist::drawPressedResetButtonSprite(data->pressedResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
   HeaderArtist::drawWinnerResetButtonSprite(data->winnerResetButton, config::INFO_PANEL_BUTTONS_HEIGHT);
@@ -58,7 +89,10 @@ void init()
   MinefieldArtist::drawNumericSprite(data->six, config::CELL_PIXEL_SIZE, 6, config::TURQUOISE);
   MinefieldArtist::drawNumericSprite(data->seven, config::CELL_PIXEL_SIZE, 7, config::PURPLE);
   MinefieldArtist::drawNumericSprite(data->eight, config::CELL_PIXEL_SIZE, 8, config::DARK_GREY);
+};
 
+void Sprites::createIntToSpriteMap()
+{
   data->intToSpriteMap = {
       {0, data->empty},
       {1, data->one},
@@ -70,19 +104,4 @@ void init()
       {7, data->seven},
       {8, data->eight},
   };
-}
-
-const SpriteData *get() { return data.get(); };
-
-void copy(const std::vector<uint32_t> &source, std::vector<uint32_t> &target, const int width, const int x, const int y)
-{
-  for (int row = 0; row < width; ++row)
-  {
-    const auto first = source.begin() + row * width;
-    const auto last = source.begin() + (row * width + width);
-    const auto result = target.begin() + (row + y) * config::GAME_WINDOW_PIXEL_WIDTH + x;
-    std::copy(first, last, result);
-  }
 };
-
-} // namespace sprites
