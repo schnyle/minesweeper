@@ -3,9 +3,13 @@
 #include <cstdint>
 #include <sprites.hpp>
 
+// private static ints
+
 int MinefieldArtist::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
 int MinefieldArtist::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
 int MinefieldArtist::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+
+// public
 
 void MinefieldArtist::updateMinefield(std::vector<uint32_t> &buff, const int width, Minesweeper &gameState)
 {
@@ -19,12 +23,22 @@ void MinefieldArtist::updateMinefield(std::vector<uint32_t> &buff, const int wid
       const int cellIndex = row * config::GRID_WIDTH + col;
       const auto &sprite = getCellSprite(gameState, cellIndex);
 
-      // could cache these values so they are only calculated once during construction/init...
+      // could cache these values so they are only calculaated once during construction/init...
       const int x = gameAreaX + col * width;
       const int y = gameAreaY + row * width;
       sprites::copy(sprite, buff, width, x, y);
     }
   }
+};
+
+void MinefieldArtist::drawEmptyCellSprite(std::vector<uint32_t> &buff, const int width)
+{
+  draw2DCellBase(buff, width);
+};
+
+void MinefieldArtist::drawHiddenCellSprite(std::vector<uint32_t> &buff, const int width)
+{
+  draw3DCellBase(buff, width);
 };
 
 void MinefieldArtist::drawFlaggedCellSprite(std::vector<uint32_t> &buff, const int width)
@@ -39,9 +53,20 @@ void MinefieldArtist::drawMineCellSprite(std::vector<uint32_t> &buff, const int 
   drawMine(buff, width);
 };
 
+void MinefieldArtist::drawMineCellRedXSprite(std::vector<uint32_t> &buff, const int width)
+{
+  draw2DCellBase(buff, width);
+  drawMine(buff, width);
+  drawX(buff, width, config::RED, width / 2, width / 2, width * 0.7, 4);
+}
+
 void MinefieldArtist::drawClickedMineCellSprite(std::vector<uint32_t> &buff, const int width)
 {
-  drawClickedMineCell(buff, width);
+  const int height = buff.size() / width;
+  const Rect rect = {0, 0, width, height};
+  drawRectangle(buff, width, rect, config::RED);
+  draw2DBorder(buff, width, rect, config::DARK_GREY);
+  drawMine(buff, width);
 }
 
 void MinefieldArtist::drawNumericSprite(std::vector<uint32_t> &buff, const int width, const int n, const uint32_t c)
@@ -65,43 +90,7 @@ void MinefieldArtist::drawNumericSprite(std::vector<uint32_t> &buff, const int w
   }
 };
 
-void MinefieldArtist::drawMineCell(std::vector<uint32_t> &buff, const int width)
-{
-  draw2DCellBase(buff, width);
-  drawMine(buff, width);
-};
-
-void MinefieldArtist::drawMineCellRedXSprite(std::vector<uint32_t> &buff, const int width)
-{
-  draw2DCellBase(buff, width);
-  drawMine(buff, width);
-  FaceArtist::drawX(buff, width, config::RED, width / 2, width / 2, width * 0.7, 4);
-}
-
-void MinefieldArtist::drawClickedMineCell(std::vector<uint32_t> &buff, const int width)
-{
-  const int height = buff.size() / width;
-  const Rect rect = {0, 0, width, height};
-  drawRectangle(buff, width, rect, config::RED);
-  draw2DBorder(buff, width, rect, config::DARK_GREY);
-  drawMine(buff, width);
-};
-
-void MinefieldArtist::draw2DCellBase(std::vector<uint32_t> &buff, const int width)
-{
-  const int height = buff.size() / width;
-  const Rect rect = {0, 0, width, height};
-  drawRectangle(buff, width, rect, config::GREY);
-  draw2DBorder(buff, width, rect, config::DARK_GREY);
-};
-
-void MinefieldArtist::draw3DCellBase(std::vector<uint32_t> &buff, const int width)
-{
-  const int height = buff.size() / width;
-  const Rect rect = {0, 0, width, height};
-  drawRectangle(buff, width, rect, config::GREY);
-  draw3DBorder(buff, width, rect, config::LIGHT_GREY, config::GREY, config::DARK_GREY);
-};
+// private
 
 void MinefieldArtist::drawMine(std::vector<uint32_t> &buff, const int width)
 {

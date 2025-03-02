@@ -43,11 +43,11 @@ void init()
   HeaderArtist::drawRaisedConfigButtonSprite(data->raisedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
   HeaderArtist::drawPressedConfigButtonSprite(data->pressedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
 
-  MinefieldArtist::draw2DCellBase(data->empty, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::draw3DCellBase(data->hidden, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawEmptyCellSprite(data->empty, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawHiddenCellSprite(data->hidden, config::CELL_PIXEL_SIZE);
   MinefieldArtist::drawFlaggedCellSprite(data->flag, config::CELL_PIXEL_SIZE);
   MinefieldArtist::drawMineCellSprite(data->mine, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::drawClickedMineCell(data->clickedMine, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawClickedMineCellSprite(data->clickedMine, config::CELL_PIXEL_SIZE);
   MinefieldArtist::drawMineCellRedXSprite(data->redXMine, config::CELL_PIXEL_SIZE);
 
   MinefieldArtist::drawNumericSprite(data->one, config::CELL_PIXEL_SIZE, 1, config::BLUE);

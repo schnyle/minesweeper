@@ -211,38 +211,3 @@ void FaceArtist::drawFaceShade(std::vector<uint32_t> &buff, const int width)
     }
   }
 }
-
-void FaceArtist::drawX(
-    std::vector<uint32_t> &buff,
-    const int width,
-    const uint32_t color,
-    const double xCenter,
-    const double yCenter,
-    const double xSize,
-    const double xThickness)
-{
-  const int size = width;
-  const double xRadius = xThickness / std::sqrt(2);
-
-  for (int y = 0; y < size; ++y)
-  {
-    for (int x = 0; x < size; ++x)
-    {
-      const int dx = x - xCenter;
-      const int dy = y - yCenter;
-
-      if (std::abs(dx) > xSize / 2 || std::abs(dy) > xSize / 2)
-      {
-        continue;
-      }
-
-      const bool positiveDiag = dy <= dx + xRadius && dy >= dx - xRadius;
-      const bool negativeDiag = dy <= -dx + xRadius && dy >= -dx - xRadius;
-
-      if (positiveDiag || negativeDiag)
-      {
-        buff[y * size + x] = color;
-      }
-    }
-  }
-}

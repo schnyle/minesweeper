@@ -5,47 +5,22 @@
 #include <cstdint>
 #include <stdexcept>
 
-BaseArtist::DigitSegments BaseArtist::intToDigitSegments(const int n)
+// public
+
+void BaseArtist::draw2DCellBase(std::vector<uint32_t> &buff, const int width)
 {
-  if (n < 0 || n > 9)
-  {
-    throw std::out_of_range("Digit must be in [0, 9]");
-  }
+  const int height = buff.size() / width;
+  const Rect rect = {0, 0, width, height};
+  drawRectangle(buff, width, rect, config::GREY);
+  draw2DBorder(buff, width, rect, config::DARK_GREY);
+};
 
-  switch (n)
-  {
-  case 0:
-    return {true, true, true, false, true, true, true};
-  case 1:
-    return {false, false, true, false, false, false, true};
-  case 2:
-    return {true, false, true, true, true, true, false};
-  case 3:
-    return {true, false, true, true, true, false, true};
-  case 4:
-    return {false, true, true, true, false, false, true};
-  case 5:
-    return {true, true, false, true, true, false, true};
-  case 6:
-    return {true, true, false, true, true, true, true};
-  case 7:
-    return {true, false, true, false, false, false, true};
-  case 8:
-    return {true, true, true, true, true, true, true};
-  case 9:
-    return {true, true, true, true, false, false, true};
-  }
-
-  throw std::runtime_error("Error converting int to DigitSegments");
-}
-
-void BaseArtist::drawRectangle(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c)
+void BaseArtist::draw3DCellBase(std::vector<uint32_t> &buff, const int width)
 {
-  for (int row = rect.y; row < rect.y + rect.h; ++row)
-  {
-    const int index = row * width + rect.x;
-    std::fill_n(buff.begin() + index, rect.w, c);
-  }
+  const int height = buff.size() / width;
+  const Rect rect = {0, 0, width, height};
+  drawRectangle(buff, width, rect, config::GREY);
+  draw3DBorder(buff, width, rect, config::LIGHT_GREY, config::GREY, config::DARK_GREY);
 };
 
 void BaseArtist::draw2DBorder(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c)
@@ -139,6 +114,15 @@ void BaseArtist::draw3DCorner(
   }
 }
 
+void BaseArtist::drawRectangle(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c)
+{
+  for (int row = rect.y; row < rect.y + rect.h; ++row)
+  {
+    const int index = row * width + rect.x;
+    std::fill_n(buff.begin() + index, rect.w, c);
+  }
+};
+
 void BaseArtist::drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c)
 {
   int segmentWidth = 0.15 * 0.6 * config::CELL_PIXEL_SIZE;
@@ -183,4 +167,75 @@ void BaseArtist::drawDigit(std::vector<uint32_t> &buff, const int width, const R
   {
     BaseArtist::drawRectangle(buff, width, {rightX, botVertY, segmentWidth, rect.h / 2}, c);
   }
+}
+
+void BaseArtist::drawX(
+    std::vector<uint32_t> &buff,
+    const int width,
+    const uint32_t c,
+    const double xCenter,
+    const double yCenter,
+    const double xSize,
+    const double xThickness)
+{
+  const int size = width;
+  const double xRadius = xThickness / std::sqrt(2);
+
+  for (int y = 0; y < size; ++y)
+  {
+    for (int x = 0; x < size; ++x)
+    {
+      const int dx = x - xCenter;
+      const int dy = y - yCenter;
+
+      if (std::abs(dx) > xSize / 2 || std::abs(dy) > xSize / 2)
+      {
+        continue;
+      }
+
+      const bool positiveDiag = dy <= dx + xRadius && dy >= dx - xRadius;
+      const bool negativeDiag = dy <= -dx + xRadius && dy >= -dx - xRadius;
+
+      if (positiveDiag || negativeDiag)
+      {
+        buff[y * size + x] = c;
+      }
+    }
+  }
+}
+
+// private
+
+BaseArtist::DigitSegments BaseArtist::intToDigitSegments(const int n)
+{
+  if (n < 0 || n > 9)
+  {
+    throw std::out_of_range("Digit must be in [0, 9]");
+  }
+
+  switch (n)
+  {
+  case 0:
+    return {true, true, true, false, true, true, true};
+  case 1:
+    return {false, false, true, false, false, false, true};
+  case 2:
+    return {true, false, true, true, true, true, false};
+  case 3:
+    return {true, false, true, true, true, false, true};
+  case 4:
+    return {false, true, true, true, false, false, true};
+  case 5:
+    return {true, true, false, true, true, false, true};
+  case 6:
+    return {true, true, false, true, true, true, true};
+  case 7:
+    return {true, false, true, false, false, false, true};
+  case 8:
+    return {true, true, true, true, true, true, true};
+  case 9:
+    return {true, true, true, true, false, false, true};
+  }
+
+  throw std::runtime_error("Error converting int to DigitSegments");
 }
