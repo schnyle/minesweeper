@@ -1,6 +1,7 @@
 #include <HeaderArtist.hpp>
 #include <MinefieldArtist.hpp>
 #include <Sprites.hpp>
+#include <algorithm>
 #include <config.hpp>
 #include <cstdint>
 #include <memory>
@@ -28,12 +29,12 @@ void Sprites::copy(
     const int x,
     const int y)
 {
+  // assumes square buffers
   for (int row = 0; row < width; ++row)
   {
     const auto first = source.begin() + row * width;
-    const auto last = source.begin() + (row * width + width);
     const auto result = target.begin() + (row + y) * config::GAME_WINDOW_PIXEL_WIDTH + x;
-    std::copy(first, last, result);
+    std::copy_n(first, width, result);
   }
 };
 

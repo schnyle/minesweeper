@@ -7,7 +7,7 @@
 
 class Sprites
 {
-public:
+private:
   struct SpriteData
   {
     std::vector<uint32_t> raisedResetButton;
@@ -34,6 +34,7 @@ public:
     std::map<int, std::vector<uint32_t>> intToSpriteMap;
   };
 
+public:
   static Sprites &getInstance();
   static void
   copy(const std::vector<uint32_t> &source, std::vector<uint32_t> &target, const int width, const int x, const int y);
@@ -48,7 +49,6 @@ private:
   Sprites(Sprites &&) = delete;
   Sprites &operator=(Sprites &&) = delete;
 
-  bool isInitialized = false;
   std::unique_ptr<SpriteData> data = std::make_unique<SpriteData>();
 
   void allocateMemory();
