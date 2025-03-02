@@ -1,7 +1,7 @@
 #include <FaceCompositor.hpp>
 #include <cstdint>
 
-void FaceCompositor::buffInsertFaceBase(std::vector<uint32_t> &buff, const int width, const double center)
+void FaceCompositor::drawFaceBase(std::vector<uint32_t> &buff, const int width, const double center)
 {
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
@@ -40,7 +40,7 @@ void FaceCompositor::buffInsertFaceBase(std::vector<uint32_t> &buff, const int w
   }
 };
 
-void FaceCompositor::buffInsertFaceSmile(std::vector<uint32_t> &buff, const int width, const double center)
+void FaceCompositor::drawFaceSmile(std::vector<uint32_t> &buff, const int width, const double center)
 {
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
@@ -76,7 +76,7 @@ void FaceCompositor::buffInsertFaceSmile(std::vector<uint32_t> &buff, const int 
   }
 };
 
-void FaceCompositor::buffInsertFaceFrown(std::vector<uint32_t> &buff, const int width)
+void FaceCompositor::drawFaceFrown(std::vector<uint32_t> &buff, const int width)
 {
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
@@ -113,7 +113,7 @@ void FaceCompositor::buffInsertFaceFrown(std::vector<uint32_t> &buff, const int 
   }
 };
 
-void FaceCompositor::buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const int width, const double center)
+void FaceCompositor::drawFaceAliveEyes(std::vector<uint32_t> &buff, const int width, const double center)
 {
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
@@ -153,7 +153,7 @@ void FaceCompositor::buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const 
   }
 };
 
-void FaceCompositor::buffInsertFaceDeadEyes(std::vector<uint32_t> &buff, const int width)
+void FaceCompositor::drawFaceDeadEye(std::vector<uint32_t> &buff, const int width)
 {
   const int size = width;
   const double leftEyeX = size * 25 / 64;
@@ -163,11 +163,11 @@ void FaceCompositor::buffInsertFaceDeadEyes(std::vector<uint32_t> &buff, const i
   const double eyeRadius = size / 8;
   const int xLineThickness = 2;
 
-  buffInsertX(buff, width, config::BLACK, leftEyeX, leftEyeY, eyeRadius, xLineThickness);
-  buffInsertX(buff, width, config::BLACK, rightEyeX, rightEyeY, eyeRadius, xLineThickness);
+  drawX(buff, width, config::BLACK, leftEyeX, leftEyeY, eyeRadius, xLineThickness);
+  drawX(buff, width, config::BLACK, rightEyeX, rightEyeY, eyeRadius, xLineThickness);
 }
 
-void FaceCompositor::buffInsertFaceShades(std::vector<uint32_t> &buff, const int width)
+void FaceCompositor::drawFaceShade(std::vector<uint32_t> &buff, const int width)
 {
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
@@ -212,7 +212,7 @@ void FaceCompositor::buffInsertFaceShades(std::vector<uint32_t> &buff, const int
   }
 }
 
-void FaceCompositor::buffInsertX(
+void FaceCompositor::drawX(
     std::vector<uint32_t> &buff,
     const int width,
     const uint32_t color,

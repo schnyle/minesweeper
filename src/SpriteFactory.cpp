@@ -12,8 +12,6 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
 {
   sprites->raisedResetButton.resize(resetButtonSize);
   sprites->pressedResetButton.resize(resetButtonSize);
-  sprites->raisedButton.resize(resetButtonSize);
-  sprites->pressedButton.resize(resetButtonSize);
   sprites->winnerResetButton.resize(resetButtonSize);
   sprites->loserResetButton.resize(resetButtonSize);
   sprites->raisedConfigButton.resize(resetButtonSize);
@@ -36,8 +34,6 @@ SpriteFactory::SpriteFactory(Sprites *spriteObjs) : sprites(spriteObjs)
 
   makeRaisedResetButtonSprite();
   makePressedResetButtonSprite();
-  makeRaisedButtonSprite();
-  makePressedButtonSprite();
   makeWinnerResetButtonSprite();
   makeLoserResetButtonSprite();
   makeRaisedConfigButtonSprite();
@@ -102,221 +98,103 @@ void SpriteFactory::copySprite(
 void SpriteFactory::makeRaisedResetButtonSprite()
 {
   auto &buff = sprites->raisedResetButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert3DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 
   const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
 };
 
 void SpriteFactory::makePressedResetButtonSprite()
 {
   auto &buff = sprites->pressedResetButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert2DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw2DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 
   const double center = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceAliveEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
 };
-
-void SpriteFactory::makeRaisedButtonSprite()
-{
-  auto &buff = sprites->raisedButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert3DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
-}
-
-void SpriteFactory::makePressedButtonSprite()
-{
-  auto &buff = sprites->pressedButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert2DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::DARK_GREY);
-}
 
 void SpriteFactory::makeWinnerResetButtonSprite()
 {
   auto &buff = sprites->winnerResetButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert3DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 
   const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceShades(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  FaceCompositor::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceSmile(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceShade(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 }
 
 void SpriteFactory::makeLoserResetButtonSprite()
 {
   auto &buff = sprites->loserResetButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert3DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 
   const double center = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  FaceCompositor::buffInsertFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
-  FaceCompositor::buffInsertFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
-  FaceCompositor::buffInsertFaceDeadEyes(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  FaceCompositor::drawFaceBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT, center);
+  FaceCompositor::drawFaceFrown(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
+  FaceCompositor::drawFaceDeadEye(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 }
 
 void SpriteFactory::makeRaisedConfigButtonSprite()
 {
   auto &buff = sprites->raisedConfigButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert3DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw3DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 
   const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * 0.5;
-  HeaderCompositor::buffInsertGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
+  HeaderCompositor::drawGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
 }
 
 void SpriteFactory::makePressedConfigButtonSprite()
 {
   auto &buff = sprites->pressedConfigButton;
-  BufferCompositor::buffInsertRectangle(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::GREY);
-  BufferCompositor::buffInsert2DBorder(
-      buff,
-      config::INFO_PANEL_BUTTONS_HEIGHT,
-      {0, 0, config::INFO_PANEL_BUTTONS_HEIGHT, config::INFO_PANEL_BUTTONS_HEIGHT},
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw2DCellBase(buff, config::INFO_PANEL_BUTTONS_HEIGHT);
 
   const double gearCenter = config::INFO_PANEL_BUTTONS_HEIGHT * (0.5 + 0.025);
-  HeaderCompositor::buffInsertGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
+  HeaderCompositor::drawGear(buff, config::INFO_PANEL_BUTTONS_HEIGHT, gearCenter);
 }
 
 void SpriteFactory::makeEmptyCellSprite()
 {
   auto &buff = sprites->empty;
-  BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
-  BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
+  MinefieldElementCompositor::draw2DCellBase(buff, config::CELL_PIXEL_SIZE);
 }
 
 void SpriteFactory::makeHiddenCellSprite()
 {
   auto &buff = sprites->hidden;
-
-  // base
-  BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
-
-  BufferCompositor::buffInsert3DBorder(
-      buff,
-      config::CELL_PIXEL_SIZE,
-      {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+  MinefieldElementCompositor::draw3DCellBase(buff, config::CELL_PIXEL_SIZE);
 }
 
 void SpriteFactory::makeFlaggedCellSprite()
 {
   auto &buff = sprites->flag;
-  buff = sprites->hidden;
-  MinefieldElementCompositor::buffInsertFlag(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::draw3DCellBase(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::drawFlag(buff, config::CELL_PIXEL_SIZE);
 }
 
 void SpriteFactory::makeMineCellSprite()
 {
   auto &buff = sprites->mine;
-  BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
-  BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
-  MinefieldElementCompositor::buffInsertMine(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::draw2DCellBase(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::drawMine(buff, config::CELL_PIXEL_SIZE);
 }
 
 void SpriteFactory::makeClickedMineCellSprite()
 {
   auto &buff = sprites->clickedMine;
-  BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::RED);
-  BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
-  MinefieldElementCompositor::buffInsertMine(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::drawClickedMineCell(buff, config::CELL_PIXEL_SIZE);
 };
 
 void SpriteFactory::makeMineCellWithRedXSprite()
 {
   auto &buff = sprites->redXMine;
-  BufferCompositor::buffInsertRectangle(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::GREY);
-  BufferCompositor::buffInsert2DBorder(
-      buff, config::CELL_PIXEL_SIZE, {0, 0, config::CELL_PIXEL_SIZE, config::CELL_PIXEL_SIZE}, config::DARK_GREY);
-  MinefieldElementCompositor::buffInsertMine(buff, config::CELL_PIXEL_SIZE);
-  FaceCompositor::buffInsertX(
+  MinefieldElementCompositor::draw2DCellBase(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::drawMine(buff, config::CELL_PIXEL_SIZE);
+  FaceCompositor::drawX(
       buff,
       config::CELL_PIXEL_SIZE,
       config::RED,
@@ -329,7 +207,7 @@ void SpriteFactory::makeMineCellWithRedXSprite()
 void SpriteFactory::makeNumericSprite(std::vector<uint32_t> &buff, const int n, const uint32_t c)
 {
   buff = sprites->empty;
-  BufferCompositor::buffInsertDigit(
+  HeaderCompositor::drawDigit(
       buff,
       config::CELL_PIXEL_SIZE,
       {config::CELL_PIXEL_SIZE / 2 - NUMERIC_SPRITE_WIDTH / 2,
@@ -344,7 +222,7 @@ void SpriteFactory::makeOneSprite()
 {
   auto &buff = sprites->one;
   buff = sprites->empty;
-  MinefieldElementCompositor::buffInsertOne(buff, config::CELL_PIXEL_SIZE);
+  MinefieldElementCompositor::drawOne(buff, config::CELL_PIXEL_SIZE);
 }
 
 int SpriteFactory::rowColToWindowIndex(const int row, const int col)

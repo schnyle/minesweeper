@@ -7,13 +7,13 @@
 class FaceCompositor : public BufferCompositor
 {
 public:
-  static void buffInsertFaceBase(std::vector<uint32_t> &buff, const int width, const double center);
-  static void buffInsertFaceSmile(std::vector<uint32_t> &buff, const int width, const double center);
-  static void buffInsertFaceFrown(std::vector<uint32_t> &buff, const int width);
-  static void buffInsertFaceAliveEyes(std::vector<uint32_t> &buff, const int width, const double center);
-  static void buffInsertFaceDeadEyes(std::vector<uint32_t> &buff, const int width);
-  static void buffInsertFaceShades(std::vector<uint32_t> &buff, const int width);
-  static void buffInsertX(
+  static void drawFaceBase(std::vector<uint32_t> &buff, const int width, const double center);
+  static void drawFaceSmile(std::vector<uint32_t> &buff, const int width, const double center);
+  static void drawFaceFrown(std::vector<uint32_t> &buff, const int width);
+  static void drawFaceAliveEyes(std::vector<uint32_t> &buff, const int width, const double center);
+  static void drawFaceDeadEye(std::vector<uint32_t> &buff, const int width);
+  static void drawFaceShade(std::vector<uint32_t> &buff, const int width);
+  static void drawX(
       std::vector<uint32_t> &buff,
       const int width,
       const uint32_t color,

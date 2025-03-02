@@ -17,8 +17,6 @@ public:
   {
     std::vector<uint32_t> raisedResetButton;
     std::vector<uint32_t> pressedResetButton;
-    std::vector<uint32_t> raisedButton;
-    std::vector<uint32_t> pressedButton;
     std::vector<uint32_t> winnerResetButton;
     std::vector<uint32_t> loserResetButton;
     std::vector<uint32_t> raisedConfigButton;
@@ -60,8 +58,6 @@ private:
 
   void makeRaisedResetButtonSprite();
   void makePressedResetButtonSprite();
-  void makeRaisedButtonSprite();
-  void makePressedButtonSprite();
   void makeWinnerResetButtonSprite();
   void makeLoserResetButtonSprite();
   void makeRaisedConfigButtonSprite();

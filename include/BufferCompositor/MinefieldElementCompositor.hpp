@@ -12,7 +12,13 @@ public:
   static int NUMERIC_SPRITE_WIDTH;
   static int NUMERIC_SPRITE_PAD;
 
-  static void buffInsertMine(std::vector<uint32_t> &buff, const int width);
-  static void buffInsertFlag(std::vector<uint32_t> &buff, const int width);
-  static void buffInsertOne(std::vector<uint32_t> &buff, const int width);
+  static void drawMineCell(std::vector<uint32_t> &buff, const int width);
+  static void drawClickedMineCell(std::vector<uint32_t> &buff, const int width);
+
+  static void draw2DCellBase(std::vector<uint32_t> &buff, const int width);
+  static void draw3DCellBase(std::vector<uint32_t> &buff, const int width);
+
+  static void drawMine(std::vector<uint32_t> &buff, const int width);
+  static void drawFlag(std::vector<uint32_t> &buff, const int width);
+  static void drawOne(std::vector<uint32_t> &buff, const int width);
 };

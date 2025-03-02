@@ -41,11 +41,7 @@ BufferCompositor::DigitSegments BufferCompositor::intToDigitSegments(const int n
   throw std::runtime_error("Error converting int to DigitSegments");
 }
 
-void BufferCompositor::buffInsertRectangle(
-    std::vector<uint32_t> &buff,
-    const int width,
-    const Rect rect,
-    const uint32_t c)
+void BufferCompositor::drawRectangle(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c)
 {
   for (int row = rect.y; row < rect.y + rect.h; ++row)
   {
@@ -54,25 +50,19 @@ void BufferCompositor::buffInsertRectangle(
   }
 };
 
-void BufferCompositor::buffInsert2DBorder(
-    std::vector<uint32_t> &buff,
-    const int width,
-    const Rect rect,
-    const uint32_t c)
+void BufferCompositor::draw2DBorder(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c)
 {
   // left edge
-  buffInsertRectangle(buff, width, {rect.x, rect.y, config::CELL_BORDER_WIDTH_2D, rect.h}, c);
+  drawRectangle(buff, width, {rect.x, rect.y, config::CELL_BORDER_WIDTH_2D, rect.h}, c);
   // top edge
-  buffInsertRectangle(buff, width, {rect.x, rect.y, rect.w, config::CELL_BORDER_WIDTH_2D}, c);
+  drawRectangle(buff, width, {rect.x, rect.y, rect.w, config::CELL_BORDER_WIDTH_2D}, c);
   // right edge
-  buffInsertRectangle(
-      buff, width, {rect.w - config::CELL_BORDER_WIDTH_2D, rect.y, config::CELL_BORDER_WIDTH_2D, rect.h}, c);
+  drawRectangle(buff, width, {rect.w - config::CELL_BORDER_WIDTH_2D, rect.y, config::CELL_BORDER_WIDTH_2D, rect.h}, c);
   // left edge
-  buffInsertRectangle(
-      buff, width, {rect.x, rect.h - config::CELL_BORDER_WIDTH_2D, rect.w, config::CELL_BORDER_WIDTH_2D}, c);
+  drawRectangle(buff, width, {rect.x, rect.h - config::CELL_BORDER_WIDTH_2D, rect.w, config::CELL_BORDER_WIDTH_2D}, c);
 }
 
-void BufferCompositor::buffInsert3DBorder(
+void BufferCompositor::draw3DBorder(
     std::vector<uint32_t> &buff,
     const int width,
     const Rect rect,
@@ -81,23 +71,17 @@ void BufferCompositor::buffInsert3DBorder(
     const uint32_t cBot)
 {
   // left edge
-  buffInsertRectangle(buff, width, {rect.x, rect.y, config::CELL_BORDER_WIDTH_3D, rect.h}, cTop);
+  drawRectangle(buff, width, {rect.x, rect.y, config::CELL_BORDER_WIDTH_3D, rect.h}, cTop);
   // top edge
-  buffInsertRectangle(buff, width, {rect.x, rect.y, rect.w, config::CELL_BORDER_WIDTH_3D}, cTop);
+  drawRectangle(buff, width, {rect.x, rect.y, rect.w, config::CELL_BORDER_WIDTH_3D}, cTop);
   // right edge
-  buffInsertRectangle(
-      buff,
-      width,
-      {rect.x + rect.w - config::CELL_BORDER_WIDTH_3D, rect.y, config::CELL_BORDER_WIDTH_3D, rect.h},
-      cBot);
+  drawRectangle(
+      buff, width, {rect.x + rect.w - config::CELL_BORDER_WIDTH_3D, rect.y, config::CELL_BORDER_WIDTH_3D, rect.h}, cBot);
   // bottom edge
-  buffInsertRectangle(
-      buff,
-      width,
-      {rect.x, rect.y + rect.h - config::CELL_BORDER_WIDTH_3D, rect.w, config::CELL_BORDER_WIDTH_3D},
-      cBot);
+  drawRectangle(
+      buff, width, {rect.x, rect.y + rect.h - config::CELL_BORDER_WIDTH_3D, rect.w, config::CELL_BORDER_WIDTH_3D}, cBot);
   // top-right corner
-  buffInsert3DCorner(
+  draw3DCorner(
       buff,
       width,
       {rect.x + rect.w - config::CELL_BORDER_WIDTH_3D,
@@ -108,7 +92,7 @@ void BufferCompositor::buffInsert3DBorder(
       cMid,
       cBot);
   // bottom-left corner
-  buffInsert3DCorner(
+  draw3DCorner(
       buff,
       width,
       {rect.x,
@@ -120,7 +104,7 @@ void BufferCompositor::buffInsert3DBorder(
       cBot);
 }
 
-void BufferCompositor::buffInsert3DCorner(
+void BufferCompositor::draw3DCorner(
     std::vector<uint32_t> &buff,
     const int width,
     const Rect rect,
@@ -157,12 +141,7 @@ void BufferCompositor::buffInsert3DCorner(
   }
 }
 
-void BufferCompositor::buffInsertDigit(
-    std::vector<uint32_t> &buff,
-    const int width,
-    const Rect rect,
-    const int n,
-    const int c)
+void BufferCompositor::drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c)
 {
   int segmentWidth = 0.15 * 0.6 * config::CELL_PIXEL_SIZE;
 
@@ -180,30 +159,30 @@ void BufferCompositor::buffInsertDigit(
 
   if (digitSegments.topMiddle)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {leftX, horizTopY, rect.w, segmentWidth}, c);
+    BufferCompositor::drawRectangle(buff, width, {leftX, horizTopY, rect.w, segmentWidth}, c);
   }
   if (digitSegments.topLeft)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {leftX, topVertY, segmentWidth, rect.h / 2}, c);
+    BufferCompositor::drawRectangle(buff, width, {leftX, topVertY, segmentWidth, rect.h / 2}, c);
   }
   if (digitSegments.topRight)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {rightX, topVertY, segmentWidth, rect.h / 2}, c);
+    BufferCompositor::drawRectangle(buff, width, {rightX, topVertY, segmentWidth, rect.h / 2}, c);
   }
   if (digitSegments.middleMiddle)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {leftX, horizMidY, rect.w, segmentWidth}, c);
+    BufferCompositor::drawRectangle(buff, width, {leftX, horizMidY, rect.w, segmentWidth}, c);
   }
   if (digitSegments.bottomMiddle)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {leftX, horizBotY, rect.w, segmentWidth}, c);
+    BufferCompositor::drawRectangle(buff, width, {leftX, horizBotY, rect.w, segmentWidth}, c);
   }
   if (digitSegments.bottomLeft)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {leftX, botVertY, segmentWidth, rect.h / 2}, c);
+    BufferCompositor::drawRectangle(buff, width, {leftX, botVertY, segmentWidth, rect.h / 2}, c);
   }
   if (digitSegments.bottomRight)
   {
-    BufferCompositor::buffInsertRectangle(buff, width, {rightX, botVertY, segmentWidth, rect.h / 2}, c);
+    BufferCompositor::drawRectangle(buff, width, {rightX, botVertY, segmentWidth, rect.h / 2}, c);
   }
 }

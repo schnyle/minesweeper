@@ -8,8 +8,7 @@
 
 class BufferCompositor
 {
-  // protected:
-public: // make protected
+protected:
   struct DigitSegments
   {
     bool topMiddle;
@@ -20,23 +19,24 @@ public: // make protected
     bool bottomLeft;
     bool bottomRight;
   };
+
   static DigitSegments intToDigitSegments(const int n);
 
-  static void buffInsertRectangle(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c);
-  static void buffInsert2DBorder(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c);
-  static void buffInsert3DBorder(
+  static void drawRectangle(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c);
+  static void draw2DBorder(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c);
+  static void draw3DBorder(
       std::vector<uint32_t> &buff,
       const int width,
       const Rect rect,
       const uint32_t cTop,
       const uint32_t cMid,
       const uint32_t cBot);
-  static void buffInsert3DCorner(
+  static void draw3DCorner(
       std::vector<uint32_t> &buff,
       const int width,
       const Rect rect,
       const uint32_t cTop,
       const uint32_t cMid,
       const uint32_t cBot);
-  static void buffInsertDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c);
+  static void drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c);
 };
