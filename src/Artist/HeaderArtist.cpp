@@ -171,16 +171,15 @@ void HeaderArtist::drawRaisedConfigButtonSprite(std::vector<uint32_t> &buff, con
 {
   draw3DCellBase(buff, width);
 
-  const double gearCenter = width * 0.5;
-  HeaderArtist::drawGear(buff, width, gearCenter);
+  HeaderArtist::drawGear(buff, width);
 }
 
 void HeaderArtist::drawPressedConfigButtonSprite(std::vector<uint32_t> &buff, const int width)
 {
   draw2DCellBase(buff, width);
 
-  const double gearCenter = width * (0.5 + 0.025);
-  HeaderArtist::drawGear(buff, width, gearCenter);
+  const double center = width * (0.5 + 0.025);
+  HeaderArtist::drawGear(buff, width, center);
 }
 
 // private
@@ -212,8 +211,9 @@ void HeaderArtist::drawTriDigit(std::vector<uint32_t> &buff, const int width, co
   }
 }
 
-void HeaderArtist::drawGear(std::vector<uint32_t> &buff, const int width, const double center)
+void HeaderArtist::drawGear(std::vector<uint32_t> &buff, const int width, double center)
 {
+  center = center < 0 ? width / 2 : center;
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
   const double radius = size / 2 * 0.2;

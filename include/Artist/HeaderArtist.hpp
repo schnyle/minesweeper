@@ -22,7 +22,7 @@ public:
 
 private:
   static void drawTriDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n);
-  static void drawGear(std::vector<uint32_t> &buff, const int width, const double center);
+  static void drawGear(std::vector<uint32_t> &buff, const int width, double center = -1);
 
   static const std::vector<uint32_t> &getResetButtonSprite(const Minesweeper &gameState);
   static const std::vector<uint32_t> &getConfigButtonSprite(const Minesweeper &gameState);
