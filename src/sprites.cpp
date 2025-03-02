@@ -1,5 +1,5 @@
 #include <HeaderArtist.hpp>
-#include <MinefieldElementArtist.hpp>
+#include <MinefieldArtist.hpp>
 #include <config.hpp>
 #include <cstdint>
 #include <memory>
@@ -43,21 +43,21 @@ void init()
   HeaderArtist::drawRaisedConfigButtonSprite(data->raisedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
   HeaderArtist::drawPressedConfigButtonSprite(data->pressedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
 
-  MinefieldElementArtist::draw2DCellBase(data->empty, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::draw3DCellBase(data->hidden, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawFlaggedCellSprite(data->flag, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawMineCellSprite(data->mine, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawClickedMineCell(data->clickedMine, config::CELL_PIXEL_SIZE);
-  MinefieldElementArtist::drawMineCellRedXSprite(data->redXMine, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::draw2DCellBase(data->empty, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::draw3DCellBase(data->hidden, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawFlaggedCellSprite(data->flag, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawMineCellSprite(data->mine, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawClickedMineCell(data->clickedMine, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawMineCellRedXSprite(data->redXMine, config::CELL_PIXEL_SIZE);
 
-  MinefieldElementArtist::drawNumericSprite(data->one, config::CELL_PIXEL_SIZE, 1, config::BLUE);
-  MinefieldElementArtist::drawNumericSprite(data->two, config::CELL_PIXEL_SIZE, 2, config::GREEN);
-  MinefieldElementArtist::drawNumericSprite(data->three, config::CELL_PIXEL_SIZE, 3, config::RED);
-  MinefieldElementArtist::drawNumericSprite(data->four, config::CELL_PIXEL_SIZE, 4, config::DARK_BLUE);
-  MinefieldElementArtist::drawNumericSprite(data->five, config::CELL_PIXEL_SIZE, 5, config::DARK_RED);
-  MinefieldElementArtist::drawNumericSprite(data->six, config::CELL_PIXEL_SIZE, 6, config::TURQUOISE);
-  MinefieldElementArtist::drawNumericSprite(data->seven, config::CELL_PIXEL_SIZE, 7, config::PURPLE);
-  MinefieldElementArtist::drawNumericSprite(data->eight, config::CELL_PIXEL_SIZE, 8, config::DARK_GREY);
+  MinefieldArtist::drawNumericSprite(data->one, config::CELL_PIXEL_SIZE, 1, config::BLUE);
+  MinefieldArtist::drawNumericSprite(data->two, config::CELL_PIXEL_SIZE, 2, config::GREEN);
+  MinefieldArtist::drawNumericSprite(data->three, config::CELL_PIXEL_SIZE, 3, config::RED);
+  MinefieldArtist::drawNumericSprite(data->four, config::CELL_PIXEL_SIZE, 4, config::DARK_BLUE);
+  MinefieldArtist::drawNumericSprite(data->five, config::CELL_PIXEL_SIZE, 5, config::DARK_RED);
+  MinefieldArtist::drawNumericSprite(data->six, config::CELL_PIXEL_SIZE, 6, config::TURQUOISE);
+  MinefieldArtist::drawNumericSprite(data->seven, config::CELL_PIXEL_SIZE, 7, config::PURPLE);
+  MinefieldArtist::drawNumericSprite(data->eight, config::CELL_PIXEL_SIZE, 8, config::DARK_GREY);
 
   data->intToSpriteMap = {
       {0, data->empty},

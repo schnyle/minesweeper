@@ -1,6 +1,6 @@
 #include <GameWindow.hpp>
 #include <HeaderArtist.hpp>
-#include <MinefieldElementArtist.hpp>
+#include <MinefieldArtist.hpp>
 #include <SDL2/SDL.h>
 #include <config.hpp>
 #include <cstdint>
@@ -71,7 +71,7 @@ void GameWindow::init()
 void GameWindow::update(Minesweeper &gameState)
 {
   HeaderArtist::updateHeader(frameBuffer, config::GAME_WINDOW_PIXEL_WIDTH, gameState);
-  MinefieldElementArtist::updateMinefield(frameBuffer, config::CELL_PIXEL_SIZE, gameState);
+  MinefieldArtist::updateMinefield(frameBuffer, config::CELL_PIXEL_SIZE, gameState);
 
   void *pixels;
   int pitch;

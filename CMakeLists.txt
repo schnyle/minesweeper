@@ -17,7 +17,7 @@ set(SOURCES
   src/Artist/BaseArtist.cpp
   src/Artist/FaceArtist.cpp
   src/Artist/HeaderArtist.cpp
-  src/Artist/MinefieldElementArtist.cpp
+  src/Artist/MinefieldArtist.cpp
   src/GameLoop.cpp
   src/main.cpp
   src/Minesweeper.cpp
