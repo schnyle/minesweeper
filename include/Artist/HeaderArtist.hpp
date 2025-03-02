@@ -21,8 +21,7 @@ public:
   static void drawPressedConfigButtonSprite(std::vector<uint32_t> &buff, const int width);
 
 private:
-  static void drawRemainingFlags(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n);
-  static void drawTimer(std::vector<uint32_t> &buff, const int width, const Rect rect, const int t);
+  static void drawTriDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n);
   static void drawGear(std::vector<uint32_t> &buff, const int width, const double center);
 
   static const std::vector<uint32_t> &getResetButtonSprite(const Minesweeper &gameState);

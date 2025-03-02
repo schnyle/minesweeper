@@ -1,8 +1,9 @@
 #include <FaceArtist.hpp>
 #include <cstdint>
 
-void FaceArtist::drawFaceBase(std::vector<uint32_t> &buff, const int width, const double center)
+void FaceArtist::drawFaceBase(std::vector<uint32_t> &buff, const int width, double center)
 {
+  center = center < 0 ? width / 2 : center;
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
   const double faceRadius = size / 2 * 0.6;
@@ -40,8 +41,9 @@ void FaceArtist::drawFaceBase(std::vector<uint32_t> &buff, const int width, cons
   }
 };
 
-void FaceArtist::drawFaceSmile(std::vector<uint32_t> &buff, const int width, const double center)
+void FaceArtist::drawFaceSmile(std::vector<uint32_t> &buff, const int width, double center)
 {
+  center = center < 0 ? width / 2 : center;
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
   const double smileBigRadius = size / 2 * 0.4;
@@ -113,8 +115,9 @@ void FaceArtist::drawFaceFrown(std::vector<uint32_t> &buff, const int width)
   }
 };
 
-void FaceArtist::drawFaceAliveEyes(std::vector<uint32_t> &buff, const int width, const double center)
+void FaceArtist::drawFaceAliveEyes(std::vector<uint32_t> &buff, const int width, double center)
 {
+  center = center < 0 ? width / 2 : center;
   const int size = width;
   const double drawRadius = size / 2 * 0.9;
   const double leftEyeX = center * 13 / 16;

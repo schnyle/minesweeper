@@ -100,7 +100,7 @@ void HeaderArtist::drawHeader(std::vector<uint32_t> &buff, const int width, cons
 
 void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, const Minesweeper &gameState)
 {
-  drawRemainingFlags(
+  drawTriDigit(
       buff,
       width,
       {config::REMAINING_FLAGS_X,
@@ -123,7 +123,7 @@ void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, co
       config::CONFIG_BUTTON_X,
       config::CONFIG_BUTTON_Y);
 
-  drawRemainingFlags(
+  drawTriDigit(
       buff,
       width,
       {config::TIMER_X, config::TIMER_Y, config::INFO_PANEL_BUTTONS_HEIGHT * 2, config::INFO_PANEL_BUTTONS_HEIGHT},
@@ -134,10 +134,9 @@ void HeaderArtist::drawRaisedResetButtonSprite(std::vector<uint32_t> &buff, cons
 {
   draw3DCellBase(buff, width);
 
-  const double center = width * 0.5;
-  FaceArtist::drawFaceBase(buff, width, center);
-  FaceArtist::drawFaceSmile(buff, width, center);
-  FaceArtist::drawFaceAliveEyes(buff, width, center);
+  FaceArtist::drawFaceBase(buff, width);
+  FaceArtist::drawFaceSmile(buff, width);
+  FaceArtist::drawFaceAliveEyes(buff, width);
 }
 
 void HeaderArtist::drawPressedResetButtonSprite(std::vector<uint32_t> &buff, const int width)
@@ -154,9 +153,8 @@ void HeaderArtist::drawWinnerResetButtonSprite(std::vector<uint32_t> &buff, cons
 {
   draw3DCellBase(buff, width);
 
-  const double center = width * 0.5;
-  FaceArtist::drawFaceBase(buff, width, center);
-  FaceArtist::drawFaceSmile(buff, width, center);
+  FaceArtist::drawFaceBase(buff, width);
+  FaceArtist::drawFaceSmile(buff, width);
   FaceArtist::drawFaceShade(buff, width);
 }
 
@@ -164,8 +162,7 @@ void HeaderArtist::drawLoserResetButtonSprite(std::vector<uint32_t> &buff, const
 {
   draw3DCellBase(buff, width);
 
-  const double center = width * 0.5;
-  FaceArtist::drawFaceBase(buff, width, center);
+  FaceArtist::drawFaceBase(buff, width);
   FaceArtist::drawFaceFrown(buff, width);
   FaceArtist::drawFaceDeadEye(buff, width);
 }
@@ -188,40 +185,13 @@ void HeaderArtist::drawPressedConfigButtonSprite(std::vector<uint32_t> &buff, co
 
 // private
 
-void HeaderArtist::drawRemainingFlags(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n)
+void HeaderArtist::drawTriDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n)
 {
   BaseArtist::drawRectangle(buff, width, rect, config::BLACK);
 
   const int leftDigit = n / 100;
   const int middleDigit = (n % 100) / 10;
   const int rightDigit = (n % 10);
-  const int digits[3]{leftDigit, middleDigit, rightDigit};
-
-  int pad = config::REMAINING_FLAGS_PAD;
-  while ((rect.w - 4 * pad) % 3 != 0)
-  {
-    ++pad;
-  }
-
-  const int digitWidth = (rect.w - 4 * pad) / 3;
-  const int digitHeight = rect.h - 2 * pad;
-
-  for (int i = 0; i < 3; ++i)
-  {
-    const int digitX = rect.x + pad + i * (digitWidth + pad);
-    const int digitY = rect.y + pad;
-
-    drawDigit(buff, width, {digitX, digitY, digitWidth, digitHeight}, digits[i], config::RED);
-  }
-};
-
-void HeaderArtist::drawTimer(std::vector<uint32_t> &buff, const int width, const Rect rect, const int t)
-{
-  BaseArtist::drawRectangle(buff, width, rect, config::BLACK);
-
-  const int leftDigit = t / 100;
-  const int middleDigit = (t % 100) / 10;
-  const int rightDigit = (t % 10);
   const int digits[3]{leftDigit, middleDigit, rightDigit};
 
   int pad = config::REMAINING_FLAGS_PAD;
