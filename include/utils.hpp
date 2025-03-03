@@ -10,4 +10,6 @@ SDL_Color hexToRgba(uint32_t hexColor);
 bool isPointInRect(const int x, const int y, const SDL_Rect &rect);
 
 void restartApplication();
+
+bool isValidCell(const int row, const int col);
 }

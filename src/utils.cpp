@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <config.hpp>
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -38,4 +39,11 @@ void restartApplication()
 
   throw std::runtime_error("Failed to restart program");
 }
+
+bool isValidCell(const int row, const int col)
+{
+  const int maxRow = config::getSettings().getGridHeight();
+  const int maxCol = config::getSettings().getGridWidth();
+  return row >= 0 && col >= 0 && row < maxRow && col < maxCol;
+};
 } // namespace utils

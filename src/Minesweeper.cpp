@@ -5,6 +5,7 @@
 #include <random>
 #include <set>
 #include <utility>
+#include <utils.hpp>
 #include <vector>
 
 Minesweeper::Minesweeper() { minefield = initMinefield(); }
@@ -229,8 +230,7 @@ void Minesweeper::floodFillEmptyCellsRecursive(int row, int col, std::set<std::p
   {
     const int newRow = row + dRow;
     const int newCol = col + dCol;
-    if (newRow < 0 || newCol < 0 || newRow >= config::getSettings().getGridHeight() ||
-        newCol >= config::getSettings().getGridWidth())
+    if (!utils::isValidCell(newRow, newCol))
     {
       continue;
     }
@@ -246,10 +246,11 @@ void Minesweeper::floodFillEmptyCellsRecursive(int row, int col, std::set<std::p
     }
 
     const int index = p.first * config::getSettings().getGridWidth() + p.second;
-    if (!minefield[index].isMine)
+    auto &cell = minefield[index];
+    if (!cell.isMine)
     {
-      minefield[index].isHidden = false;
-      if (minefield[index].nAdjacentMines == 0)
+      cell.isHidden = false;
+      if (cell.nAdjacentMines == 0)
       {
         floodFillEmptyCellsRecursive(newRow, newCol, visited);
       }
