@@ -35,6 +35,7 @@ constexpr int INFO_PANEL_BUTTONS_HEIGHT = 0.75 * INFO_PANEL_HEIGHT;
 constexpr int CELL_BORDER_WIDTH_2D = 2; // even int
 constexpr int DEFAULT_CELL_PIXEL_SIZE = 50;
 constexpr double DEFAULT_GAME_WINDOW_TO_DISPLAY_RATIO = 0.7;
+constexpr double MINE_FREQUENCY = 0.2;
 
 inline std::filesystem::path getConfigPath()
 {

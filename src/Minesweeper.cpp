@@ -99,7 +99,7 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
 {
   std::random_device rd;
   std::mt19937 rg(rd());
-  std::bernoulli_distribution dist(0.2);
+  std::bernoulli_distribution dist(config::MINE_FREQUENCY);
 
   std::vector<Cell> data(config::getSettings().getGridHeight() * config::getSettings().getGridWidth());
   numMines = 0;
