@@ -27,9 +27,9 @@ private:
 
   struct
   {
-    SDL_Color black = utils::hexToRgba(config::BLACK);
-    SDL_Color grey = utils::hexToRgba(config::GREY);
-    SDL_Color darkGrey = utils::hexToRgba(config::DARK_GREY);
+    SDL_Color black = utils::hexToRgba(config::Colors::BLACK);
+    SDL_Color grey = utils::hexToRgba(config::Colors::GREY);
+    SDL_Color darkGrey = utils::hexToRgba(config::Colors::DARK_GREY);
   } colors;
 
   struct SettingsField
@@ -37,7 +37,7 @@ private:
     SDL_Rect rect;
     std::string label;
     std::string value;
-    uint32_t bgColorHex = config::DARK_GREY;
+    uint32_t bgColorHex = config::Colors::DARK_GREY;
     bool isEditing = false;
 
     SettingsField() = default;
@@ -49,7 +49,7 @@ private:
     SDL_Rect rect;
     std::string label;
     std::function<void()> handleClick;
-    uint32_t bgColorHex = config::DARK_GREY;
+    uint32_t bgColorHex = config::Colors::DARK_GREY;
     bool isPressed = false;
 
     SettingsButton() = default;

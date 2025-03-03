@@ -43,8 +43,8 @@ SettingsWindow::~SettingsWindow()
 
 void SettingsWindow::init()
 {
-  pixelWidth = config::CONFIG_WINDOW_PIXEL_WIDTH;
-  pixelHeight = config::CONFIG_WINDOW_PIXEL_HEIGHT;
+  pixelWidth = config::getSettings().getConfigWindowWidth();
+  pixelHeight = config::getSettings().getConfigWindowHeight();
 
   createMenuItems();
   createMenuButtons();
@@ -106,7 +106,7 @@ void SettingsWindow::handleEvent(SDL_Event &event)
       if (utils::isPointInRect(cursorX, cursorY, button->rect))
       {
         button->isPressed = true;
-        button->bgColorHex = config::LIGHT_BLUE;
+        button->bgColorHex = config::Colors::LIGHT_BLUE;
       }
     }
 
@@ -114,12 +114,12 @@ void SettingsWindow::handleEvent(SDL_Event &event)
     {
       if (utils::isPointInRect(cursorX, cursorY, menuItem->rect))
       {
-        menuItem->bgColorHex = config::LIGHT_BLUE;
+        menuItem->bgColorHex = config::Colors::LIGHT_BLUE;
         menuItem->isEditing = true;
       }
       else
       {
-        menuItem->bgColorHex = config::DARK_GREY;
+        menuItem->bgColorHex = config::Colors::DARK_GREY;
         menuItem->isEditing = false;
       }
     }
@@ -134,7 +134,7 @@ void SettingsWindow::handleEvent(SDL_Event &event)
         button->handleClick();
       }
       button->isPressed = false;
-      button->bgColorHex = config::DARK_GREY;
+      button->bgColorHex = config::Colors::DARK_GREY;
     }
     break;
 
@@ -173,17 +173,17 @@ void SettingsWindow::createMenuItems()
   settingsMenuFields.cellSize.rect = SDL_Rect{
       MENU_ITEM_X, FIRST_MENU_FIELD_Y + 0 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuFields.cellSize.label = "Cell Size";
-  settingsMenuFields.cellSize.value = std::to_string(config::CELL_PIXEL_SIZE);
+  settingsMenuFields.cellSize.value = std::to_string(config::getSettings().getCellPixelSize());
 
   settingsMenuFields.windowWidth.rect = SDL_Rect{
       MENU_ITEM_X, FIRST_MENU_FIELD_Y + 1 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuFields.windowWidth.label = "Window Width";
-  settingsMenuFields.windowWidth.value = std::to_string(config::GAME_WINDOW_PIXEL_WIDTH);
+  settingsMenuFields.windowWidth.value = std::to_string(config::getSettings().getGameWindowWidth());
 
   settingsMenuFields.windowHeight.rect = SDL_Rect{
       MENU_ITEM_X, FIRST_MENU_FIELD_Y + 2 * MENU_ITEM_VERT_SPACING, MENU_ITEM_WIDTH, MENU_ITEM_HEIGHT};
   settingsMenuFields.windowHeight.label = "Window Height";
-  settingsMenuFields.windowHeight.value = std::to_string(config::GAME_WINDOW_PIXEL_HEIGHT);
+  settingsMenuFields.windowHeight.value = std::to_string(config::getSettings().getGameWindowHeight());
 }
 
 void SettingsWindow::createMenuButtons()
@@ -196,7 +196,7 @@ void SettingsWindow::createMenuButtons()
     const int cellSize = std::stoi(settingsMenuFields.cellSize.value);
     const int windowW = std::stoi(settingsMenuFields.windowWidth.value);
     const int windowH = std::stoi(settingsMenuFields.windowHeight.value);
-    config::writeConfigFile(windowW, windowH, cellSize);
+    config::getSettings().writeToFile(windowW, windowH, cellSize);
   };
 
   settingsMenuButtons.restart.rect = SDL_Rect{
@@ -209,8 +209,8 @@ void SettingsWindow::createMenuButtons()
   settingsMenuButtons.defaults.label = "DEFAULT";
   settingsMenuButtons.defaults.handleClick = [this]()
   {
-    const int defaultWidth = config::DISPLAY_PIXEL_WIDTH * config::GAME_WINDOW_TO_DISPLAY_RATIO;
-    const int defaultHeight = config::DISPLAY_PIXEL_HEIGHT * config::GAME_WINDOW_TO_DISPLAY_RATIO;
+    const int defaultWidth = config::getSettings().getDisplayWidth() * config::DEFAULT_GAME_WINDOW_TO_DISPLAY_RATIO;
+    const int defaultHeight = config::getSettings().getDisplayHeight() * config::DEFAULT_GAME_WINDOW_TO_DISPLAY_RATIO;
 
     settingsMenuFields.cellSize.value = std::to_string(config::DEFAULT_CELL_PIXEL_SIZE);
     settingsMenuFields.windowWidth.value = std::to_string(defaultWidth);

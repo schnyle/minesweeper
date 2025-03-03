@@ -20,6 +20,6 @@ public:
   void handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isGameLoopRunning);
 
 private:
-  const int gameAreaX = config::GRID_AREA_X_PAD + config::FRAME_WIDTH;
-  const int gameAreaY = config::GRID_AREA_Y_PAD + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+  const int gameAreaX = config::getSettings().getGridAreaPadX() + config::FRAME_WIDTH;
+  const int gameAreaY = config::getSettings().getGridAreaPadY() + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
 };

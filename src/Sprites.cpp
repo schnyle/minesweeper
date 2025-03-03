@@ -33,7 +33,7 @@ void Sprites::copy(
   for (int row = 0; row < width; ++row)
   {
     const auto first = source.begin() + row * width;
-    const auto result = target.begin() + (row + y) * config::GAME_WINDOW_PIXEL_WIDTH + x;
+    const auto result = target.begin() + (row + y) * config::getSettings().getGameWindowWidth() + x;
     std::copy_n(first, width, result);
   }
 };
@@ -41,7 +41,7 @@ void Sprites::copy(
 void Sprites::allocateMemory()
 {
   int resetButtonSize = config::INFO_PANEL_BUTTONS_HEIGHT * config::INFO_PANEL_BUTTONS_HEIGHT;
-  int cellSpriteSize = config::CELL_PIXEL_SIZE * config::CELL_PIXEL_SIZE;
+  int cellSpriteSize = config::getSettings().getCellPixelSize() * config::getSettings().getCellPixelSize();
 
   data->raisedResetButton.resize(resetButtonSize);
   data->pressedResetButton.resize(resetButtonSize);
@@ -75,21 +75,23 @@ void Sprites::drawSprites()
   HeaderArtist::drawRaisedConfigButtonSprite(data->raisedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
   HeaderArtist::drawPressedConfigButtonSprite(data->pressedConfigButton, config::INFO_PANEL_BUTTONS_HEIGHT);
 
-  MinefieldArtist::drawEmptyCellSprite(data->empty, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::drawHiddenCellSprite(data->hidden, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::drawFlaggedCellSprite(data->flag, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::drawMineCellSprite(data->mine, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::drawClickedMineCellSprite(data->clickedMine, config::CELL_PIXEL_SIZE);
-  MinefieldArtist::drawMineCellRedXSprite(data->redXMine, config::CELL_PIXEL_SIZE);
+  MinefieldArtist::drawEmptyCellSprite(data->empty, config::getSettings().getCellPixelSize());
+  MinefieldArtist::drawHiddenCellSprite(data->hidden, config::getSettings().getCellPixelSize());
+  MinefieldArtist::drawFlaggedCellSprite(data->flag, config::getSettings().getCellPixelSize());
+  MinefieldArtist::drawMineCellSprite(data->mine, config::getSettings().getCellPixelSize());
+  MinefieldArtist::drawClickedMineCellSprite(data->clickedMine, config::getSettings().getCellPixelSize());
+  MinefieldArtist::drawMineCellRedXSprite(data->redXMine, config::getSettings().getCellPixelSize());
 
-  MinefieldArtist::drawNumericSprite(data->one, config::CELL_PIXEL_SIZE, 1, config::BLUE);
-  MinefieldArtist::drawNumericSprite(data->two, config::CELL_PIXEL_SIZE, 2, config::GREEN);
-  MinefieldArtist::drawNumericSprite(data->three, config::CELL_PIXEL_SIZE, 3, config::RED);
-  MinefieldArtist::drawNumericSprite(data->four, config::CELL_PIXEL_SIZE, 4, config::DARK_BLUE);
-  MinefieldArtist::drawNumericSprite(data->five, config::CELL_PIXEL_SIZE, 5, config::DARK_RED);
-  MinefieldArtist::drawNumericSprite(data->six, config::CELL_PIXEL_SIZE, 6, config::TURQUOISE);
-  MinefieldArtist::drawNumericSprite(data->seven, config::CELL_PIXEL_SIZE, 7, config::PURPLE);
-  MinefieldArtist::drawNumericSprite(data->eight, config::CELL_PIXEL_SIZE, 8, config::DARK_GREY);
+  MinefieldArtist::drawNumericSprite(data->one, config::getSettings().getCellPixelSize(), 1, config::Colors::BLUE);
+  MinefieldArtist::drawNumericSprite(data->two, config::getSettings().getCellPixelSize(), 2, config::Colors::GREEN);
+  MinefieldArtist::drawNumericSprite(data->three, config::getSettings().getCellPixelSize(), 3, config::Colors::RED);
+  MinefieldArtist::drawNumericSprite(
+      data->four, config::getSettings().getCellPixelSize(), 4, config::Colors::DARK_BLUE);
+  MinefieldArtist::drawNumericSprite(data->five, config::getSettings().getCellPixelSize(), 5, config::Colors::DARK_RED);
+  MinefieldArtist::drawNumericSprite(data->six, config::getSettings().getCellPixelSize(), 6, config::Colors::TURQUOISE);
+  MinefieldArtist::drawNumericSprite(data->seven, config::getSettings().getCellPixelSize(), 7, config::Colors::PURPLE);
+  MinefieldArtist::drawNumericSprite(
+      data->eight, config::getSettings().getCellPixelSize(), 8, config::Colors::DARK_GREY);
 };
 
 void Sprites::createIntToSpriteMap()

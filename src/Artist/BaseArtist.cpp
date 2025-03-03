@@ -11,16 +11,16 @@ void BaseArtist::draw2DCellBase(std::vector<uint32_t> &buff, const int width)
 {
   const int height = buff.size() / width;
   const Rect rect = {0, 0, width, height};
-  drawRectangle(buff, width, rect, config::GREY);
-  draw2DBorder(buff, width, rect, config::DARK_GREY);
+  drawRectangle(buff, width, rect, config::Colors::GREY);
+  draw2DBorder(buff, width, rect, config::Colors::DARK_GREY);
 };
 
 void BaseArtist::draw3DCellBase(std::vector<uint32_t> &buff, const int width)
 {
   const int height = buff.size() / width;
   const Rect rect = {0, 0, width, height};
-  drawRectangle(buff, width, rect, config::GREY);
-  draw3DBorder(buff, width, rect, config::LIGHT_GREY, config::GREY, config::DARK_GREY);
+  drawRectangle(buff, width, rect, config::Colors::GREY);
+  draw3DBorder(buff, width, rect, config::Colors::LIGHT_GREY, config::Colors::GREY, config::Colors::DARK_GREY);
 };
 
 void BaseArtist::draw2DBorder(std::vector<uint32_t> &buff, const int width, const Rect rect, const uint32_t c)
@@ -44,23 +44,35 @@ void BaseArtist::draw3DBorder(
     const uint32_t cBot)
 {
   // left edge
-  drawRectangle(buff, width, {rect.x, rect.y, config::CELL_BORDER_WIDTH_3D, rect.h}, cTop);
+  drawRectangle(buff, width, {rect.x, rect.y, config::getSettings().getCellBorderWidth3D(), rect.h}, cTop);
   // top edge
-  drawRectangle(buff, width, {rect.x, rect.y, rect.w, config::CELL_BORDER_WIDTH_3D}, cTop);
+  drawRectangle(buff, width, {rect.x, rect.y, rect.w, config::getSettings().getCellBorderWidth3D()}, cTop);
   // right edge
   drawRectangle(
-      buff, width, {rect.x + rect.w - config::CELL_BORDER_WIDTH_3D, rect.y, config::CELL_BORDER_WIDTH_3D, rect.h}, cBot);
+      buff,
+      width,
+      {rect.x + rect.w - config::getSettings().getCellBorderWidth3D(),
+       rect.y,
+       config::getSettings().getCellBorderWidth3D(),
+       rect.h},
+      cBot);
   // bottom edge
   drawRectangle(
-      buff, width, {rect.x, rect.y + rect.h - config::CELL_BORDER_WIDTH_3D, rect.w, config::CELL_BORDER_WIDTH_3D}, cBot);
+      buff,
+      width,
+      {rect.x,
+       rect.y + rect.h - config::getSettings().getCellBorderWidth3D(),
+       rect.w,
+       config::getSettings().getCellBorderWidth3D()},
+      cBot);
   // top-right corner
   draw3DCorner(
       buff,
       width,
-      {rect.x + rect.w - config::CELL_BORDER_WIDTH_3D,
+      {rect.x + rect.w - config::getSettings().getCellBorderWidth3D(),
        rect.y,
-       config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D},
+       config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D()},
       cTop,
       cMid,
       cBot);
@@ -69,9 +81,9 @@ void BaseArtist::draw3DBorder(
       buff,
       width,
       {rect.x,
-       rect.y + rect.h - config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D},
+       rect.y + rect.h - config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D()},
       cTop,
       cMid,
       cBot);
@@ -125,7 +137,7 @@ void BaseArtist::drawRectangle(std::vector<uint32_t> &buff, const int width, con
 
 void BaseArtist::drawDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n, const int c)
 {
-  int segmentWidth = 0.15 * 0.6 * config::CELL_PIXEL_SIZE;
+  int segmentWidth = 0.15 * 0.6 * config::getSettings().getCellPixelSize();
 
   const int leftX = rect.x;
   const int rightX = rect.x + rect.w - segmentWidth;

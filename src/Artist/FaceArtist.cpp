@@ -27,14 +27,14 @@ void FaceArtist::drawFaceBase(std::vector<uint32_t> &buff, const int width, doub
 
       if (faceCircle)
       {
-        buff[y * size + x] = config::YELLOW;
+        buff[y * size + x] = config::Colors::YELLOW;
         continue;
       }
 
       const bool outlineCircle = dx * dx + dy * dy <= outlineRadiusSqrd;
       if (outlineCircle)
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
         continue;
       }
     }
@@ -71,7 +71,7 @@ void FaceArtist::drawFaceSmile(std::vector<uint32_t> &buff, const int width, dou
 
       if (smileBigCircle && !smileSmallCircle && smileAngle)
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
         continue;
       }
     }
@@ -108,7 +108,7 @@ void FaceArtist::drawFaceFrown(std::vector<uint32_t> &buff, const int width)
 
       if (smileBigCircle && !smileSmallCircle && smileAngle)
       {
-        buff[(size - y + (size / 5)) * size + x] = config::BLACK;
+        buff[(size - y + (size / 5)) * size + x] = config::Colors::BLACK;
         continue;
       }
     }
@@ -149,7 +149,7 @@ void FaceArtist::drawFaceAliveEyes(std::vector<uint32_t> &buff, const int width,
 
       if (leftCircle || rightCircle)
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
         continue;
       }
     }
@@ -166,8 +166,8 @@ void FaceArtist::drawFaceDeadEye(std::vector<uint32_t> &buff, const int width)
   const double eyeRadius = size / 8;
   const int xLineThickness = 2;
 
-  drawX(buff, width, config::BLACK, leftEyeX, leftEyeY, eyeRadius, xLineThickness);
-  drawX(buff, width, config::BLACK, rightEyeX, rightEyeY, eyeRadius, xLineThickness);
+  drawX(buff, width, config::Colors::BLACK, leftEyeX, leftEyeY, eyeRadius, xLineThickness);
+  drawX(buff, width, config::Colors::BLACK, rightEyeX, rightEyeY, eyeRadius, xLineThickness);
 }
 
 void FaceArtist::drawFaceShade(std::vector<uint32_t> &buff, const int width)
@@ -208,7 +208,7 @@ void FaceArtist::drawFaceShade(std::vector<uint32_t> &buff, const int width)
 
       if ((leftCircle && leftSemiCircle) || (rightCircle && rightSemiCircle))
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
         continue;
       }
     }

@@ -5,22 +5,22 @@
 
 // private static ints
 
-int MinefieldArtist::NUMERIC_SPRITE_HEIGHT = 0.6 * config::CELL_PIXEL_SIZE;
+int MinefieldArtist::NUMERIC_SPRITE_HEIGHT = 0.6 * config::getSettings().getCellPixelSize();
 int MinefieldArtist::NUMERIC_SPRITE_WIDTH = NUMERIC_SPRITE_HEIGHT / 2;
-int MinefieldArtist::NUMERIC_SPRITE_PAD = (config::CELL_PIXEL_SIZE - NUMERIC_SPRITE_HEIGHT) / 2;
+int MinefieldArtist::NUMERIC_SPRITE_PAD = (config::getSettings().getCellPixelSize() - NUMERIC_SPRITE_HEIGHT) / 2;
 
 // public
 
 void MinefieldArtist::updateMinefield(std::vector<uint32_t> &buff, const int width, Minesweeper &gameState)
 {
-  static int gameAreaX = config::GRID_AREA_X_PAD + config::FRAME_WIDTH;
-  static int gameAreaY = config::GRID_AREA_Y_PAD + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
+  static int gameAreaX = config::getSettings().getGridAreaPadX() + config::FRAME_WIDTH;
+  static int gameAreaY = config::getSettings().getGridAreaPadY() + config::INFO_PANEL_HEIGHT + 2 * config::FRAME_WIDTH;
 
-  for (int row = 0; row < config::GRID_HEIGHT; ++row)
+  for (int row = 0; row < config::getSettings().getGridHeight(); ++row)
   {
-    for (int col = 0; col < config::GRID_WIDTH; ++col)
+    for (int col = 0; col < config::getSettings().getGridWidth(); ++col)
     {
-      const int cellIndex = row * config::GRID_WIDTH + col;
+      const int cellIndex = row * config::getSettings().getGridWidth() + col;
       const auto &sprite = getCellSprite(gameState, cellIndex);
 
       // could cache these values so they are only calculaated once during construction/init...
@@ -57,15 +57,15 @@ void MinefieldArtist::drawMineCellRedXSprite(std::vector<uint32_t> &buff, const 
 {
   draw2DCellBase(buff, width);
   drawMine(buff, width);
-  drawX(buff, width, config::RED, width / 2, width / 2, width * 0.7, 4);
+  drawX(buff, width, config::Colors::RED, width / 2, width / 2, width * 0.7, 4);
 }
 
 void MinefieldArtist::drawClickedMineCellSprite(std::vector<uint32_t> &buff, const int width)
 {
   const int height = buff.size() / width;
   const Rect rect = {0, 0, width, height};
-  drawRectangle(buff, width, rect, config::RED);
-  draw2DBorder(buff, width, rect, config::DARK_GREY);
+  drawRectangle(buff, width, rect, config::Colors::RED);
+  draw2DBorder(buff, width, rect, config::Colors::DARK_GREY);
   drawMine(buff, width);
 }
 
@@ -114,7 +114,7 @@ void MinefieldArtist::drawMine(std::vector<uint32_t> &buff, const int width)
 
       if (glint)
       {
-        buff[y * size + x] = config::WHITE;
+        buff[y * size + x] = config::Colors::WHITE;
         continue;
       }
 
@@ -135,7 +135,7 @@ void MinefieldArtist::drawMine(std::vector<uint32_t> &buff, const int width)
 
       if (circle || verticalLine || horizontalLine || positiveDiag || negativeDiag)
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
       }
     }
   }
@@ -143,38 +143,45 @@ void MinefieldArtist::drawMine(std::vector<uint32_t> &buff, const int width)
 
 void MinefieldArtist::drawFlag(std::vector<uint32_t> &buff, const int width)
 {
-  const int totalFlagPoleHeight = 0.55 * config::CELL_PIXEL_SIZE;
+  const int totalFlagPoleHeight = 0.55 * config::getSettings().getCellPixelSize();
 
-  const int flagPoleBottomY = config::CELL_PIXEL_SIZE - ((config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2);
+  const int flagPoleBottomY = config::getSettings().getCellPixelSize() -
+                              ((config::getSettings().getCellPixelSize() - totalFlagPoleHeight) / 2);
 
   // bottom base rectangle
-  const int bottomBaseRectHeight = 0.1 * config::CELL_PIXEL_SIZE;
-  const int bottomBaseRectWidth = 0.5 * config::CELL_PIXEL_SIZE;
-  const int bottomBaseRectX = (config::CELL_PIXEL_SIZE - bottomBaseRectWidth) / 2;
+  const int bottomBaseRectHeight = 0.1 * config::getSettings().getCellPixelSize();
+  const int bottomBaseRectWidth = 0.5 * config::getSettings().getCellPixelSize();
+  const int bottomBaseRectX = (config::getSettings().getCellPixelSize() - bottomBaseRectWidth) / 2;
   const int bottomBaseRectY = flagPoleBottomY - bottomBaseRectHeight;
   BaseArtist::drawRectangle(
       buff,
-      config::CELL_PIXEL_SIZE,
+      config::getSettings().getCellPixelSize(),
       {bottomBaseRectX, bottomBaseRectY, bottomBaseRectWidth, bottomBaseRectHeight},
-      config::BLACK);
+      config::Colors::BLACK);
 
   // top base rectangle
-  const int topBaseRectHeight = 0.05 * config::CELL_PIXEL_SIZE;
-  const int topBaseRectWidth = 0.33 * config::CELL_PIXEL_SIZE;
-  const int topBaseRectX = (config::CELL_PIXEL_SIZE - topBaseRectWidth) / 2;
+  const int topBaseRectHeight = 0.05 * config::getSettings().getCellPixelSize();
+  const int topBaseRectWidth = 0.33 * config::getSettings().getCellPixelSize();
+  const int topBaseRectX = (config::getSettings().getCellPixelSize() - topBaseRectWidth) / 2;
   const int topBaseRectY = flagPoleBottomY - bottomBaseRectHeight - topBaseRectHeight;
   BaseArtist::drawRectangle(
-      buff, config::CELL_PIXEL_SIZE, {topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight}, config::BLACK);
+      buff,
+      config::getSettings().getCellPixelSize(),
+      {topBaseRectX, topBaseRectY, topBaseRectWidth, topBaseRectHeight},
+      config::Colors::BLACK);
 
   // pole
-  const int poleWidth = 0.05 * config::CELL_PIXEL_SIZE;
-  const int poleX = (config::CELL_PIXEL_SIZE - poleWidth) / 2;
-  const int poleY = (config::CELL_PIXEL_SIZE - totalFlagPoleHeight) / 2;
+  const int poleWidth = 0.05 * config::getSettings().getCellPixelSize();
+  const int poleX = (config::getSettings().getCellPixelSize() - poleWidth) / 2;
+  const int poleY = (config::getSettings().getCellPixelSize() - totalFlagPoleHeight) / 2;
   BaseArtist::drawRectangle(
-      buff, config::CELL_PIXEL_SIZE, {poleX, poleY, poleWidth, totalFlagPoleHeight}, config::BLACK);
+      buff,
+      config::getSettings().getCellPixelSize(),
+      {poleX, poleY, poleWidth, totalFlagPoleHeight},
+      config::Colors::BLACK);
 
   // flag
-  const int flagSize = 0.3 * config::CELL_PIXEL_SIZE;
+  const int flagSize = 0.3 * config::getSettings().getCellPixelSize();
   const int flagX = poleX + poleWidth - flagSize;
   const int flagY = poleY;
   const double flagSlope = 0.66;
@@ -186,7 +193,7 @@ void MinefieldArtist::drawFlag(std::vector<uint32_t> &buff, const int width)
       if (y <= (flagSlope * x) + (flagSize / 2) - 1 && y >= -(flagSlope * x) + (flagSize / 2) + 1)
       {
         const int buffX = x + flagX;
-        buff[buffY * width + buffX] = config::RED;
+        buff[buffY * width + buffX] = config::Colors::RED;
       }
     }
   }
@@ -196,7 +203,7 @@ void MinefieldArtist::drawOne(std::vector<uint32_t> &buff, const int width)
 {
   std::vector<uint32_t> sprite;
   sprite.resize(NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT);
-  std::fill_n(sprite.begin(), NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT, config::GREY);
+  std::fill_n(sprite.begin(), NUMERIC_SPRITE_HEIGHT * NUMERIC_SPRITE_HEIGHT, config::Colors::GREY);
 
   // base
   const int baseHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
@@ -206,19 +213,20 @@ void MinefieldArtist::drawOne(std::vector<uint32_t> &buff, const int width)
       sprite,
       NUMERIC_SPRITE_HEIGHT,
       {baseLeftPad, NUMERIC_SPRITE_HEIGHT - baseHeight, baseWidth, baseHeight},
-      config::BLUE);
+      config::Colors::BLUE);
 
   // stem
   const int stemWidth = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int stemLeftPad = (NUMERIC_SPRITE_HEIGHT - stemWidth) / 2;
   BaseArtist::drawRectangle(
-      sprite, NUMERIC_SPRITE_HEIGHT, {stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_HEIGHT}, config::BLUE);
+      sprite, NUMERIC_SPRITE_HEIGHT, {stemLeftPad, 0, stemWidth, NUMERIC_SPRITE_HEIGHT}, config::Colors::BLUE);
 
   // topper
   const int topperWidth = 0.2 * NUMERIC_SPRITE_HEIGHT;
   const int topperHeight = 0.15 * NUMERIC_SPRITE_HEIGHT;
   const int topperX = stemLeftPad - topperWidth;
-  BaseArtist::drawRectangle(sprite, NUMERIC_SPRITE_HEIGHT, {topperX, 0, topperWidth, topperHeight}, config::BLUE);
+  BaseArtist::drawRectangle(
+      sprite, NUMERIC_SPRITE_HEIGHT, {topperX, 0, topperWidth, topperHeight}, config::Colors::BLUE);
 
   for (int i = 0; i < NUMERIC_SPRITE_HEIGHT; ++i)
   {

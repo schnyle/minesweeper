@@ -100,12 +100,12 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
   std::mt19937 rg(rd());
   std::bernoulli_distribution dist(0.2);
 
-  std::vector<Cell> data(config::GRID_HEIGHT * config::GRID_WIDTH);
+  std::vector<Cell> data(config::getSettings().getGridHeight() * config::getSettings().getGridWidth());
   numMines = 0;
   numFlags = 0;
   secondsElapsed = 0;
 
-  for (int i = 0; i < config::GRID_HEIGHT * config::GRID_WIDTH; ++i)
+  for (int i = 0; i < config::getSettings().getGridHeight() * config::getSettings().getGridWidth(); ++i)
   {
     bool isMine = dist(rg); // random
     bool isHidden = true;
@@ -113,13 +113,13 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
 
     if (isMine)
     {
-      const int row = i / config::GRID_WIDTH;
-      const int col = i % config::GRID_WIDTH;
+      const int row = i / config::getSettings().getGridWidth();
+      const int col = i % config::getSettings().getGridWidth();
 
       ++numMines;
 
       // right
-      if (col != config::GRID_WIDTH - 1)
+      if (col != config::getSettings().getGridWidth() - 1)
       {
         ++data[i + 1].nAdjacentMines;
       }
@@ -133,37 +133,37 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
       // top
       if (row != 0)
       {
-        ++data[i - config::GRID_WIDTH].nAdjacentMines;
+        ++data[i - config::getSettings().getGridWidth()].nAdjacentMines;
       }
 
       // bot
-      if (row != config::GRID_HEIGHT - 1)
+      if (row != config::getSettings().getGridHeight() - 1)
       {
-        ++data[i + config::GRID_WIDTH].nAdjacentMines;
+        ++data[i + config::getSettings().getGridWidth()].nAdjacentMines;
       }
 
       // top-left
       if (row != 0 && col != 0)
       {
-        ++data[i - config::GRID_WIDTH - 1].nAdjacentMines;
+        ++data[i - config::getSettings().getGridWidth() - 1].nAdjacentMines;
       }
 
       // top-right
-      if (row != 0 && col != config::GRID_WIDTH - 1)
+      if (row != 0 && col != config::getSettings().getGridWidth() - 1)
       {
-        ++data[i - config::GRID_WIDTH + 1].nAdjacentMines;
+        ++data[i - config::getSettings().getGridWidth() + 1].nAdjacentMines;
       }
 
       // bot-left
-      if (row != config::GRID_HEIGHT - 1 && col != 0)
+      if (row != config::getSettings().getGridHeight() - 1 && col != 0)
       {
-        ++data[i + config::GRID_WIDTH - 1].nAdjacentMines;
+        ++data[i + config::getSettings().getGridWidth() - 1].nAdjacentMines;
       }
 
       // bot-right
-      if (row != config::GRID_HEIGHT - 1 && col != config::GRID_WIDTH - 1)
+      if (row != config::getSettings().getGridHeight() - 1 && col != config::getSettings().getGridWidth() - 1)
       {
-        ++data[i + config::GRID_WIDTH + 1].nAdjacentMines;
+        ++data[i + config::getSettings().getGridWidth() + 1].nAdjacentMines;
       }
     }
 
@@ -172,7 +172,10 @@ std::vector<Minesweeper::Cell> Minesweeper::initMinefield()
   return data;
 }
 
-int Minesweeper::rowColToIndex(const int row, const int col) const { return row * config::GRID_WIDTH + col; }
+int Minesweeper::rowColToIndex(const int row, const int col) const
+{
+  return row * config::getSettings().getGridWidth() + col;
+}
 
 void Minesweeper::revealAdjacentCells(const int row, const int col)
 {
@@ -183,7 +186,8 @@ void Minesweeper::revealAdjacentCells(const int row, const int col)
   {
     const int currentRow = row + dRow;
     const int currentCol = col + dCol;
-    if (currentRow < 0 || currentCol < 0 || currentRow >= config::GRID_HEIGHT || currentCol >= config::GRID_WIDTH)
+    if (currentRow < 0 || currentCol < 0 || currentRow >= config::getSettings().getGridHeight() ||
+        currentCol >= config::getSettings().getGridWidth())
     {
       continue;
     }
@@ -225,7 +229,8 @@ void Minesweeper::floodFillEmptyCellsRecursive(int row, int col, std::set<std::p
   {
     const int newRow = row + dRow;
     const int newCol = col + dCol;
-    if (newRow < 0 || newCol < 0 || newRow >= config::GRID_HEIGHT || newCol >= config::GRID_WIDTH)
+    if (newRow < 0 || newCol < 0 || newRow >= config::getSettings().getGridHeight() ||
+        newCol >= config::getSettings().getGridWidth())
     {
       continue;
     }
@@ -240,7 +245,7 @@ void Minesweeper::floodFillEmptyCellsRecursive(int row, int col, std::set<std::p
       visited.insert(p);
     }
 
-    const int index = p.first * config::GRID_WIDTH + p.second;
+    const int index = p.first * config::getSettings().getGridWidth() + p.second;
     if (!minefield[index].isMine)
     {
       minefield[index].isHidden = false;

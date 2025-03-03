@@ -14,10 +14,12 @@
 
 GameWindow::GameWindow() : Window()
 {
-  frameBuffer.resize(config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
+  frameBuffer.resize(config::getSettings().getGameWindowWidth() * config::getSettings().getGameWindowHeight());
 
   HeaderArtist::drawHeader(
-      frameBuffer, config::GAME_WINDOW_PIXEL_WIDTH, config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT);
+      frameBuffer,
+      config::getSettings().getGameWindowWidth(),
+      config::getSettings().getGameWindowWidth() * config::getSettings().getGameWindowHeight());
 }
 
 void GameWindow::init()
@@ -25,8 +27,8 @@ void GameWindow::init()
   SDL_Rect bounds;
   SDL_GetDisplayBounds(0, &bounds);
 
-  const int leftPad = (config::DISPLAY_PIXEL_WIDTH - config::GAME_WINDOW_PIXEL_WIDTH) / 2;
-  const int topPad = (config::DISPLAY_PIXEL_HEIGHT - config::GAME_WINDOW_PIXEL_HEIGHT) / 2;
+  const int leftPad = (config::getSettings().getDisplayWidth() - config::getSettings().getGameWindowWidth()) / 2;
+  const int topPad = (config::getSettings().getDisplayHeight() - config::getSettings().getGameWindowHeight()) / 2;
 
   const int windowX = bounds.x + leftPad;
   const int windowY = bounds.y + topPad;
@@ -35,8 +37,8 @@ void GameWindow::init()
       "Minesweeper",
       windowX,
       windowY,
-      config::GAME_WINDOW_PIXEL_WIDTH,
-      config::GAME_WINDOW_PIXEL_HEIGHT,
+      config::getSettings().getGameWindowWidth(),
+      config::getSettings().getGameWindowHeight(),
       SDL_WINDOW_SHOWN));
   SDL_SetWindowPosition(window.get(), windowX, windowY);
   SDL_ShowWindow(window.get());
@@ -57,8 +59,8 @@ void GameWindow::init()
       renderer.get(),
       SDL_PIXELFORMAT_RGBA8888,
       SDL_TEXTUREACCESS_STREAMING,
-      config::GAME_WINDOW_PIXEL_WIDTH,
-      config::GAME_WINDOW_PIXEL_HEIGHT));
+      config::getSettings().getGameWindowWidth(),
+      config::getSettings().getGameWindowHeight()));
 
   if (!texture)
   {
@@ -70,8 +72,8 @@ void GameWindow::init()
 
 void GameWindow::update(Minesweeper &gameState)
 {
-  HeaderArtist::updateHeader(frameBuffer, config::GAME_WINDOW_PIXEL_WIDTH, gameState);
-  MinefieldArtist::updateMinefield(frameBuffer, config::CELL_PIXEL_SIZE, gameState);
+  HeaderArtist::updateHeader(frameBuffer, config::getSettings().getGameWindowWidth(), gameState);
+  MinefieldArtist::updateMinefield(frameBuffer, config::getSettings().getCellPixelSize(), gameState);
 
   void *pixels;
   int pitch;
@@ -80,7 +82,7 @@ void GameWindow::update(Minesweeper &gameState)
   std::memcpy(
       pixels,
       frameBuffer.data(),
-      config::GAME_WINDOW_PIXEL_WIDTH * config::GAME_WINDOW_PIXEL_HEIGHT * sizeof(uint32_t));
+      config::getSettings().getGameWindowWidth() * config::getSettings().getGameWindowHeight() * sizeof(uint32_t));
 
   SDL_UnlockTexture(texture.get());
   SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
@@ -93,24 +95,24 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
   const int cursorY = event.motion.y;
 
   const SDL_Rect resetButtonRect{
-      config::RESET_BUTTON_X,
-      config::RESET_BUTTON_Y,
+      config::getSettings().getResetButtonX(),
+      config::getSettings().getResetButtonY(),
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::INFO_PANEL_BUTTONS_HEIGHT};
   const bool inResetButton = utils::isPointInRect(cursorX, cursorY, resetButtonRect);
 
   const SDL_Rect configButtonRect{
-      config::CONFIG_BUTTON_X,
-      config::CONFIG_BUTTON_Y,
+      config::getSettings().getConfigButtonX(),
+      config::getSettings().getConfigButtonY(),
       config::INFO_PANEL_BUTTONS_HEIGHT,
       config::INFO_PANEL_BUTTONS_HEIGHT};
   const bool inConfigButton = utils::isPointInRect(cursorX, cursorY, configButtonRect);
 
-  const int row = (cursorY - gameAreaY) / config::CELL_PIXEL_SIZE;
-  const int col = (cursorX - gameAreaX) / config::CELL_PIXEL_SIZE;
+  const int row = (cursorY - gameAreaY) / config::getSettings().getCellPixelSize();
+  const int col = (cursorX - gameAreaX) / config::getSettings().getCellPixelSize();
 
-  const bool inXBounds = cursorX >= gameAreaX && col >= 0 && col < config::GRID_WIDTH;
-  const bool inYBounds = cursorY >= gameAreaY && row >= 0 && row < config::GRID_HEIGHT;
+  const bool inXBounds = cursorX >= gameAreaX && col >= 0 && col < config::getSettings().getGridWidth();
+  const bool inYBounds = cursorY >= gameAreaY && row >= 0 && row < config::getSettings().getGridHeight();
   const bool inGameArea = inXBounds && inYBounds;
 
   switch (event.type)

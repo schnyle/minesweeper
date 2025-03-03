@@ -26,7 +26,7 @@ public:
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
 
-    config::init(dm.w, dm.h);
+    config::getSettings().initialize(dm.w, dm.h);
 
     return true;
   }

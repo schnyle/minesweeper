@@ -14,88 +14,94 @@
 void HeaderArtist::drawHeader(std::vector<uint32_t> &buff, const int width, const int buffSize)
 {
   // base
-  std::fill_n(buff.begin(), buffSize, config::GREY);
+  std::fill_n(buff.begin(), buffSize, config::Colors::GREY);
 
   // border
   BaseArtist::draw3DBorder(
       buff,
       width,
-      {0, 0, config::GAME_WINDOW_PIXEL_WIDTH, config::GAME_WINDOW_PIXEL_HEIGHT},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+      {0, 0, config::getSettings().getGameWindowWidth(), config::getSettings().getGameWindowHeight()},
+      config::Colors::LIGHT_GREY,
+      config::Colors::GREY,
+      config::Colors::DARK_GREY);
 
   BaseArtist::draw3DBorder(
       buff,
       width,
-      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-       config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-       config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-       config::GAME_WINDOW_PIXEL_HEIGHT - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D)},
-      config::DARK_GREY,
-      config::GREY,
-      config::LIGHT_GREY);
+      {config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D(),
+       config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getGameWindowWidth() -
+           2 * (config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D()),
+       config::getSettings().getGameWindowHeight() -
+           2 * (config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D())},
+      config::Colors::DARK_GREY,
+      config::Colors::GREY,
+      config::Colors::LIGHT_GREY);
 
   // header / game separator
   BaseArtist::draw3DBorder(
       buff,
       width,
-      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      {config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D(),
        config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-       config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
+       config::getSettings().getGameWindowWidth() -
+           2 * (config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D()),
        config::FRAME_WIDTH},
-      config::LIGHT_GREY,
-      config::GREY,
-      config::DARK_GREY);
+      config::Colors::LIGHT_GREY,
+      config::Colors::GREY,
+      config::Colors::DARK_GREY);
   // fill overlap
   BaseArtist::drawRectangle(
       buff,
       width,
-      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::CELL_BORDER_WIDTH_3D,
-       config::GAME_WINDOW_PIXEL_WIDTH - 2 * (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-       config::FRAME_WIDTH - 2 * config::CELL_BORDER_WIDTH_3D},
-      config::GREY);
+      {config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D(),
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getGameWindowWidth() -
+           2 * (config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D()),
+       config::FRAME_WIDTH - 2 * config::getSettings().getCellBorderWidth3D()},
+      config::Colors::GREY);
   // top-left corner
   BaseArtist::draw3DCorner(
       buff,
       width,
-      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
+      {config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D(),
        config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-       config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D},
-      config::DARK_GREY,
-      config::GREY,
-      config::LIGHT_GREY);
+       config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D()},
+      config::Colors::DARK_GREY,
+      config::Colors::GREY,
+      config::Colors::LIGHT_GREY);
   // top-right corner
   BaseArtist::drawRectangle(
       buff,
       width,
-      {config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
+      {config::getSettings().getGameWindowWidth() - config::FRAME_WIDTH,
        config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT,
-       config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D},
-      config::LIGHT_GREY);
+       config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D()},
+      config::Colors::LIGHT_GREY);
   // bottom-left corner
   BaseArtist::drawRectangle(
       buff,
       width,
-      {config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D,
-       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-       config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D},
-      config::DARK_GREY);
+      {config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D(),
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT +
+           (config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D()),
+       config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D()},
+      config::Colors::DARK_GREY);
   // bottom-right corner
   BaseArtist::draw3DCorner(
       buff,
       width,
-      {config::GAME_WINDOW_PIXEL_WIDTH - config::FRAME_WIDTH,
-       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT + (config::FRAME_WIDTH - config::CELL_BORDER_WIDTH_3D),
-       config::CELL_BORDER_WIDTH_3D,
-       config::CELL_BORDER_WIDTH_3D},
-      config::DARK_GREY,
-      config::GREY,
-      config::LIGHT_GREY);
+      {config::getSettings().getGameWindowWidth() - config::FRAME_WIDTH,
+       config::FRAME_WIDTH + config::INFO_PANEL_HEIGHT +
+           (config::FRAME_WIDTH - config::getSettings().getCellBorderWidth3D()),
+       config::getSettings().getCellBorderWidth3D(),
+       config::getSettings().getCellBorderWidth3D()},
+      config::Colors::DARK_GREY,
+      config::Colors::GREY,
+      config::Colors::LIGHT_GREY);
 };
 
 void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, const Minesweeper &gameState)
@@ -103,8 +109,8 @@ void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, co
   drawTriDigit(
       buff,
       width,
-      {config::REMAINING_FLAGS_X,
-       config::REMAINING_FLAGS_Y,
+      {config::getSettings().getRemainingFlagsX(),
+       config::getSettings().getRemainingFlagsY(),
        config::INFO_PANEL_BUTTONS_HEIGHT * 2,
        config::INFO_PANEL_BUTTONS_HEIGHT},
       gameState.getRemainingFlags());
@@ -113,20 +119,23 @@ void HeaderArtist::updateHeader(std::vector<uint32_t> &buff, const int width, co
       getResetButtonSprite(gameState),
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::RESET_BUTTON_X,
-      config::RESET_BUTTON_Y);
+      config::getSettings().getResetButtonX(),
+      config::getSettings().getResetButtonY());
 
   Sprites::getInstance().copy(
       getConfigButtonSprite(gameState),
       buff,
       config::INFO_PANEL_BUTTONS_HEIGHT,
-      config::CONFIG_BUTTON_X,
-      config::CONFIG_BUTTON_Y);
+      config::getSettings().getConfigButtonX(),
+      config::getSettings().getConfigButtonY());
 
   drawTriDigit(
       buff,
       width,
-      {config::TIMER_X, config::TIMER_Y, config::INFO_PANEL_BUTTONS_HEIGHT * 2, config::INFO_PANEL_BUTTONS_HEIGHT},
+      {config::getSettings().getTimerX(),
+       config::getSettings().getTimerY(),
+       config::INFO_PANEL_BUTTONS_HEIGHT * 2,
+       config::INFO_PANEL_BUTTONS_HEIGHT},
       gameState.getSecondsElapsed());
 }
 
@@ -186,14 +195,14 @@ void HeaderArtist::drawPressedConfigButtonSprite(std::vector<uint32_t> &buff, co
 
 void HeaderArtist::drawTriDigit(std::vector<uint32_t> &buff, const int width, const Rect rect, const int n)
 {
-  BaseArtist::drawRectangle(buff, width, rect, config::BLACK);
+  BaseArtist::drawRectangle(buff, width, rect, config::Colors::BLACK);
 
   const int leftDigit = n / 100;
   const int middleDigit = (n % 100) / 10;
   const int rightDigit = (n % 10);
   const int digits[3]{leftDigit, middleDigit, rightDigit};
 
-  int pad = config::REMAINING_FLAGS_PAD;
+  int pad = config::getSettings().getRemainingFlagsPad();
   while ((rect.w - 4 * pad) % 3 != 0)
   {
     ++pad;
@@ -207,7 +216,7 @@ void HeaderArtist::drawTriDigit(std::vector<uint32_t> &buff, const int width, co
     const int digitX = rect.x + pad + i * (digitWidth + pad);
     const int digitY = rect.y + pad;
 
-    drawDigit(buff, width, {digitX, digitY, digitWidth, digitHeight}, digits[i], config::RED);
+    drawDigit(buff, width, {digitX, digitY, digitWidth, digitHeight}, digits[i], config::Colors::RED);
   }
 }
 
@@ -239,14 +248,14 @@ void HeaderArtist::drawGear(std::vector<uint32_t> &buff, const int width, double
       const bool innerCircle = dx * dx + dy * dy <= radiusSqrd;
       if (innerCircle)
       {
-        buff[y * size + x] = config::GREY;
+        buff[y * size + x] = config::Colors::GREY;
         continue;
       }
 
       const bool outerCircle = dx * dx + dy * dy <= outerRadiusSqrd;
       if (outerCircle)
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
         continue;
       }
     }
@@ -275,7 +284,7 @@ void HeaderArtist::drawGear(std::vector<uint32_t> &buff, const int width, double
       const int n = theta * (numTeeth * 2) / (2 * M_PI);
       if (n % 2 != 0)
       {
-        buff[y * size + x] = config::BLACK;
+        buff[y * size + x] = config::Colors::BLACK;
         continue;
       }
     }
