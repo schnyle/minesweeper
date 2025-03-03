@@ -31,14 +31,14 @@ void GameLoop::handleEvents()
       isRunning = false;
     }
 
-    if (event.window.windowID == renderer.gameWindow.getWindowID())
+    if (event.window.windowID == renderer.getGameWindow().getWindowID())
     {
-      renderer.gameWindow.handleEvent(event, game, isRunning);
+      renderer.getGameWindow().handleEvent(event, game, isRunning);
     }
 
-    if (event.window.windowID == renderer.settingsWindow.getWindowID())
+    if (event.window.windowID == renderer.getSettingsWindow().getWindowID())
     {
-      renderer.settingsWindow.handleEvent(event);
+      renderer.getSettingsWindow().handleEvent(event);
     }
   }
 }
@@ -64,9 +64,9 @@ void GameLoop::updateTimer(Uint32 &lastTime, Uint32 &timerAccumulator)
 
 void GameLoop::render()
 {
-  renderer.gameWindow.update(game);
-  renderer.settingsWindow.update(game);
-  renderer.gameWindow.update(game);
+  renderer.getGameWindow().update(game);
+  renderer.getSettingsWindow().update(game);
+  renderer.getGameWindow().update(game);
 }
 
 void GameLoop::limitFPS(Uint32 &frameStart)

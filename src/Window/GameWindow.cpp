@@ -89,7 +89,7 @@ void GameWindow::update(Minesweeper &gameState)
   SDL_RenderPresent(renderer.get());
 };
 
-void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isGameLoopRunning)
+void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isGameLoopRunning) const
 {
   const int cursorX = event.motion.x;
   const int cursorY = event.motion.y;
@@ -120,7 +120,7 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
   case SDL_MOUSEBUTTONDOWN:
   {
 
-    if (inGameArea && !gameState.isGameOver)
+    if (inGameArea && !gameState.getIsGameOver())
     {
       switch (event.button.button)
       {
@@ -140,12 +140,12 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
 
     if (inResetButton && event.button.button == SDL_BUTTON_LEFT)
     {
-      gameState.isResetButtonPressed = true;
+      gameState.setIsResetButtonPressed(true);
     }
 
     if (inConfigButton && event.button.button == SDL_BUTTON_LEFT)
     {
-      gameState.isConfigButtonPressed = true;
+      gameState.setIsConfigButtonPressed(true);
     }
 
     break;
@@ -153,18 +153,18 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
 
   case SDL_MOUSEBUTTONUP:
   {
-    if (inResetButton && gameState.isResetButtonPressed)
+    if (inResetButton && gameState.getIsResetButtonPressed())
     {
       gameState.reset();
     }
 
-    if (inConfigButton && gameState.isConfigButtonPressed)
+    if (inConfigButton && gameState.getIsConfigButtonPressed())
     {
-      gameState.showConfigWindow = !gameState.showConfigWindow;
+      gameState.setShowConfigWindow(!gameState.getShowConfigButton());
     }
 
-    gameState.isConfigButtonPressed = false;
-    gameState.isResetButtonPressed = false;
+    gameState.setIsConfigButtonPressed(false);
+    gameState.setIsResetButtonPressed(false);
     break;
   }
 

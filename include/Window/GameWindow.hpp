@@ -17,7 +17,7 @@ public:
 
   void init() override;
   void update(Minesweeper &) override;
-  void handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isGameLoopRunning);
+  void handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isGameLoopRunning) const;
 
 private:
   const int gameAreaX = config::getSettings().getGridAreaPadX() + config::FRAME_WIDTH;

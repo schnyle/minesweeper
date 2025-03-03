@@ -12,8 +12,6 @@
 
 class Renderer
 {
-  friend class GameLoop;
-
 public:
   static bool initSDL()
   {
@@ -34,6 +32,9 @@ public:
   Renderer() { gameWindow.init(); }
 
   ~Renderer() { SDL_Quit(); };
+
+  GameWindow &getGameWindow() { return gameWindow; };
+  SettingsWindow &getSettingsWindow() { return settingsWindow; };
 
 private:
   GameWindow gameWindow;

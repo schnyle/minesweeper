@@ -8,9 +8,6 @@
 
 class Minesweeper
 {
-  friend class GameLoop;
-  friend class GameWindow;
-
 private:
   struct Cell
   {
@@ -38,10 +35,15 @@ public:
   bool getIsConfigButtonPressed() const { return isConfigButtonPressed; }
   bool getShowConfigButton() const { return showConfigWindow; };
 
+  void setIsResetButtonPressed(const bool newVal) { isResetButtonPressed = newVal; }
+  void setIsConfigButtonPressed(const bool newVal) { isConfigButtonPressed = newVal; }
+  void setShowConfigWindow(const bool newVal) { showConfigWindow = newVal; }
+
   void handleLeftClick(const int row, const int col);
   void handleRightClick(const int row, const int col);
   void handleMiddleClick(const int row, const int col);
   void incrementTimer() { ++secondsElapsed; };
+  void checkForGameWon();
   void reset();
 
 private:
@@ -69,5 +71,4 @@ private:
   void revealAdjacentCells(const int row, const int col);
   void floodFillEmptyCells(const int row, const int col);
   void floodFillEmptyCellsRecursive(const int row, const int col, std::set<std::pair<int, int>> &visited);
-  void checkForGameWon();
 };
