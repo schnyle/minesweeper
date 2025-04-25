@@ -125,7 +125,14 @@ void GameWindow::handleEvent(SDL_Event &event, Minesweeper &gameState, bool &isG
       switch (event.button.button)
       {
       case SDL_BUTTON_LEFT:
-        gameState.handleLeftClick(row, col);
+        if (SDL_GetModState() & KMOD_CTRL)
+        {
+          gameState.handleMiddleClick(row, col);
+        }
+        else
+        {
+          gameState.handleLeftClick(row, col);
+        }
         break;
       case SDL_BUTTON_MIDDLE:
         gameState.handleMiddleClick(row, col);
