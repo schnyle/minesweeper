@@ -84,17 +84,31 @@
 - CMake 3.18+
 - SDL2 and SDL2_ttf development libraries
 
-## Cross-Platform Compilation
+## Building
 
-### Linux/macOD
+### Development Build (Dynamic Linking)
+
+Fast compilation, requires SDL2 libraries installed:
 
 ```bash
 mkdir build && cd build
-cmake ..
+cmake ..  # or cmake -DSTATIC_BUILD=OFF ..
 make
 ```
 
-### Windows (cross-compilation)
+### Release Build (Static Linking)
+
+Standalone binary, no dependencies required:
+
+```bash
+mkdir build-release && cd build-release
+cmake -DSTATIC_BUILD=ON ..
+make
+```
+
+### Cross-Platform Compilation
+
+#### Windows (cross-compilation)
 
 ```bash
 docker build -t minesweeper-windows build-tools/windows

@@ -1,7 +1,7 @@
 #include <GameWindow.hpp>
 #include <HeaderArtist.hpp>
 #include <MinefieldArtist.hpp>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <Sprites.hpp>
 #include <config.hpp>
 #include <cstdint>

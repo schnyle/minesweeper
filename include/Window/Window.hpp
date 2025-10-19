@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Minesweeper.hpp>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <cstdint>
 #include <memory>
 #include <vector>
