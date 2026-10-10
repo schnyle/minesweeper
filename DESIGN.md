@@ -42,7 +42,7 @@ init:
 
 ### `config`: singleton object maintaining configuration parameters
 
-- exposes `read()` and `write()` methods
+- exposes `load()` and `save()` methods
 - default template if no config exists on disk
 
 ### `engine`: the Minesweeper game engine that maintains gamestate and handles updates
@@ -61,12 +61,12 @@ init:
 
 - responsible for generating reusable sprites such as flag, mine, numbers.
 
-###
+## Progress
 
-## Plan of Attack
-
-1. _Build Setup_: CMake, SDL fetch, gtest
-2. _Engine with TDD_: a complete game in memory validated with TDD, no UI.
-3. _Skeleton_: app loop + window + renderer drawing plain colored rects per cell state (no sprites) + input hit testing + timer shown as text or in window title
-4. _Re-evaluate design_ after building out MVP which tests the architecture
-5. _Build out rest_ once design is locked in
+- [x] Base CMake setup with `src/main.cpp`
+- [ ] Base GTest setup with `src/engine/` and `tests/engine`
+- [ ] Basic public `engine` functionality with TDD
+- [ ] Skeleton architecture to test design: app loop + window + renderer drawing plain colored rects per cell state (no sprites) + input hit testing + timer shown as text or in window title
+- [ ] Iterate on design
+- [ ] Complete `engine` functionality with TDD
+- [ ] **update later**

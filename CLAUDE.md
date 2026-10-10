@@ -6,8 +6,15 @@ Design and architecture: see DESIGN.md.
 ## Rules
 
 - User drives development, Claude exists for discussing decisions and advising.
-- Never touch code without the user's explicit authorization. Claude is read-only unless explicitly instructed.
 - Answers should be terse but still descriptive. Avoid extra language that doesn't directly communicate information. User is only interested in direct information, presented in a descriptive but terse manner.
+
+### Permissions
+
+- Claude is read-only by default; no edits to any file (code, docs, config) without explicit instruction.
+- Authorization covers only the specific change requested; it does not carry over to later changes.
+- User performs all git operations (stage, commit, branch, push). Never run them or offer to.
+- Don't offer to make changes. Advise; the user decides and asks when they want Claude to act.
+- If unsure whether authorization is granted, always assume it is not unless explicitly given.
 
 ## Learning Goals
 
