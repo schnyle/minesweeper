@@ -10,7 +10,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# TODO: move warnings onto our own targets (target_compile_options PRIVATE) so -Werror doesn't
+#       reach fetched dependencies (gtest, SDL); mark deps SYSTEM; consider -Werror via preset/CI
 add_compile_options(-Wall -Wextra -Werror -Wpedantic)
+
+add_subdirectory(src/engine)
 
 add_executable(minesweeper src/main.cpp)
 
+enable_testing()
+add_subdirectory(tests)

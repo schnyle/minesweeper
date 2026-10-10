@@ -64,7 +64,7 @@ init:
 ## Progress
 
 - [x] Base CMake setup with `src/main.cpp`
-- [ ] Base GTest setup with `src/engine/` and `tests/engine`
+- [x] Base GTest setup with `src/engine/` and `tests/engine`
 - [ ] Basic public `engine` functionality with TDD
 - [ ] Skeleton architecture to test design: app loop + window + renderer drawing plain colored rects per cell state (no sprites) + input hit testing + timer shown as text or in window title
 - [ ] Iterate on design
