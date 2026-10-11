@@ -2,7 +2,7 @@
 
 ## Components
 
-### `app`: root of process which orchestrates all other components
+### `app` (`main.cpp`): root of process which orchestrates all other components
 
 pseudocode:
 
@@ -53,9 +53,9 @@ init:
 ### `input`: handles mouse events
 
 - exposes a helper function to take an `SDL_Event&` and `Layout&` to produce an `Action` enum result
-- holds a small amount of state to handle consecutive `SDL_MOUSEBUTTONUP`/`SDL_MOUSEBUTTONDOWN` events
+- holds a small amount of state to handle consecutive `SDL_EVENT_MOUSE_BUTTON_UP`/`SDL_EVENT_MOUSE_BUTTON_DOWN` events
 
-### `renderer`: manages SDL2 for displaying the Minesweeper game state and surrounding GUI
+### `renderer`: manages SDL3 for displaying the Minesweeper game state and surrounding GUI
 
 ### `sprites`: generates 2d vector of colors for all the sprites used throughout the rendering
 
@@ -65,7 +65,7 @@ init:
 
 - [x] Base CMake setup with `src/main.cpp`
 - [x] Base GTest setup with `src/engine/` and `tests/engine`
-- [ ] Basic public `engine` functionality with TDD
+- [x] SDL3 dependency (system, `find_package`) + minimal window
 - [ ] Skeleton architecture to test design: app loop + window + renderer drawing plain colored rects per cell state (no sprites) + input hit testing + timer shown as text or in window title
 - [ ] Iterate on design
 - [ ] Complete `engine` functionality with TDD

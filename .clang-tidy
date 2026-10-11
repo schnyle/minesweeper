@@ -1,0 +1,13 @@
+Checks: >
+  -*,
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length,
+  -readability-magic-numbers
+CheckOptions:
+  - key: bugprone-unused-return-value.CheckedReturnTypes
+    value: '::std::error_code;::std::error_condition;::std::errc;::std::expected;::std::optional'
+WarningsAsErrors: ''
