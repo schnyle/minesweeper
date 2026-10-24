@@ -68,15 +68,15 @@ void Gui::render(const Engine &engine)
       SDL_RenderFillRect(renderer_, &cell_rect);
 
       SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-      switch (engine.cell(r, c).state)
+      switch (engine.game_cell({.row = r, .col = c}).state)
       {
-      case Engine::CellState::Flagged:
+      case Engine::GameCellState::Flagged:
         SDL_RenderDebugText(renderer_, cell_rect.x, cell_rect.y, "F");
         break;
-      case Engine::CellState::Hidden:
+      case Engine::GameCellState::Hidden:
         SDL_RenderDebugText(renderer_, cell_rect.x, cell_rect.y, "H");
         break;
-      case Engine::CellState::Revealed:
+      case Engine::GameCellState::Revealed:
         SDL_RenderDebugText(renderer_, cell_rect.x, cell_rect.y, "R");
         break;
       }

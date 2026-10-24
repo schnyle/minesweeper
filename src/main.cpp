@@ -57,15 +57,15 @@ void App::handle_action(const input::ActionVariant &action)
         }
         else if constexpr (std::is_same_v<T, LeftClick>)
         {
-          engine_.reveal(arg.pos.row, arg.pos.col);
+          engine_.reveal(arg.pos);
         }
         else if constexpr (std::is_same_v<T, RightClick>)
         {
-          engine_.flag(arg.pos.row, arg.pos.col);
+          engine_.flag(arg.pos);
         }
         else if constexpr (std::is_same_v<T, ChordClick>)
         {
-          engine_.chord(arg.pos.row, arg.pos.col);
+          engine_.chord(arg.pos);
         }
         else
         {

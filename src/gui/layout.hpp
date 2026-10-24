@@ -4,10 +4,7 @@
 #include <array>
 #include <optional>
 
-struct CellPosition
-{
-  int row, col;
-};
+#include "engine/engine.hpp"
 
 // all values are pixel counts
 // computed in ints so everything lands on whole pixels; rects stored as SDL_FRect since SDL3
