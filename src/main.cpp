@@ -9,12 +9,17 @@ static int constexpr WINDOW_WIDTH_PIXELS = 1280;
 static int constexpr WINDOW_HEIGHT_PIXEL = 960;
 static int constexpr CELL_ROWS_COUNT = 19;
 static int constexpr CELL_COLS_COUNT = 24;
+static constexpr LayoutStyle LAYOUT_STYLE{
+    .divider_width = 20,
+    .header_height_pct = 10.0,
+    .reset_button_cell_span = 1.5,
+};
 
 class App
 {
 public:
   App(int window_width, int window_height, int cell_rows_count, int cell_cols_count)
-      : engine_{cell_rows_count, cell_cols_count}, gui_{window_width, window_height, engine_}
+      : engine_{cell_rows_count, cell_cols_count}, gui_{{.width = window_width, .height = window_height}, LAYOUT_STYLE, engine_}
   {
   }
 

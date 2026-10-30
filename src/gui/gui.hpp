@@ -9,7 +9,7 @@
 class Gui
 {
 public:
-  Gui(int window_width, int window_height, const Engine &engine);
+  Gui(WindowSizePixels window_size, LayoutStyle layout_style, const Engine &engine);
   ~Gui();
 
   Gui(const Gui &) = delete;

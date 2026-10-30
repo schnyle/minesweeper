@@ -4,9 +4,21 @@
 
 #include "engine/engine.hpp"
 #include "gui/gui.hpp"
+#include "gui/layout.hpp"
 
-Gui::Gui(int window_width, int window_height, const Engine &engine)
-    : layout_{window_width, window_height, engine.row_count(), engine.col_count()}
+namespace
+{
+// layout is in whole pixels; SDL3 rendering takes floats
+void _fill_rect(SDL_Renderer *renderer, const SDL_Rect &rect)
+{
+  SDL_FRect frect{};
+  SDL_RectToFRect(&rect, &frect);
+  SDL_RenderFillRect(renderer, &frect);
+}
+} // namespace
+
+Gui::Gui(WindowSizePixels window_size, LayoutStyle layout_style, const Engine &engine)
+    : layout_{window_size, {.rows = engine.row_count(), .cols = engine.col_count()}, layout_style}
 {
   if (!SDL_InitSubSystem(SDL_INIT_VIDEO))
   {
@@ -14,7 +26,7 @@ Gui::Gui(int window_width, int window_height, const Engine &engine)
     throw std::runtime_error("failed to initialize SDL3");
   }
 
-  if (!SDL_CreateWindowAndRenderer("minesweeper", window_width, window_height, 0, &window_, &renderer_))
+  if (!SDL_CreateWindowAndRenderer("minesweeper", window_size.width, window_size.height, 0, &window_, &renderer_))
   {
     SDL_Log("window/renderer creation failed: %s", SDL_GetError());
     SDL_Quit();
@@ -33,34 +45,37 @@ void Gui::render(const Engine &engine)
 {
   // background
   SDL_SetRenderDrawColor(renderer_, 40, 40, 40, 255);
-  SDL_RenderFillRect(renderer_, &layout_.window);
+  _fill_rect(renderer_, layout_.window_rect);
 
   // dividers
   SDL_SetRenderDrawColor(renderer_, 0, 0, 255, 255);
-  SDL_RenderFillRects(
-      renderer_, layout_.divider_SDL_FRects.data(), static_cast<int>(layout_.divider_SDL_FRects.size()));
+  _fill_rect(renderer_, layout_.divider_rects.top);
+  _fill_rect(renderer_, layout_.divider_rects.middle);
+  _fill_rect(renderer_, layout_.divider_rects.bottom);
+  _fill_rect(renderer_, layout_.divider_rects.left);
+  _fill_rect(renderer_, layout_.divider_rects.right);
 
   // header
   SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255);
-  SDL_RenderFillRect(renderer_, &layout_.header);
+  _fill_rect(renderer_, layout_.header_rect);
 
   // board
   SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
-  SDL_RenderFillRect(renderer_, &layout_.board);
+  _fill_rect(renderer_, layout_.grid_rect);
 
   // cells: inset by a border so the board color shows between them
   constexpr float CELL_BORDER = 2.0F;
   const auto cell = static_cast<float>(layout_.cell_width);
-  const int rows = static_cast<int>(layout_.board.h / cell);
-  const int cols = static_cast<int>(layout_.board.w / cell);
+  const int rows = engine.row_count();
+  const int cols = engine.col_count();
 
   for (int r = 0; r < rows; ++r)
   {
     for (int c = 0; c < cols; ++c)
     {
       const SDL_FRect cell_rect{
-          .x = layout_.board.x + (static_cast<float>(c) * cell) + CELL_BORDER,
-          .y = layout_.board.y + (static_cast<float>(r) * cell) + CELL_BORDER,
+          .x = static_cast<float>(layout_.grid_rect.x) + (static_cast<float>(c) * cell) + CELL_BORDER,
+          .y = static_cast<float>(layout_.grid_rect.y) + (static_cast<float>(r) * cell) + CELL_BORDER,
           .w = cell - (2 * CELL_BORDER),
           .h = cell - (2 * CELL_BORDER),
       };

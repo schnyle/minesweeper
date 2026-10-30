@@ -45,7 +45,8 @@ public:
   [[nodiscard]] Status status() const { return status_; }
   [[nodiscard]] int row_count() const { return row_count_; }
   [[nodiscard]] int col_count() const { return col_count_; }
-  [[nodiscard]] const GameCell &game_cell(CellPosition cell_position) const;
+  [[nodiscard]] const GameCell &
+  game_cell(CellPosition cell_position, std::source_location loc = std::source_location::current()) const;
 
   void chord(CellPosition cell_position);
   void flag(CellPosition cell_position);
@@ -58,13 +59,23 @@ private:
   const int col_count_;
   std::vector<GameCell> cells_;
 
-  auto &game_cell_impl(this auto &self, const CellPosition cell_position)
+  auto &game_cell_impl(
+      this auto &self,
+      const CellPosition cell_position,
+      std::source_location loc = std::source_location::current())
   {
     const auto [row, col] = cell_position;
     if (row < 0 || self.row_count_ <= row || col < 0 || self.col_count_ <= col)
     {
-      const auto loc = std::source_location::current();
-      throw std::out_of_range(std::format("{}: got out of range (row, col): ({}, {})", loc.function_name(), row, col));
+      throw std::out_of_range(
+          std::format(
+              "{}:{}: (row={}, col={}) out of valid range (row=[0, {}), col=[0, {}))",
+              loc.file_name(),
+              loc.line(),
+              row,
+              col,
+              self.row_count_,
+              self.col_count_));
     }
     return std::mdspan(self.cells_.data(), self.row_count_, self.col_count_)[row, col];
   }

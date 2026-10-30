@@ -1,6 +1,7 @@
 #include "gui/input.hpp"
 
 #include <SDL3/SDL_events.h>
+#include <cmath>
 #include <optional>
 
 namespace input
@@ -8,7 +9,7 @@ namespace input
 namespace
 {
 [[nodiscard]] std::optional<ActionVariant>
-_handle_mouse_down(const SDL_Event &event, const Layout &layout, const SDL_FPoint &point)
+_handle_mouse_down(const SDL_Event &event, const Layout &layout, const SDL_Point &point)
 {
   switch (event.button.button)
   {
@@ -47,7 +48,10 @@ _handle_mouse_down(const SDL_Event &event, const Layout &layout, const SDL_FPoin
 
 std::optional<ActionVariant> to_action(const SDL_Event &event, const Layout &layout)
 {
-  const struct SDL_FPoint point{.x = event.motion.x, .y = event.motion.y};
+  // SDL3 mouse coordinates are float; layout is in whole pixels.
+  // Pixel i covers [i, i+1), so std::floor gives the pixel containing the mouse position.
+  const SDL_Point point{
+      .x = static_cast<int>(std::floor(event.motion.x)), .y = static_cast<int>(std::floor(event.motion.y))};
 
   switch (event.type)
   {
