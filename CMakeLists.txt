@@ -17,17 +17,17 @@ add_compile_options(-Wall -Wextra -Werror -Wpedantic)
 
 find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3-shared)
 
+add_subdirectory(src/app)
 add_subdirectory(src/engine)
 add_subdirectory(src/gui)
 
 add_executable(minesweeper src/main.cpp)
-target_link_libraries(minesweeper PRIVATE SDL3::SDL3)
-target_link_libraries(minesweeper PRIVATE gui engine)
+target_link_libraries(minesweeper PRIVATE app)
 
 
 find_program(CLANG_TIDY_EXE clang-tidy)
 if (CLANG_TIDY_EXE)
-  set_target_properties(minesweeper engine gui PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+  set_target_properties(minesweeper engine gui app PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
 else()
   message(STATUS "clang-tidy not found; skipping")
 endif()

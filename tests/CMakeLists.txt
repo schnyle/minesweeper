@@ -12,5 +12,10 @@ enable_testing()
 add_executable(engine_test engine/engine_test.cpp)
 target_link_libraries(engine_test PRIVATE engine GTest::gtest_main)
 
+
+add_executable(layout_test gui/layout_test.cpp)
+target_link_libraries(layout_test PRIVATE gui GTest::gtest_main)
+
 include(GoogleTest)
 gtest_discover_tests(engine_test)
+gtest_discover_tests(layout_test)

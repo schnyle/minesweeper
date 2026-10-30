@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <ostream>
+#include <source_location>
 
 #include "engine.hpp"
 
@@ -42,9 +43,9 @@ Engine::Engine(int rows, int cols)
 {
 }
 
-const Engine::GameCell &Engine::game_cell(const CellPosition cell_position) const
+const Engine::GameCell &Engine::game_cell(const CellPosition cell_position, std::source_location loc) const
 {
-  return game_cell_impl(cell_position);
+  return game_cell_impl(cell_position, loc);
 }
 
 void Engine::chord(const CellPosition cell_position)

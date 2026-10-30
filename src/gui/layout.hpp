@@ -1,28 +1,58 @@
 #pragma once
 
 #include <SDL3/SDL_rect.h>
-#include <array>
 #include <optional>
+#include <variant>
 
 #include "engine/engine.hpp"
 
-// all values are pixel counts
-// computed in ints so everything lands on whole pixels; rects stored as SDL_FRect since SDL3
-// rendering and mouse coordinates are float
+struct ResetButton
+{
+  bool operator==(const ResetButton &) const = default;
+};
+
+using HitTarget = std::variant<CellPosition, ResetButton>;
+
+struct WindowSizePixels
+{
+  int width;
+  int height;
+};
+
+struct GridSize
+{
+  int rows;
+  int cols;
+};
+
+struct LayoutStyle
+{
+  int divider_width;
+  double header_height_pct;
+  double reset_button_cell_span;
+};
+
+struct DividerRects
+{
+  SDL_Rect top;
+  SDL_Rect middle; // between header and body
+  SDL_Rect bottom;
+  SDL_Rect left;
+  SDL_Rect right;
+};
+
 struct Layout
 {
-  static constexpr int DEFAULT_DIVIDER_WIDTH = 20;
-  static constexpr double DEFAULT_HEADER_HEIGHT_PCT = 10.0; // percent of window height dedicated to header
+  Layout(WindowSizePixels window_size, GridSize grid_size, LayoutStyle style);
 
-  SDL_FRect window;
-  SDL_FRect header;
-  SDL_FRect board;                             // exactly the grid of cells, centered in the space below the header
-  std::array<SDL_FRect, 5> divider_SDL_FRects; // top, middle, bottom, left, right
-
-  int divider_width = DEFAULT_DIVIDER_WIDTH;
   int cell_width;
+  SDL_Rect window_rect;
+  SDL_Rect header_rect;
+  SDL_Rect reset_button_rect;
+  SDL_Rect body_rect;
+  SDL_Rect grid_rect;
+  DividerRects divider_rects;
 
-  Layout(int window_width, int window_height, int rows, int cols);
-
-  [[nodiscard]] std::optional<CellPosition> cell_at(const SDL_FPoint &point) const;
+  [[nodiscard]] std::optional<CellPosition> cell_at(const SDL_Point &point) const;
+  [[nodiscard]] std::optional<HitTarget> hit_test(const SDL_Point &point) const;
 };
