@@ -1,64 +1,112 @@
 #include "gui/input.hpp"
+#include "engine/engine.hpp"
+#include "gui/layout.hpp"
 
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_mouse.h>
 #include <cmath>
 #include <optional>
+#include <utility>
 
 namespace input
 {
 namespace
 {
-[[nodiscard]] std::optional<ActionVariant>
-_handle_mouse_down(const SDL_Event &event, const Layout &layout, const SDL_Point &point)
+// SDL3 mouse coordinates are float; layout is in whole pixels.
+// Pixel i covers [i, i+1), so std::floor gives the pixel containing the mouse position.
+[[nodiscard]] SDL_Point _to_point(const SDL_MouseButtonEvent &button)
 {
+  return {.x = static_cast<int>(std::floor(button.x)), .y = static_cast<int>(std::floor(button.y))};
+}
+
+[[nodiscard]] std::optional<Action>
+_handle_mouse_down(const SDL_Event &event, const Layout &layout, std::optional<Press> &pressed)
+{
+  pressed.reset();
+
+  const auto target = layout.hit_test(_to_point(event.button));
+  if (!target)
+  {
+    return std::nullopt;
+  }
+
+  switch (event.button.button)
+  {
+  case SDL_BUTTON_RIGHT:
+  {
+    if (const auto *cell = std::get_if<CellPosition>(&*target))
+    {
+      return action::Flag{*cell};
+    }
+    break;
+  }
+  case SDL_BUTTON_LEFT:
+  case SDL_BUTTON_MIDDLE:
+  {
+    pressed = Press{*target, event.button.button};
+    return std::nullopt;
+  }
+  default:
+    break;
+  }
+
+  return std::nullopt;
+};
+
+[[nodiscard]] std::optional<Action>
+_handle_mouse_button_up(const SDL_Event &event, const Layout &layout, std::optional<Press> &pressed)
+{
+  const auto press = std::exchange(pressed, std::nullopt);
+  if (!press || press->button != event.button.button)
+  {
+    return std::nullopt;
+  }
+
+  const auto target = layout.hit_test(_to_point(event.button));
+  if (!target || *target != press->target)
+  {
+    return std::nullopt;
+  }
+
+  const auto *cell = std::get_if<CellPosition>(&*target);
+
   switch (event.button.button)
   {
   case SDL_BUTTON_LEFT:
   {
-    if (auto cell_pos = layout.cell_at(point))
+    if (std::holds_alternative<ResetButton>(*target))
     {
-      return action::LeftClick{*cell_pos};
+      return action::Reset{};
     }
-    break;
-  }
-  case SDL_BUTTON_RIGHT:
-  {
-    if (auto cell_pos = layout.cell_at(point))
+    if (cell != nullptr)
     {
-      return action::RightClick{*cell_pos};
+      return action::Reveal{*cell};
     }
     break;
   }
   case SDL_BUTTON_MIDDLE:
   {
-    if (auto cell_pos = layout.cell_at(point))
+    if (cell != nullptr)
     {
-      return action::ChordClick{*cell_pos};
+      return action::Chord{*cell};
     }
     break;
   }
   default:
-    return std::nullopt;
+    break;
   }
 
-  // unreachable
   return std::nullopt;
-};
+}
 } // namespace
 
-std::optional<ActionVariant> to_action(const SDL_Event &event, const Layout &layout)
+std::optional<Action> to_action(const SDL_Event &event, const Layout &layout, std::optional<Press> &pressed)
 {
-  // SDL3 mouse coordinates are float; layout is in whole pixels.
-  // Pixel i covers [i, i+1), so std::floor gives the pixel containing the mouse position.
-  const SDL_Point point{
-      .x = static_cast<int>(std::floor(event.motion.x)), .y = static_cast<int>(std::floor(event.motion.y))};
-
   switch (event.type)
   {
   case SDL_EVENT_QUIT:
   {
     return action::Quit{};
-    break;
   }
   case SDL_EVENT_KEY_DOWN:
   {
@@ -71,14 +119,14 @@ std::optional<ActionVariant> to_action(const SDL_Event &event, const Layout &lay
   }
   case SDL_EVENT_MOUSE_BUTTON_DOWN:
   {
-    if (auto res = _handle_mouse_down(event, layout, point))
-    {
-      return res;
-    };
-    break;
+    return _handle_mouse_down(event, layout, pressed);
+  }
+  case SDL_EVENT_MOUSE_BUTTON_UP:
+  {
+    return _handle_mouse_button_up(event, layout, pressed);
   }
   default:
-    return std::nullopt;
+    break;
   }
   return std::nullopt;
 }

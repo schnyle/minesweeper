@@ -1,5 +1,7 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
+#include <SDL3/SDL_render.h>
+#include <optional>
 #include <stdexcept>
 
 #include "engine/engine.hpp"
@@ -41,7 +43,7 @@ Gui::~Gui()
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-void Gui::render(const Engine &engine)
+void Gui::render(const Engine &engine, std::optional<int> elapsed_seconds)
 {
   // background
   SDL_SetRenderDrawColor(renderer_, 40, 40, 40, 255);
@@ -59,40 +61,51 @@ void Gui::render(const Engine &engine)
   SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255);
   _fill_rect(renderer_, layout_.header_rect);
 
+  // header - timer
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+  if (elapsed_seconds.has_value())
+  {
+    SDL_RenderDebugText(renderer_, 0, 0, std::format("{}", *elapsed_seconds).c_str());
+  }
+
+  // header - reset button
+  SDL_SetRenderDrawColor(renderer_, 120, 43, 218, 255);
+  _fill_rect(renderer_, layout_.reset_button_rect);
+
   // board
   SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
   _fill_rect(renderer_, layout_.grid_rect);
 
   // cells: inset by a border so the board color shows between them
-  constexpr float CELL_BORDER = 2.0F;
-  const auto cell = static_cast<float>(layout_.cell_width);
-  const int rows = engine.row_count();
-  const int cols = engine.col_count();
+  constexpr int CELL_BORDER = 2;
+  const int cell = layout_.cell_width;
 
-  for (int r = 0; r < rows; ++r)
+  for (int r = 0; r < engine.row_count(); ++r)
   {
-    for (int c = 0; c < cols; ++c)
+    for (int c = 0; c < engine.col_count(); ++c)
     {
-      const SDL_FRect cell_rect{
-          .x = static_cast<float>(layout_.grid_rect.x) + (static_cast<float>(c) * cell) + CELL_BORDER,
-          .y = static_cast<float>(layout_.grid_rect.y) + (static_cast<float>(r) * cell) + CELL_BORDER,
+      const SDL_Rect cell_rect{
+          .x = layout_.grid_rect.x + (c * cell) + CELL_BORDER,
+          .y = layout_.grid_rect.y + (r * cell) + CELL_BORDER,
           .w = cell - (2 * CELL_BORDER),
           .h = cell - (2 * CELL_BORDER),
       };
       SDL_SetRenderDrawColor(renderer_, 160, 160, 160, 255);
-      SDL_RenderFillRect(renderer_, &cell_rect);
+      _fill_rect(renderer_, cell_rect);
+      const auto text_x = static_cast<float>(cell_rect.x);
+      const auto text_y = static_cast<float>(cell_rect.y);
 
       SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
       switch (engine.game_cell({.row = r, .col = c}).state)
       {
       case Engine::GameCellState::Flagged:
-        SDL_RenderDebugText(renderer_, cell_rect.x, cell_rect.y, "F");
+        SDL_RenderDebugText(renderer_, text_x, text_y, "F");
         break;
       case Engine::GameCellState::Hidden:
-        SDL_RenderDebugText(renderer_, cell_rect.x, cell_rect.y, "H");
+        SDL_RenderDebugText(renderer_, text_x, text_y, "H");
         break;
       case Engine::GameCellState::Revealed:
-        SDL_RenderDebugText(renderer_, cell_rect.x, cell_rect.y, "R");
+        SDL_RenderDebugText(renderer_, text_x, text_y, "R");
         break;
       }
     }
@@ -100,3 +113,5 @@ void Gui::render(const Engine &engine)
 
   SDL_RenderPresent(renderer_);
 }
+
+std::optional<input::Action> Gui::handle(const SDL_Event &event) { return input::to_action(event, layout_, pressed_); };

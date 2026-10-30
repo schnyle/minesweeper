@@ -4,35 +4,48 @@
 #include <optional>
 #include <variant>
 
+#include "engine/engine.hpp"
 #include "gui/layout.hpp"
 
 namespace input
 {
+
+struct Press
+{
+  Press(HitTarget target, Uint8 button) : target(target), button(button) {}
+
+  HitTarget target;
+  Uint8 button; // e.g. SDL_BUTTON_LEFT
+};
+
 namespace action
 {
+struct Reveal
+{
+  CellPosition pos;
+};
+
+struct Flag
+{
+  CellPosition pos;
+};
+
+struct Chord
+{
+  CellPosition pos;
+};
+
+struct Reset
+{
+};
+
 struct Quit
 {
 };
-
-struct LeftClick
-{
-  CellPosition pos;
-};
-
-struct RightClick
-{
-  CellPosition pos;
-};
-
-struct ChordClick
-{
-  CellPosition pos;
-};
-
 } // namespace action
 
-using ActionVariant = std::variant<action::LeftClick, action::RightClick, action::ChordClick, action::Quit>;
+using Action = std::variant<action::Reveal, action::Flag, action::Chord, action::Reset, action::Quit>;
 
-std::optional<ActionVariant> to_action(const SDL_Event &event, const Layout &layout);
+std::optional<Action> to_action(const SDL_Event &event, const Layout &layout, std::optional<Press> &pressed);
 
 } // namespace input
